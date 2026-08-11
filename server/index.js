@@ -32,11 +32,14 @@ app.get('/api/majors', async (_req, res, next) => {
   try {
     const { rows } = await pool.query(
       `SELECT m.id, m.slug, m.name, m.faculty, m.data_quality,
-              m.salary_entry_jod, m.salary_3yr_jod, m.salary_5yr_jod,
-              count(c.id)::int AS course_count
+              m.salary_entry_min_jod, m.salary_entry_max_jod,
+              m.salary_5yr_min_jod, m.salary_5yr_max_jod,
+              m.salary_confidence, m.top_jobs,
+              (SELECT count(*)::int FROM courses c WHERE c.major_id = m.id) AS course_count,
+              (SELECT coalesce(array_agg(DISTINCT u.code), '{}')
+                 FROM university_majors um JOIN universities u ON u.id = um.university_id
+                WHERE um.major_id = m.id) AS universities
          FROM majors m
-         LEFT JOIN courses c ON c.major_id = m.id
-        GROUP BY m.id
         ORDER BY m.name`,
     );
     res.json(rows);
@@ -50,8 +53,8 @@ app.get('/api/universities', async (_req, res, next) => {
     const { rows } = await pool.query(
       `SELECT u.*,
               coalesce(
-                json_agg(json_build_object('major', m.name, 'relation', um.relation,
-                                           'course_count', um.course_count)
+                json_agg(json_build_object('major', m.name, 'program', um.program_name,
+                                           'competitive_average', um.competitive_average)
                          ORDER BY m.name) FILTER (WHERE m.id IS NOT NULL), '[]') AS majors
          FROM universities u
          LEFT JOIN university_majors um ON um.university_id = u.id
@@ -74,7 +77,7 @@ app.get('/api/majors/:slug/universities', async (req, res, next) => {
          JOIN universities u ON u.id = um.university_id
          JOIN majors m ON m.id = um.major_id
         WHERE m.slug = $1
-        ORDER BY um.course_count DESC, u.code`,
+        ORDER BY um.competitive_average DESC NULLS LAST, u.code`,
       [req.params.slug],
     );
     res.json(rows);
@@ -89,7 +92,7 @@ app.get('/api/majors/:slug/courses', async (req, res, next) => {
       `SELECT c.* FROM courses c
          JOIN majors m ON m.id = c.major_id
         WHERE m.slug = $1
-        ORDER BY c.sub_field NULLS LAST, c.name`,
+        ORDER BY c.track NULLS LAST, c.name`,
       [req.params.slug],
     );
     res.json(rows);

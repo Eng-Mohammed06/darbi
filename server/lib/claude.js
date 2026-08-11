@@ -45,10 +45,8 @@ and verified job listings. Recommend the 3-5 best-fitting majors.
 Rules:
 - Recommend ONLY majors that appear in the catalog. Never invent one.
 - Cite only courses that appear in the catalog, by their exact name.
-- The catalog has NO salary data yet. Do not state, estimate, or imply salary
-  figures — not even ranges. If the student asks about pay, say the figures are
-  still being verified. Judges fact-check this platform; an invented number is
-  worse than an absent one.
+- Salary bands in the catalog are verified and cited; quote them as ranges, and
+  never invent one that is not listed.
 - Ground every claim in the catalog and the student's stated interests and GPA.
 - Write to the student directly, in plain English. Be concrete, not generic.`;
 
@@ -64,7 +62,7 @@ export async function recommendMajors({ student, majors, courses, jobs }) {
     courses: courses.map((c) => ({
       major: c.major_name,
       name: c.name,
-      sub_field: c.sub_field,
+      track: c.track,
       provider: c.provider,
     })),
     sample_jobs: jobs.slice(0, 40).map((j) => ({
@@ -117,7 +115,7 @@ export function recommendMajorsFallback({ student, majors, courses, jobs }) {
     const majorCourses = courses.filter((c) => c.major_name === major.name);
     const haystack = [
       major.name,
-      ...majorCourses.map((c) => `${c.sub_field ?? ''} ${c.name}`),
+      ...majorCourses.map((c) => `${c.track ?? ''} ${c.name}`),
     ]
       .join(' ')
       .toLowerCase();
@@ -153,9 +151,9 @@ export function recommendMajorsFallback({ student, majors, courses, jobs }) {
     data: {
       recommendations,
       summary:
-        'These matches come from DARBI’s verified course and job data, ranked by how well ' +
-        'they line up with your stated interests. AI-written guidance is unavailable right now, ' +
-        'so this ranking is rule-based. Salary figures are still being verified and are not shown.',
+        'These matches come from DARBI’s verified Jordanian course, salary and job data, ' +
+        'ranked by how well they line up with your stated interests. AI-written guidance is ' +
+        'unavailable right now, so this ranking is rule-based.',
     },
     model: 'rule-based-fallback',
     source: 'fallback',

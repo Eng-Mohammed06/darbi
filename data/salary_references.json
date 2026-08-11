@@ -1,0 +1,128 @@
+[
+  {
+    "id": "R1",
+    "source": "Jordan Engineers Association — official salary scale (PDF)",
+    "role": "Primary",
+    "provided": "Legally binding minimum monthly wage by years of experience for registered engineering disciplines (covers Electrical & Computer Engineering).",
+    "link": "https://jea.org.jo/EBV4.0/Root_Storage/AR/%D8%B3%D9%84%D9%85_%D8%A7%D9%84%D8%B1%D9%88%D8%A7%D8%AA%D8%A8.pdf"
+  },
+  {
+    "id": "R2",
+    "source": "Al Rai newspaper — coverage of the Association's 2008 wage-scale increase to 400 JOD",
+    "role": "Primary",
+    "provided": "Confirms the exact monthly floor at each experience band (400 / 430 / 470 / 520 / 580 / 650 / 720 / 800 JOD).",
+    "link": "https://alrai.com/article/290134"
+  },
+  {
+    "id": "R3",
+    "source": "Khadash.com — 'Engineer Salaries in Jordan: Syndicate Scale, Experience, Project Size' (Mar 2026)",
+    "role": "Primary",
+    "provided": "Confirms the 400 JOD entry floor is still current in 2026, and gives the top of the scale (1,350+ JOD) and the bachelor's-vs-master's pay gap.",
+    "link": "https://www.khadash.com/%D8%B1%D8%A7%D8%AA%D8%A8-%D8%A7%D9%84%D9%85%D9%87%D9%86%D8%AF%D8%B3-%D8%A7%D9%84%D9%85%D9%82%D9%8A%D9%85-%D9%81%D9%8A-%D8%A7%D9%84%D8%A7%D8%B1%D8%AF%D9%86/"
+  },
+  {
+    "id": "R4",
+    "source": "Nabd.com, republishing 'Sawt Amman' — 'Engineer Salaries in Jordan 2026: A Complete Market Guide' (Apr 2026)",
+    "role": "Primary",
+    "provided": "Real-world pay by specialty and experience stage: electrical vs. civil/mechanical vs. software engineer, at fresh-grad, 2-3yr, and 5-7yr stages — the main source for the market ranges in this file.",
+    "link": "https://nabd.com/s/170673314-81159c/"
+  },
+  {
+    "id": "R5",
+    "source": "PayScale.com — Electrical Engineer & Software Engineer, Jordan",
+    "role": "Cross-check",
+    "provided": "Crowdsourced pay by experience band (based on 5-30 submitted salaries per band); used only as a loose sanity-check given small sample sizes.",
+    "link": "https://www.payscale.com/research/JO/Job=Electrical_Engineer/Salary ; https://www.payscale.com/research/JO/Job=Software_Engineer/Salary"
+  },
+  {
+    "id": "R6",
+    "source": "Bayt.com — Computer Engineering jobs, Jordan",
+    "role": "Cross-check",
+    "provided": "Live job postings used for realistic job titles and for one explicit monthly salary figure (JOD 1,200/mo systems-engineer role).",
+    "link": "https://www.bayt.com/en/jordan/jobs/computer-engineering-jobs/"
+  },
+  {
+    "id": "R7",
+    "source": "Bayt.com — Salary-tagged jobs, Jordan",
+    "role": "Cross-check",
+    "provided": "Additional live postings with stated monthly salaries, used to sanity-check the 3-Yr and 5-Yr bands.",
+    "link": "https://www.bayt.com/en/jordan/jobs/salary-jobs/"
+  },
+  {
+    "id": "R8",
+    "source": "Glassdoor — Electrical Engineer, Jordan/Amman",
+    "role": "Excluded",
+    "provided": "Self-reported salaries (5-7 respondents) show ~JOD 1,100-1,166/yr — implausibly low; not used.",
+    "link": "https://www.glassdoor.com/Salaries/jordan-electrical-engineer-salary-SRCH_IL.0,6_IN127_KO7,26.htm"
+  },
+  {
+    "id": "R9",
+    "source": "Glassdoor — Software Engineer, Amman",
+    "role": "Excluded",
+    "provided": "340+ self-reported salaries show ~JOD 892-942/yr — below Jordan's minimum wage (~JOD 3,120/yr); excluded as an evident data/currency bug on Glassdoor's non-US pages.",
+    "link": "https://www.glassdoor.com/Salaries/amman-jordan-software-engineer-salary-SRCH_IL.0,12_IM1502_KO13,30.htm"
+  },
+  {
+    "id": "R10",
+    "source": "worldsalaries.com — Electrical Engineer & Computer Engineer, Jordan",
+    "role": "Discontinued",
+    "provided": "Used in an earlier draft of this file, then dropped: its 'Electrical Engineer, Master's degree' figure (JOD 23,140/yr) is identical to an unrelated 'AI Developer' figure reported elsewhere, indicating a generic template rather than real per-occupation data. Kept here only for the record.",
+    "link": "https://worldsalaries.com/average-electrical-engineer-salary-in-jordan/"
+  },
+  {
+    "id": "R11",
+    "source": "3arabi.ai — 'AI Salaries in Jordan' (source of the duplicate-figure discovery)",
+    "role": "Discontinued",
+    "provided": "Its JOD 23,140/yr 'AI Developer' figure matches worldsalaries.com's unrelated Electrical Engineer figure exactly — the finding that triggered dropping worldsalaries.com as a source.",
+    "link": "https://3arabi.ai/%D8%B1%D9%88%D8%A7%D8%AA%D8%A8-%D8%A7%D9%84%D8%B0%D9%83%D8%A7%D8%A1-%D8%A7%D9%84%D8%A7%D8%B5%D8%B7%D9%86%D8%A7%D8%B9%D9%8A-%D9%81%D9%8A-%D8%A7%D9%84%D8%A3%D8%B1%D8%AF%D9%86/"
+  },
+  {
+    "id": "R12",
+    "source": "Nashmi Jobs — Greater Amman Municipality (GAM) engineering recruitment posting",
+    "role": "Cross-check",
+    "provided": "Public-sector engineering pay band for new hires (700–1,000 JOD/mo) vs. experienced hires (1,000–1,500 JOD/mo); used as government-sector context for Civil Engineering.",
+    "link": "https://nashmijobs.com/job/103548"
+  },
+  {
+    "id": "R13",
+    "source": "Jordan Records / Wazeeftak — Arab Potash Company & Jordan Phosphate Mines hiring posts",
+    "role": "Context",
+    "provided": "Confirms these industrial employers hire Mechanical, Chemical, and Civil engineers and pay a 16-salary/yr structure (13th–16th month bonuses); used as industrial-sector context for Mechanical and Chemical Engineering.",
+    "link": "https://jordanrec.com/archives/170530"
+  },
+  {
+    "id": "R14",
+    "source": "fadiahmad.com — Chemical Engineering fresh-graduate job posting",
+    "role": "Primary",
+    "provided": "Real entry-level job posting stating a monthly salary of JOD 500 for a Chemical Engineering graduate; anchors the Chemical Engineering entry-level figure.",
+    "link": "https://www.fadiahmad.com/2024/08/chemical-engineering.html"
+  },
+  {
+    "id": "R15",
+    "source": "Bayt.com — Mechanical Engineering salaries, Jordan",
+    "role": "Cross-check",
+    "provided": "Aggregate salary page for Mechanical Engineering job postings in Jordan, used as a general cross-check on the Mechanical Engineering range.",
+    "link": "https://www.bayt.com/ar/jordan/salaries/jobrole/mechanical-engineering/"
+  },
+  {
+    "id": "R16",
+    "source": "salaryexplorer.com — 'Chemist' salary survey, Jordan",
+    "role": "Excluded",
+    "provided": "Reports an implausibly high average of JOD 3,130/mo for 'Chemist' in Jordan — more than double the JEA's highest experience band — consistent with a generic global-template figure rather than real local data (same pattern as R10/R11); not used.",
+    "link": "http://www.salaryexplorer.com/ar/salary-survey.php?loc=109&loctype=1&job=678&jobtype=3"
+  },
+  {
+    "id": "R17",
+    "source": "Glassdoor — Biomedical Engineer, Amman, Jordan",
+    "role": "Excluded",
+    "provided": "Reports ~USD 31,334/yr (≈ JOD 1,850–2,200/mo) with no visible sample size — more than double every other discipline's entry-level range in this file; treated as an implausible outlier, consistent with other excluded Glassdoor Jordan/Amman figures (R8, R9).",
+    "link": "https://www.glassdoor.com/Salaries/amman-jordan-biomedical-engineer-salary-SRCH_IL.0,12_IM1502_KO13,32.htm"
+  },
+  {
+    "id": "R18",
+    "source": "Quora — Mechatronics Engineer salary answers",
+    "role": "Excluded",
+    "provided": "Crowd-sourced answers giving inconsistent figures (JOD 800–2,000/mo in one answer, ~USD 85,000/yr in another) with no cited source or clear Jordan-specific basis; not used, though it confirms mechatronics is widely seen as paying at or above the general engineering scale.",
+    "link": "https://ar.quora.com/%D9%83%D9%85-%D9%8A%D9%82%D8%AF%D8%B1-%D8%B1%D8%A7%D8%AA%D8%A8-%D9%85%D9%87%D9%86%D8%AF%D8%B3%D9%8A%D9%86-%D8%A7%D9%84%D9%85%D9%8A%D9%83%D8%A7%D8%AA%D8%B1%D9%88%D9%86%D9%8A%D9%83%D8%B3"
+  }
+]

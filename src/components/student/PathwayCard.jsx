@@ -62,16 +62,20 @@ export default function PathwayCard({ slug, onSave, saved, onClose }) {
               <p className="text-xs text-gray-500 mb-1">Taught at</p>
               <ul className="mb-3">
                 {study.taught_at.map((u) => (
-                  <li key={u.code} className="text-sm">
+                  <li key={`${u.code}-${u.program_name}`} className="text-sm">
                     <span className="font-semibold text-darbi-navy">{u.code}</span>
-                    <span className="text-gray-500"> · {u.course_count} courses</span>
+                    <span className="text-gray-500">
+                      {u.competitive_average != null
+                        ? ` · needs ${u.competitive_average}% Tawjihi`
+                        : ' · average not published'}
+                    </span>
                   </li>
                 ))}
               </ul>
             </>
           ) : (
             <p className="text-sm text-gray-500 italic mb-3">
-              No university on file yet — courses here come from training academies.
+              No university on file for this major yet.
             </p>
           )}
           <p className="text-xs text-gray-500 mb-1">Start with</p>
@@ -122,6 +126,21 @@ export default function PathwayCard({ slug, onSave, saved, onClose }) {
         </Stage>
 
         <Stage n="3" title="Market demand">
+          {salary.available && (
+            <div className="mb-4 pb-3 border-b">
+              <p className="text-xs text-gray-500 mb-1">Salary progression</p>
+              {[['Entry', salary.entry], ['3 years', salary.three_year], ['5 years', salary.five_year]]
+                .filter(([, b]) => b?.min != null)
+                .map(([label, b]) => (
+                  <p key={label} className="text-sm">
+                    <span className="text-gray-500">{label}: </span>
+                    <span className="font-semibold" style={{ color: GOLD }}>
+                      {b.min === b.max ? b.min : `${b.min}–${b.max}`} JD
+                    </span>
+                  </p>
+                ))}
+            </div>
+          )}
           <div className="mb-3">
             <p className="text-4xl font-bold" style={{ color: GOLD }}>
               {demand.listings}
@@ -152,14 +171,14 @@ export default function PathwayCard({ slug, onSave, saved, onClose }) {
 
       <div className="px-6 py-3 bg-gray-50 border-t text-xs text-gray-500">
         {salary.available ? (
-          <>Entry salary {salary.entry_jod} JOD/month · source: {salary.source}</>
-        ) : (
           <>
-            Salary bands for this major are still being verified and are deliberately not shown.
-            Demand figures come from {demand.total_listings_on_board} job listings gathered from
-            Jordanian sources.
+            Salary source: {(salary.source ?? '').split('\n')[0]}
+            {salary.confidence && ` · Confidence: ${salary.confidence.split('.')[0]}`}
           </>
+        ) : (
+          <>No salary band on file for this major.</>
         )}
+        {' · '}Demand from {demand.total_listings_on_board} verified Jordanian listings.
       </div>
     </div>
   );

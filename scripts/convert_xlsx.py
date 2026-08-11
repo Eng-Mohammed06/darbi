@@ -1,14 +1,22 @@
 #!/usr/bin/env python3
-"""Convert the team's spreadsheets into normalized JSON under data/.
+"""Convert the approved Phase 2 deliverables into normalized JSON under data/.
 
-    python3 scripts/convert_xlsx.py <dir-with-xlsx-files>
+    python3 scripts/convert_xlsx.py docs/deliverables
+
+Reads the four signed-off files:
+
+    Data Files/salaries_data.xlsx        salary bands + sources + confidence
+    Data Files/Universities_majors.xlsx  6 universities, Tawjihi admission averages
+    Data Files/companies_jobs.xlsx       176 listings + fresh-grad benchmarks
+    Engineering Courses/All Courses.xlsx courses, career paths, providers
 
 Runtime never touches .xlsx — the seed script reads data/*.json. Re-run this
 only when the team ships updated spreadsheets. Stdlib only, no pip install.
 
-Anything ambiguous (unparseable cost, malformed salary) keeps its original
-string in a *_raw field and is reported under "warnings" in the summary, so
-nothing gets silently invented. Judges fact-check this data.
+This data is approved and verified, so figures are carried through rather than
+suppressed. What is *not* carried through is anything the files do not say:
+unparseable values keep their original string in a *_raw field and are listed
+under "warnings" at the end.
 """
 import html
 import json
@@ -19,6 +27,12 @@ import zipfile
 from pathlib import Path
 
 WARNINGS = []
+
+
+def warn(message):
+    """Record a warning once, however many rows trigger it."""
+    if message not in WARNINGS:
+        WARNINGS.append(message)
 
 
 # --------------------------------------------------------------- xlsx reader --
@@ -76,441 +90,566 @@ def read_xlsx(path):
     return sheets
 
 
-# ------------------------------------------------------------------- parsing --
 def cell(row, i):
     return row[i].strip() if i < len(row) else ""
 
 
-def is_blank_row(row):
+def is_blank(row):
     return not any(c.strip() for c in row)
 
 
-def is_section_header(row):
-    """Rows like ['1. Power Systems', '', '', '', '', ''] — a heading, not data."""
-    return bool(cell(row, 0)) and not any(cell(row, i) for i in range(1, len(row)))
-
-
-RANGE_RE = re.compile(r"(\d[\d,]*)\s*[-–—]\s*(\d[\d,]*)")
-
-
-def parse_money_range(raw, *, context):
-    """'250-350' -> (250, 350). Returns (None, None) when not confidently parseable."""
-    if not raw:
-        return None, None
-    m = RANGE_RE.search(raw)
-    if not m:
-        # No range, but a lone figure ('300 JOD + Comm.') is a usable lower bound.
-        single = re.search(r"(\d[\d,]*)", raw)
-        if single:
-            return int(single.group(1).replace(",", "")), None
-        WARNINGS.append(f"cost/salary not parseable, kept raw: {raw!r} ({context})")
-        return None, None
-    lo_s, hi_s = m.group(1), m.group(2)
-    lo, hi = int(lo_s.replace(",", "")), int(hi_s.replace(",", ""))
-    # '0-100' is real (free-to-100-JOD online courses). '000-1,600' is a typo:
-    # padded zeros, not a genuine bound.
-    if len(lo_s) > 1 and lo_s.startswith("0"):
-        WARNINGS.append(
-            f"malformed low bound in {raw!r} ({context}) — left unparsed, raw kept"
-        )
-        return None, hi
-    if lo > hi:
-        WARNINGS.append(f"low > high in {raw!r} ({context}) — left unparsed")
-        return None, None
-    return lo, hi
-
-
-def parse_gpa(raw):
-    if not raw or raw.lower() in {"not stated", "n/a", "none", "-"}:
-        return None
-    m = re.search(r"\d(?:\.\d+)?", raw)
-    return float(m.group(0)) if m else None
-
-
-def split_list(raw, seps=r"[/,;]"):
-    if not raw:
-        return []
-    return [p.strip() for p in re.split(seps, raw) if p.strip()]
+def lines(text):
+    """Split a multi-line cell into clean lines."""
+    return [l.strip() for l in re.split(r"[\r\n]+", text or "") if l.strip()]
 
 
 def slugify(name):
     return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
 
 
-# ------------------------------------------------------------------ courses --
-STD_HEADERS = ["sub_field", "name", "provider", "accreditation", "cost", "notes"]
-
-# Files whose single sheet holds two majors back to back. The sub-field column
-# is numbered ('1. ...', '2. ...'); the second major starts where it resets to 1.
-SPLIT_FILES = {
-    "civil_computerscience_engineering_courses.xlsx": ["Civil Engineering", "Computer Science"],
-    "software_computerengineering_courses.xlsx": ["Software Engineering", "Computer Engineering"],
+# ------------------------------------------------------------------- majors --
+# One canonical name per major. Everything else in the workbooks is an alias:
+# the universities file uses short forms ("Computer", "CS", "Medical") and the
+# course workbook uses sheet prefixes.
+MAJORS = {
+    "Electrical Engineering": ["electrical", "electrical / power", "electrical / computer", "ee"],
+    "Computer Engineering": ["computer", "computer engineering", "ce"],
+    "Computer Science": ["cs", "computer science"],
+    "Software Engineering": ["software", "software engineering", "se"],
+    "Civil Engineering": ["civil", "civil / construction", "civil /geomatics", "civil / geomatics"],
+    "Mechanical Engineering": ["mechanical", "mechanical engineering"],
+    "Mechatronics Engineering": ["mechatronics", "mechatronics engineering"],
+    "Chemical Engineering": ["chemical", "chemical engineering"],
+    "Biomedical Engineering": ["biomedical", "biomedical engineering", "medical"],
+    "Semiconductor Engineering": ["semi conductors", "semiconductors", "semiconductor"],
 }
-# Files where each sheet is one major, named after it.
-SHEET_PER_MAJOR = {
-    "biomedical_chemical_engineering_courses.xlsx",
-    "electrical_mechanical_engineering_courses.xlsx",
-}
+ALIAS_TO_MAJOR = {a: canon for canon, aliases in MAJORS.items() for a in aliases}
+ALIAS_TO_MAJOR.update({canon.lower(): canon for canon in MAJORS})
 
 
-def leading_number(text):
-    m = re.match(r"\s*(\d+)\s*[.)]", text)
+def canonical_major(raw):
+    if not raw:
+        return None
+    key = re.sub(r"\s+", " ", raw.strip().lower())
+    return ALIAS_TO_MAJOR.get(key)
+
+
+MONEY_RANGE = re.compile(r"(\d[\d,]*)\s*[-–—]\s*(\d[\d,]*)")
+MONEY_ONE = re.compile(r"(\d[\d,]*)")
+
+
+def parse_monthly(raw, *, context):
+    """'400–450 /mo (4,800–5,400 /yr)' -> (400, 450).
+
+    Only the part before the annualised parenthetical is considered, so the
+    yearly figure can never be mistaken for the monthly one.
+    """
+    if not raw:
+        return None, None, None
+    monthly = raw.split("(")[0]
+    m = MONEY_RANGE.search(monthly)
+    if m:
+        lo, hi = (int(g.replace(",", "")) for g in m.groups())
+        if lo > hi:
+            warn(f"low > high in {raw!r} ({context})")
+            return None, None, raw
+        return lo, hi, raw
+    one = MONEY_ONE.search(monthly)
+    if one:
+        v = int(one.group(1).replace(",", ""))
+        return v, v, raw
+    return None, None, raw
+
+
+CONFIDENCE_RANK = [
+    ("medium-high", "high"),
+    ("low-medium", "low"),
+    ("high", "high"),
+    ("medium", "medium"),
+    ("low", "low"),
+]
+
+
+def confidence_to_quality(text):
+    """The sheet grades its own figures; carry that grade into data_quality."""
+    t = (text or "").strip().lower()
+    for prefix, quality in CONFIDENCE_RANK:
+        if t.startswith(prefix):
+            return quality
+    return "pending"
+
+
+def convert_salaries(src):
+    path = src / "Data Files" / "salaries_data.xlsx"
+    if not path.exists():
+        warn("missing salaries_data.xlsx — majors will carry no salary bands")
+        return {}, []
+
+    sheets = dict(read_xlsx(path))
+    majors = {}
+
+    rows = sheets.get("Salary Data", [])
+    header_at = next(
+        (i for i, r in enumerate(rows) if cell(r, 0).lower() == "major"), None
+    )
+    if header_at is None:
+        warn("salaries_data.xlsx: no 'Major' header row found")
+        return {}, []
+
+    for row in rows[header_at + 1:]:
+        if is_blank(row):
+            continue
+        name = canonical_major(cell(row, 0))
+        if not name:
+            warn(f"salary row for unmapped major {cell(row, 0)!r} — skipped")
+            continue
+        entry_lo, entry_hi, entry_raw = parse_monthly(cell(row, 1), context=f"{name} entry")
+        y3_lo, y3_hi, y3_raw = parse_monthly(cell(row, 2), context=f"{name} 3-yr")
+        y5_lo, y5_hi, y5_raw = parse_monthly(cell(row, 3), context=f"{name} 5-yr")
+        confidence = cell(row, 6)
+        majors[name] = {
+            "salary_entry_min_jod": entry_lo,
+            "salary_entry_max_jod": entry_hi,
+            "salary_entry_raw": entry_raw,
+            "salary_3yr_min_jod": y3_lo,
+            "salary_3yr_max_jod": y3_hi,
+            "salary_3yr_raw": y3_raw,
+            "salary_5yr_min_jod": y5_lo,
+            "salary_5yr_max_jod": y5_hi,
+            "salary_5yr_raw": y5_raw,
+            "top_jobs": lines(cell(row, 4)),
+            "salary_source": cell(row, 5),
+            "salary_confidence": confidence,
+            "data_quality": confidence_to_quality(confidence),
+        }
+
+    # References tab: the numbered [R1]…[Rn] citations the salary cells point at.
+    references = []
+    ref_rows = sheets.get("References", [])
+    ref_header = next((i for i, r in enumerate(ref_rows) if cell(r, 0).upper() == "ID"), None)
+    if ref_header is not None:
+        for row in ref_rows[ref_header + 1:]:
+            if is_blank(row) or not cell(row, 0):
+                continue
+            references.append(
+                {
+                    "id": cell(row, 0),
+                    "source": cell(row, 1),
+                    "role": cell(row, 2),
+                    "provided": cell(row, 3),
+                    "link": cell(row, 4),
+                }
+            )
+    return majors, references
+
+
+# ------------------------------------------------------------- universities --
+def parse_years(raw):
+    m = re.search(r"(\d+)", raw or "")
     return int(m.group(1)) if m else None
 
 
-def std_course_rows(rows, source_file, major_for_row):
-    out = []
-    current_section = ""
+def parse_average(raw):
+    """Tawjihi averages are percentages; 'N/A' means the file has no figure."""
+    if not raw or raw.strip().upper() in {"N/A", "NA", "-", "—"}:
+        return None
+    m = re.search(r"\d+(?:\.\d+)?", raw)
+    return float(m.group(0)) if m else None
+
+
+def convert_universities(src):
+    path = src / "Data Files" / "Universities_majors.xlsx"
+    if not path.exists():
+        warn("missing Universities_majors.xlsx")
+        return [], []
+
+    rows = read_xlsx(path)[0][1]
+    universities, links = {}, []
+
     for row in rows[1:]:
-        if is_blank_row(row):
+        if is_blank(row) or not cell(row, 0):
             continue
-        if is_section_header(row):
-            current_section = cell(row, 0)
+        raw_uni = cell(row, 0)
+        code_match = re.search(r"\(([A-Z]{2,6})\)", raw_uni)
+        if not code_match:
+            warn(f"university without a (CODE): {raw_uni!r} — skipped")
+            continue
+        code = code_match.group(1)
+        name = raw_uni[: code_match.start()].strip()
+        # The source file spells it "Jodan"; the institution is Jordan UST.
+        if name.lower().startswith("jodan"):
+            name = "Jordan" + name[5:]
+            if code == "JUST":
+                warn(
+                    "Universities_majors.xlsx spells JUST as 'Jodan University…'; "
+                    "corrected to 'Jordan' for display, source value preserved"
+                )
+
+        entry = universities.setdefault(
+            code,
+            {
+                "code": code,
+                "name": name,
+                "name_in_source": raw_uni,
+                "city": None,
+                "website": None,
+                "source_files": ["Universities_majors.xlsx"],
+                "programs_note": None,
+            },
+        )
+
+        program = cell(row, 1)
+        major = canonical_major(program)
+        if not major:
+            warn(f"{code}: program {program!r} maps to no canonical major — skipped")
+            continue
+
+        links.append(
+            {
+                "university_code": code,
+                "major_name": major,
+                "program_name": program,
+                "faculty": cell(row, 2),
+                "duration_years": parse_years(cell(row, 3)),
+                "parallel_average": parse_average(cell(row, 4)),
+                "competitive_average": parse_average(cell(row, 5)),
+                "minimum_average": parse_average(cell(row, 6)),
+                "relation": "offers_degree",  # this file lists degree programmes
+                "evidence": f"Universities_majors.xlsx · {raw_uni} · {program}",
+            }
+        )
+
+    for u in sorted(universities.values(), key=lambda u: u["code"]):
+        n = sum(1 for l in links if l["university_code"] == u["code"])
+        print(f"  {u['code']:<5} {u['name'][:44]:<44} {n} programmes")
+
+    return sorted(universities.values(), key=lambda u: u["code"]), links
+
+
+# --------------------------------------------------------------------- jobs --
+def convert_jobs(src):
+    path = src / "Data Files" / "companies_jobs.xlsx"
+    if not path.exists():
+        warn("missing companies_jobs.xlsx")
+        return [], []
+
+    sheets = dict(read_xlsx(path))
+    jobs, seen = [], set()
+
+    for row in sheets.get("Jobs", [])[1:]:
+        if is_blank(row):
+            continue
+        company, title = cell(row, 0), cell(row, 1)
+        if not company or not title:
+            continue
+        key = (company.lower(), title.lower())
+        if key in seen:
+            continue
+        seen.add(key)
+
+        salary_raw = cell(row, 4)
+        lo, hi, _ = parse_monthly(salary_raw, context=f"{company}/{title[:30]}")
+        gpa_raw = cell(row, 3)
+
+        # Map free-text majors onto canonical ones where possible, but keep the
+        # original list too — employers write "Telecom Engineering" and similar
+        # that have no canonical equivalent, and dropping them would lose signal.
+        raw_majors = [p.strip() for p in re.split(r"[/,;]", cell(row, 2)) if p.strip()]
+        canon = sorted({canonical_major(m) for m in raw_majors} - {None})
+
+        jobs.append(
+            {
+                "company_name": company,
+                "title": title,
+                "required_majors": raw_majors,
+                "canonical_majors": canon,
+                "min_gpa": None if gpa_raw.lower().startswith("not") else None,
+                "min_gpa_raw": gpa_raw,
+                "salary_raw": salary_raw,
+                "salary_min_jod": lo,
+                "salary_max_jod": hi,
+                "salary_is_estimate": salary_raw.lower().startswith("est"),
+                "required_skills": [s.strip() for s in re.split(r"[,;]", cell(row, 5)) if s.strip()],
+                "source": cell(row, 6),
+                "verified": True,  # every row in the approved file is signed off
+            }
+        )
+
+    benchmarks = []
+    for row in sheets.get("Fresh_Grad_Salary_Benchmarks", [])[1:]:
+        if is_blank(row) or not cell(row, 0):
+            continue
+        lo, hi, _ = parse_monthly(cell(row, 1), context=f"benchmark {cell(row, 0)}")
+        if lo is None:
+            # Footnote rows ("Note: No individual job ad…") carry no range.
+            continue
+        benchmarks.append(
+            {
+                "role_family": cell(row, 0),
+                "range_raw": cell(row, 1),
+                "min_jod": lo,
+                "max_jod": hi,
+                "source": cell(row, 2),
+            }
+        )
+    return jobs, benchmarks
+
+
+# ------------------------------------------------------------------ courses --
+# All Courses.xlsx carries several unrelated table shapes. Each handler below
+# reads one shape; SHEET_ROUTES decides which handler a sheet goes to.
+STD_COURSE_HEADER = "sub-field / track"
+DETAIL_HEADER = "career path"
+
+
+def std_courses(rows, major, sheet):
+    """6-col: Sub-Field | Course | Provider | Accreditation | Cost | Notes"""
+    out, section = [], ""
+    for row in rows[1:]:
+        if is_blank(row):
+            continue
+        if cell(row, 0) and not any(cell(row, i) for i in range(1, 6)):
+            section = cell(row, 0)
             continue
         name = cell(row, 1)
         if not name:
             continue
-        cost_raw = cell(row, 4)
-        lo, hi = parse_money_range(cost_raw, context=f"{source_file}:{name[:40]}")
+        lo, hi, raw = parse_monthly(cell(row, 4), context=f"{sheet}:{name[:36]}")
         out.append(
             {
-                "major_name": major_for_row(row, current_section),
-                "sub_field": re.sub(r"^\s*\d+\s*[.)]\s*", "", cell(row, 0) or current_section),
+                "major_name": major,
+                "track": re.sub(r"^\s*\d+\s*[.)]\s*", "", cell(row, 0) or section),
                 "name": name,
+                "what_you_learn": None,
                 "provider": cell(row, 2),
                 "accreditation": cell(row, 3),
-                "cost_raw": cost_raw,
+                "online_alternative": None,
+                "duration": None,
+                "cost_raw": raw,
                 "cost_min_jod": lo,
                 "cost_max_jod": hi,
-                "duration": None,
-                "qualifications": None,
+                "cost_online_usd": None,
                 "notes": cell(row, 5),
-                "source_file": source_file,
+                "source_sheet": sheet,
             }
         )
     return out
 
 
+def detail_courses(rows, major, sheet):
+    """9-col: Career Path | Course | What You Learn | Where in Jordan |
+    Online Alternative | Duration | Cost in Jordan | Online Cost | Notes"""
+    out, track = [], ""
+    for row in rows[1:]:
+        if is_blank(row):
+            continue
+        if cell(row, 0):
+            track = cell(row, 0)
+        name = cell(row, 1)
+        if not name:
+            continue
+        lo, hi, raw = parse_monthly(cell(row, 6), context=f"{sheet}:{name[:36]}")
+        out.append(
+            {
+                "major_name": major,
+                "track": track,
+                "name": name,
+                "what_you_learn": cell(row, 2) or None,
+                "provider": cell(row, 3) or None,
+                "accreditation": None,
+                "online_alternative": cell(row, 4) or None,
+                "duration": cell(row, 5) or None,
+                "cost_raw": raw,
+                "cost_min_jod": lo,
+                "cost_max_jod": hi,
+                "cost_online_usd": cell(row, 7) or None,
+                "notes": cell(row, 8) or None,
+                "source_sheet": sheet,
+            }
+        )
+    return out
+
+
+def career_path_rows(rows, major, sheet):
+    """5-col: # | Career Path | Focus | Typical Roles | Tools"""
+    out = []
+    for row in rows[1:]:
+        if is_blank(row) or not cell(row, 1):
+            continue
+        out.append(
+            {
+                "major_name": major,
+                "name": cell(row, 1),
+                "focus": cell(row, 2),
+                "typical_roles": cell(row, 3),
+                "tools": cell(row, 4),
+                "skills": None,
+                "coursera": None,
+                "udemy": None,
+                "jordan_centers": None,
+                "source_sheet": sheet,
+            }
+        )
+    return out
+
+
+def skills_path_rows(rows, major, sheet):
+    """5-col: Career Path/Job Title | Skills | Coursera | Udemy | Centers"""
+    out = []
+    for row in rows[1:]:
+        if is_blank(row) or not cell(row, 0):
+            continue
+        out.append(
+            {
+                "major_name": major,
+                "name": cell(row, 0),
+                "focus": None,
+                "typical_roles": None,
+                "tools": None,
+                "skills": cell(row, 1),
+                "coursera": cell(row, 2),
+                "udemy": cell(row, 3),
+                "jordan_centers": cell(row, 4),
+                "source_sheet": sheet,
+            }
+        )
+    return out
+
+
+def centre_rows(rows, sheet, cols):
+    """Training centres, in whichever column order the sheet uses."""
+    out = []
+    for row in rows[1:]:
+        if is_blank(row) or not cell(row, cols["name"]):
+            continue
+        out.append(
+            {
+                "name": cell(row, cols["name"]),
+                "field": cell(row, cols["field"]) if cols.get("field") is not None else None,
+                "location": cell(row, cols["location"]) if cols.get("location") is not None else None,
+                "specialty": cell(row, cols["specialty"]) if cols.get("specialty") is not None else None,
+                "notes": cell(row, cols["notes"]) if cols.get("notes") is not None else None,
+                "website": cell(row, cols["website"]) if cols.get("website") is not None else None,
+                "source_sheet": sheet,
+            }
+        )
+    return out
+
+
+def platform_rows(rows, sheet):
+    out = []
+    for row in rows[1:]:
+        if is_blank(row) or not cell(row, 0):
+            continue
+        out.append(
+            {
+                "name": cell(row, 0),
+                "best_for": cell(row, 1),
+                "pricing": cell(row, 2),
+                "notes": cell(row, 3),
+                "source_sheet": sheet,
+            }
+        )
+    return out
+
+
+SHEET_MAJOR_PREFIX = {"CE": "Civil Engineering", "CS": "Computer Science"}
+
+
 def convert_courses(src):
-    courses = []
-
-    for fname in sorted(SHEET_PER_MAJOR):
-        path = src / fname
-        if not path.exists():
-            WARNINGS.append(f"missing expected file: {fname}")
-            continue
-        for sheet_name, rows in read_xlsx(path):
-            courses += std_course_rows(rows, fname, lambda r, s, m=sheet_name: m)
-
-    for fname, majors in SPLIT_FILES.items():
-        path = src / fname
-        if not path.exists():
-            WARNINGS.append(f"missing expected file: {fname}")
-            continue
-        rows = read_xlsx(path)[0][1]
-        # Sub-fields are numbered '1. ...', '2. ...'. The second major starts
-        # where that numbering resets. A reset only counts once we've actually
-        # climbed past 1 — otherwise the repeated '1.' on a section header and
-        # its first data row looks like a reset and splits at row 1.
-        boundary, peak = None, 0
-        for i, row in enumerate(rows[1:], start=1):
-            n = leading_number(cell(row, 0))
-            if n is None:
-                continue
-            if n == 1 and peak > 1:
-                boundary = i
-                break
-            peak = max(peak, n)
-        if boundary is None:
-            WARNINGS.append(f"{fname}: could not find major boundary; all rows -> {majors[0]}")
-            boundary = len(rows)
-
-        first = std_course_rows(
-            [rows[0]] + rows[1:boundary], fname, lambda r, s, m=majors[0]: m
-        )
-        second = std_course_rows(
-            [rows[0]] + rows[boundary:], fname, lambda r, s, m=majors[1]: m
-        )
-        print(f"  {fname}: {majors[0]}={len(first)} rows, {majors[1]}={len(second)} rows")
-        courses += first + second
-
-    # engineering_courses.xlsx has its own schema with an explicit Major column.
-    path = src / "engineering_courses.xlsx"
-    if path.exists():
-        rows = read_xlsx(path)[0][1]
-        for row in rows[1:]:
-            if is_blank_row(row) or not cell(row, 2):
-                continue
-            cost_raw = cell(row, 5)
-            lo, hi = parse_money_range(
-                cost_raw, context=f"engineering_courses.xlsx:{cell(row, 2)[:40]}"
-            )
-            if lo is None and hi is None and cost_raw.isdigit():
-                lo = hi = int(cost_raw)  # single figure, e.g. "250"
-                WARNINGS.pop()  # not actually a warning
-            courses.append(
-                {
-                    "major_name": cell(row, 1),
-                    "sub_field": None,
-                    "name": cell(row, 2),
-                    "provider": cell(row, 6),
-                    "accreditation": None,
-                    "cost_raw": cost_raw,
-                    "cost_min_jod": lo,
-                    "cost_max_jod": hi,
-                    "duration": cell(row, 4),
-                    "qualifications": cell(row, 3),
-                    "notes": None,
-                    "source_file": "engineering_courses.xlsx",
-                }
-            )
-    else:
-        WARNINGS.append("missing expected file: engineering_courses.xlsx")
-
-    return courses
-
-
-# --------------------------------------------------------------------- jobs --
-def convert_jobs(src):
-    """Union of both job files, deduped on (company, title).
-
-    companies_jobs.xlsx (50 rows) is a superset of companies_jobs_FINAL.xlsx
-    (33 rows) and both are entirely 'Verified', so the larger file wins.
-    """
-    seen, jobs = {}, []
-    for fname in ("companies_jobs.xlsx", "companies_jobs_FINAL.xlsx"):
-        path = src / fname
-        if not path.exists():
-            WARNINGS.append(f"missing expected file: {fname}")
-            continue
-        for row in read_xlsx(path)[0][1][1:]:
-            if is_blank_row(row):
-                continue
-            company, title = cell(row, 1), cell(row, 2)
-            if not company or not title:
-                continue
-            key = (company.lower(), title.lower())
-            if key in seen:
-                continue
-            salary_raw = cell(row, 5)
-            lo, hi = parse_money_range(salary_raw, context=f"{fname}:{company}/{title[:30]}")
-            status = cell(row, 8)
-            seen[key] = True
-            jobs.append(
-                {
-                    "company_name": company,
-                    "title": title,
-                    "required_majors": split_list(cell(row, 3)),
-                    "min_gpa": parse_gpa(cell(row, 4)),
-                    "salary_raw": salary_raw,
-                    "salary_min_jod": lo,
-                    "salary_max_jod": hi,
-                    "required_skills": split_list(cell(row, 6), seps=r"[,;]"),
-                    "source": cell(row, 7),
-                    "verified": status.lower() == "verified",
-                }
-            )
-    return jobs
-
-
-# ----------------------------------------------------- career reference data --
-def convert_career(src):
-    paths, centers = [], []
-    path = src / "career_courses_ENGLISH.xlsx"
+    path = src / "Engineering Courses" / "All Courses.xlsx"
     if not path.exists():
-        WARNINGS.append("missing expected file: career_courses_ENGLISH.xlsx")
-        return paths, centers
+        warn("missing All Courses.xlsx")
+        return [], [], [], []
 
-    for sheet_name, rows in read_xlsx(path):
-        if sheet_name.lower().startswith("jordan training"):
-            for row in rows[1:]:
-                if is_blank_row(row) or not cell(row, 1):
-                    continue
-                centers.append(
-                    {
-                        "field": cell(row, 0),
-                        "name": cell(row, 1),
-                        "study_type": cell(row, 2),
-                        "details": cell(row, 3),
-                        "contact": cell(row, 4),
-                    }
-                )
+    courses, paths_out, centres, platforms = [], [], [], []
+
+    for sheet, rows in read_xlsx(path):
+        if not rows:
+            continue
+        header = [c.lower() for c in rows[0]]
+        first = header[0] if header else ""
+        prefix = sheet.split(" - ")[0].strip()
+        major = SHEET_MAJOR_PREFIX.get(prefix) or canonical_major(sheet) or canonical_major(prefix)
+
+        if "read me" in sheet.lower() or sheet.lower() == "cover":
+            continue
+
+        if first.startswith(STD_COURSE_HEADER):
+            if not major and sheet.lower() != "shared courses":
+                warn(f"course sheet {sheet!r} maps to no major — rows kept unlinked")
+            courses += std_courses(rows, major, sheet)
+        elif "courses & training detail" in sheet.lower():
+            courses += detail_courses(rows, major, sheet)
+        elif "career paths overview" in sheet.lower():
+            paths_out += career_path_rows(rows, major, sheet)
+        elif first.startswith(DETAIL_HEADER) or first.startswith("job title"):
+            paths_out += skills_path_rows(rows, major, sheet)
+        elif first.startswith("centre") or first.startswith("center"):
+            centres += centre_rows(
+                rows, sheet,
+                {"name": 0, "location": 1, "specialty": 2, "notes": 3, "website": 4},
+            )
+        elif first.startswith("provider"):
+            centres += centre_rows(
+                rows, sheet,
+                {"name": 0, "location": 1, "specialty": 2, "notes": 4, "field": 2, "website": None},
+            )
+        elif first.startswith("field"):
+            centres += centre_rows(
+                rows, sheet,
+                {"field": 0, "name": 1, "specialty": 2, "notes": 3, "location": 4, "website": None},
+            )
+        elif first.startswith("platform"):
+            platforms += platform_rows(rows, sheet)
         else:
-            for row in rows[1:]:
-                if is_blank_row(row) or not cell(row, 0):
-                    continue
-                paths.append(
-                    {
-                        "track": sheet_name,
-                        "title": cell(row, 0),
-                        "skills": cell(row, 1),
-                        "coursera": cell(row, 2),
-                        "udemy": cell(row, 3),
-                        "jordan_centers": cell(row, 4),
-                    }
-                )
-    return paths, centers
+            warn(f"unrecognised sheet layout: {sheet!r} (header {rows[0][:3]}) — skipped")
 
-
-# ------------------------------------------------------------- institutions --
-# Degree-granting institutions that actually appear in the team's spreadsheets.
-# `aliases` are the spellings found in the files (providers use both "JUST —
-# Amman" and "JUST - Campus"); `website` is only filled where a file states it.
-# Nothing here is invented — `sourced_from` names the file each fact came from.
-UNIVERSITIES = [
-    {
-        "code": "JUST",
-        "name": "Jordan University of Science and Technology",
-        "aliases": ["JUST"],
-        "website": "just.edu.jo",
-        "website_source": "DARBI_Phase2_Sprint_Plan.html",
-    },
-    {
-        "code": "UJ",
-        "name": "University of Jordan",
-        "aliases": ["UJ", "University of Jordan"],
-        "website": "ju.edu.jo",
-        "website_source": "career_courses_ENGLISH.xlsx",
-    },
-    {
-        "code": "GJU",
-        "name": "German Jordanian University",
-        "aliases": ["GJU", "German-Jordanian University", "German Jordanian University"],
-        "website": "gju.edu.jo",
-        "website_source": "career_courses_ENGLISH.xlsx",
-    },
-    {
-        "code": "PSUT",
-        "name": "Princess Sumaya University for Technology",
-        "aliases": ["PSUT", "PSU"],
-        "website": "psut.edu.jo",
-        "website_source": "career_courses_ENGLISH.xlsx",
-    },
-    {
-        "code": "HTU",
-        "name": "Al Hussein Technical University",
-        "aliases": ["HTU", "Hussein Technical University"],
-        "website": "htu.edu.jo",
-        "website_source": "career_courses_ENGLISH.xlsx",
-    },
-    {
-        "code": "LTUC",
-        "name": "Luminus Technical University College",
-        "aliases": ["LTUC", "Luminus", "ASAC"],
-        "website": "ltuc.com",
-        "website_source": "career_courses_ENGLISH.xlsx",
-    },
-]
-
-
-def mentions(alias, text):
-    """Whole-token match, so 'PSU' doesn't fire inside another word."""
-    return bool(re.search(rf"(?<![A-Za-z]){re.escape(alias)}(?![A-Za-z])", text or ""))
-
-
-def match_university(text):
-    for uni in UNIVERSITIES:
-        if any(mentions(a, text) for a in uni["aliases"]):
-            return uni
-    return None
-
-
-def convert_institutions(courses, career_paths, training_centers):
-    """Build the university list and its links to majors, from file evidence only."""
-    found = {}
-
-    def note(uni, source_file):
-        entry = found.setdefault(
-            uni["code"],
-            {
-                "code": uni["code"],
-                "name": uni["name"],
-                "city": None,  # not stated per-institution in any source file
-                "website": uni["website"],
-                "website_source": uni["website_source"],
-                "source_files": [],
-                "programs_note": None,
-            },
-        )
-        if source_file not in entry["source_files"]:
-            entry["source_files"].append(source_file)
-        return entry
-
-    # 1. Course providers -> which majors each institution actually teaches.
-    links = {}
-    for c in courses:
-        uni = match_university(c.get("provider"))
-        if not uni:
-            continue
-        note(uni, c["source_file"])
-        key = (uni["code"], c["major_name"])
-        link = links.setdefault(
-            key,
-            {
-                "university_code": uni["code"],
-                "major_name": c["major_name"],
-                "relation": "provides_courses",
-                "course_count": 0,
-                "evidence": c["provider"],
-            },
-        )
-        link["course_count"] += 1
-
-    # 2. Training-centre rows -> degree programmes, where a file states them.
-    for t in training_centers:
-        uni = match_university(t.get("name"))
-        if not uni:
-            continue
-        entry = note(uni, "career_courses_ENGLISH.xlsx")
-        if t.get("details") and not entry["programs_note"]:
-            entry["programs_note"] = t["details"]
-
-    # 3. Career-path rows cite universities in free text too.
-    for p in career_paths:
-        for uni in UNIVERSITIES:
-            if any(mentions(a, p.get("jordan_centers") or "") for a in uni["aliases"]):
-                note(uni, "career_courses_ENGLISH.xlsx")
-
-    universities = sorted(found.values(), key=lambda u: u["code"])
-    university_majors = sorted(links.values(), key=lambda l: (l["university_code"], l["major_name"]))
-
-    for u in universities:
-        offered = [l["major_name"] for l in university_majors if l["university_code"] == u["code"]]
-        print(f"  {u['code']:<5} {u['name'][:46]:<46} majors: {len(offered)}")
-
-    return universities, university_majors
-
-
-# ------------------------------------------------------------------- majors --
-def derive_majors(courses):
-    """Majors are derived from the course data we actually have.
-
-    Salary fields stay null: the salaries.xlsx deliverable never landed, and
-    inventing figures would fail the judges' fact-check. data_quality records it.
-    """
-    names = sorted({c["major_name"] for c in courses if c["major_name"]})
-    return [
-        {
-            "slug": slugify(n),
-            "name": n,
-            "faculty": "Engineering" if "Engineering" in n else None,
-            "duration_years": None,
-            "entry_requirements": None,
-            "salary_entry_jod": None,
-            "salary_3yr_jod": None,
-            "salary_5yr_jod": None,
-            "salary_source": None,
-            "top_jobs": [],
-            "data_quality": "pending",
-        }
-        for n in names
-    ]
+    return courses, paths_out, centres, platforms
 
 
 # --------------------------------------------------------------------- main --
+def build_majors(salary_by_major, university_links, courses, jobs):
+    """The canonical major list, enriched from every file that mentions it."""
+    names = set(MAJORS)
+    out = []
+    for name in sorted(names):
+        salary = salary_by_major.get(name, {})
+        out.append(
+            {
+                "slug": slugify(name),
+                "name": name,
+                "faculty": next(
+                    (l["faculty"] for l in university_links if l["major_name"] == name and l["faculty"]),
+                    "Engineering",
+                ),
+                "duration_years": next(
+                    (l["duration_years"] for l in university_links
+                     if l["major_name"] == name and l["duration_years"]),
+                    None,
+                ),
+                "entry_requirements": None,
+                "top_jobs": salary.get("top_jobs", []),
+                "salary_entry_min_jod": salary.get("salary_entry_min_jod"),
+                "salary_entry_max_jod": salary.get("salary_entry_max_jod"),
+                "salary_entry_raw": salary.get("salary_entry_raw"),
+                "salary_3yr_min_jod": salary.get("salary_3yr_min_jod"),
+                "salary_3yr_max_jod": salary.get("salary_3yr_max_jod"),
+                "salary_3yr_raw": salary.get("salary_3yr_raw"),
+                "salary_5yr_min_jod": salary.get("salary_5yr_min_jod"),
+                "salary_5yr_max_jod": salary.get("salary_5yr_max_jod"),
+                "salary_5yr_raw": salary.get("salary_5yr_raw"),
+                "salary_source": salary.get("salary_source"),
+                "salary_confidence": salary.get("salary_confidence"),
+                "data_quality": salary.get("data_quality", "pending"),
+            }
+        )
+    return out
+
+
 def main():
     if len(sys.argv) < 2:
-        sys.exit(f"usage: {sys.argv[0]} <dir-with-xlsx-files>")
+        sys.exit(f"usage: {sys.argv[0]} <deliverables-dir>")
     src = Path(sys.argv[1]).expanduser()
     if not src.is_dir():
         sys.exit(f"not a directory: {src}")
@@ -518,29 +657,47 @@ def main():
     out = Path(__file__).resolve().parent.parent / "data"
     out.mkdir(exist_ok=True)
 
-    print(f"reading spreadsheets from {src}")
-    courses = convert_courses(src)
-    jobs = convert_jobs(src)
-    career_paths, training_centers = convert_career(src)
-    majors = derive_majors(courses)
-    print("institutions:")
-    universities, university_majors = convert_institutions(courses, career_paths, training_centers)
+    print(f"reading approved deliverables from {src}\n")
+
+    print("salaries:")
+    salary_by_major, references = convert_salaries(src)
+    print(f"  {len(salary_by_major)} majors with bands, {len(references)} cited references")
+
+    print("universities:")
+    universities, university_majors = convert_universities(src)
+
+    print("jobs:")
+    jobs, benchmarks = convert_jobs(src)
+    print(f"  {len(jobs)} listings, {len(benchmarks)} fresh-grad benchmarks")
+
+    print("courses:")
+    courses, career_paths, training_centers, online_platforms = convert_courses(src)
+    print(
+        f"  {len(courses)} courses, {len(career_paths)} career paths, "
+        f"{len(training_centers)} centres, {len(online_platforms)} platforms"
+    )
+
+    majors = build_majors(salary_by_major, university_majors, courses, jobs)
 
     datasets = {
         "majors.json": majors,
-        "courses.json": courses,
-        "jobs.json": jobs,
-        "career_paths.json": career_paths,
-        "training_centers.json": training_centers,
         "universities.json": universities,
         "university_majors.json": university_majors,
+        "courses.json": courses,
+        "career_paths.json": career_paths,
+        "training_centers.json": training_centers,
+        "online_platforms.json": online_platforms,
+        "jobs.json": jobs,
+        "salary_benchmarks.json": benchmarks,
+        "salary_references.json": references,
     }
 
+    print()
     for fname, rows in datasets.items():
         (out / fname).write_text(
             json.dumps(rows, indent=2, ensure_ascii=False) + "\n", encoding="utf8"
         )
-        print(f"  wrote data/{fname:<24} {len(rows):>4} rows")
+        print(f"  wrote data/{fname:<26} {len(rows):>4} rows")
 
     if WARNINGS:
         print(f"\n{len(WARNINGS)} data-quality warning(s):")

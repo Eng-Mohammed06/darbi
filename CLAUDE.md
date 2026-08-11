@@ -9,10 +9,10 @@ The defensible asset is **verified Jordanian data** — real universities, major
 salaries, companies. The sprint plan says it outright: *"Judges will fact-check
 this."* The AI layer is table stakes.
 
-**Never invent a data point.** No estimated salaries, no plausible-looking
-company names, no filled-in GPA requirements. Every row carries a `source`, and
-unknowns stay `NULL` with `data_quality = 'pending'`. A gap we disclose is
-survivable; a fabricated figure a judge checks is not.
+**Never invent a data point.** The figures now in the database are approved and
+verified, so use them freely — but never add one the files do not contain. Every
+row carries its source; unknowns stay `NULL`. A gap we disclose is survivable; a
+fabricated figure a judge checks is not.
 
 ## Three portals, one login
 
@@ -65,39 +65,69 @@ and 5174. Don't "fix" these back to defaults.
 ## Data pipeline
 
 ```
-team's *.xlsx  →  scripts/convert_xlsx.py  →  data/*.json  →  scripts/seed.mjs  →  Postgres
+docs/deliverables/**.xlsx → scripts/convert_xlsx.py → data/*.json → scripts/seed.mjs → Postgres
 ```
 
-`data/*.json` is committed — it is the actual deliverable dataset. Runtime never
-reads `.xlsx`. The converter is stdlib-only Python (no pip install) and reports
-every value it could not parse rather than guessing.
+`docs/deliverables/` is the **approved Phase 2 deliverable set** and the first
+source of truth. `data/*.json` is committed and generated from it; runtime never
+reads `.xlsx`. The converter is stdlib-only Python and reports every value it
+could not parse rather than guessing.
 
-Current contents: 8 majors, 108 courses, 50 jobs (36 companies), 21 career
-paths, 13 training centres.
+Four approved source files, one per team member:
 
-### Known gaps — disclose, don't fill
+| File | Owner | Gives us |
+|---|---|---|
+| `salaries_data.xlsx` | Shadi | 9 majors × entry/3-yr/5-yr bands, top jobs, cited sources, self-graded confidence |
+| `Universities_majors.xlsx` | Khaleel | 6 universities, 39 degree programmes, **Tawjihi admission averages** |
+| `companies_jobs.xlsx` | Hussam | 176 listings from 147 companies + 17 fresh-grad benchmarks |
+| `All Courses.xlsx` | — | 139 courses, 40 career paths, 39 centres, 20 online platforms |
 
-These were Week-1 deliverables that never landed:
+Current totals: 10 majors, 6 universities, 39 programmes, 139 courses, 176 jobs.
+Coverage: 9/10 majors have a salary band, 10/10 are taught somewhere, 28
+programmes carry a competitive Tawjihi average.
 
-- **No salary data.** All 8 majors have `salary_*_jod = NULL`,
-  `data_quality = 'pending'`. The student results page must degrade gracefully.
-- **No universities.** `universities` is empty; `data/universities.json` is `[]`.
-- **No GPA requirements.** All 50 seeded jobs have `min_gpa = NULL` (every
-  spreadsheet row said "Not stated"), so the company portal's GPA filter has
-  nothing to bite on yet. Filter logic treats `NULL` as "no requirement".
+### Two averages, never conflate them
+
+`university_majors` holds both. `minimum_average` is the floor to apply;
+`competitive_average` is what the last admitted student actually scored. A NULL
+competitive average means **not published**, not "no bar". The advisor prompt
+says this explicitly because students confuse the two constantly.
 
 ### Data quirks already handled
 
-- `companies_jobs_FINAL.xlsx` (33 rows) is a **subset** of `companies_jobs.xlsx`
-  (50 rows), not a newer version. Both are entirely `Verified`. The converter
-  takes the union, deduped on (company, title).
-- Two spreadsheets pack two majors into one sheet, split where the `1. / 2. /
-  3.` sub-field numbering resets. Verified split: Civil/Computer Science and
-  Software/Computer Engineering, 8 courses each.
-- One salary reads `000-1,600` (a typo for `1,000-1,600`). Left unparsed with
-  `salary_raw` preserved — do not "correct" it without a source.
-- `0-100` costs are genuine (free-to-100-JOD online courses), not typos.
+- `Universities_majors.xlsx` spells JUST as *"Jodan University of Science and
+  Technology"*. Corrected for display; `universities.name_in_source` keeps the
+  original.
+- Majors appear under short names in the universities file (`Computer`, `CS`,
+  `Medical`, `Semi Conductors`) and full names elsewhere. `MAJORS` in the
+  converter is the alias map — add to it rather than renaming source data.
+- BAU offers two Civil and two Electrical programmes, so a naive `array_agg` of
+  university codes double-counts. Queries use `array_agg(DISTINCT …)`.
+- 33 of 176 job salaries are prefixed `Est.` — market estimates, not employer
+  figures. `jobs.salary_is_estimate` flags them and the advisor is told not to
+  present them as confirmed.
+- Every job row still says `Min GPA: Not stated`, so `min_gpa` is NULL across
+  the board and the company GPA filter has nothing to bite on.
 - `current_role` is a reserved word in Postgres. The column is `current_title`.
+
+## Design system — from the approved wireframe
+
+`docs/deliverables/Wireframes & Design/` is authoritative for layout. Tokens live
+in `src/styles/global.css` with the PDF's wording quoted beside each:
+
+| | |
+|---|---|
+| Navy / Gold | `#001a33` / `#d4af37` |
+| Max width | **800px, centred** (`.darbi-container`) |
+| Box padding | 20px (`.darbi-box`) |
+| Section gap | 30px (`.darbi-section`) |
+| Button height | 45px, 5px radius (`.darbi-btn`) |
+| Input padding | 10px, gold focus border (`.darbi-input`) |
+
+Use those classes rather than ad-hoc Tailwind spacing. The results card in
+`RecommendationCard.jsx` reproduces the wireframe's structure exactly: rank,
+MAJOR NAME, Average Salary, Universities, Top Jobs, [Learn more] [Save], with
+[Show all majors] beneath the top 3.
 
 ## Layout
 
@@ -170,8 +200,11 @@ Done: repo, schema, data pipeline, seed, auth, three dashboards, recommendation
 endpoint with rule-based fallback, university extraction, streaming chat
 advisor, pathway card.
 
-Not done: deploy to Railway; Tawjihi data (blocks the school journey as the deck
-describes it); salary bands; university links for six of eight majors.
+Not done: deploy to Railway; mobile testing on a real device.
+
+Closed by the approved deliverables: salary bands, universities, Tawjihi
+averages. The advisor's old "never state a salary" and "no Tawjihi data"
+guardrails are gone — that data is signed off now.
 
 `scripts/smoke.sh` covers the API end to end (29 checks) and cleans up after
 itself — it used to leave a fake job on the board and inflate the pathway

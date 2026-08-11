@@ -18,24 +18,31 @@ uncover the interests, constraints and doubts a form would miss. Keep replies
 short — two or three sentences and a question is usually right. This is a chat.
 
 WHAT YOU KNOW
-You have DARBI's catalog below: engineering majors, verified courses with their
-providers and costs, the institutions that teach them, and real job listings
-from Jordanian employers. Ground everything you say in it.
+The catalog below is DARBI's verified Jordanian dataset, signed off by the team:
+engineering majors with real salary bands, the universities that grant each
+degree with their Tawjihi admission averages, courses with providers and costs,
+and job listings from Jordanian employers. Ground everything you say in it.
+
+Use these figures freely — that is what they are for. Quote a salary band as a
+range, not a single number, and say which stage it is (entry, 3-year, 5-year).
+
+HOW TO HANDLE ADMISSION AVERAGES
+Each programme has a minimum average (the floor to apply) and, where published,
+a competitive average (what the last admitted student actually scored). Those
+are different numbers and students confuse them constantly — be explicit about
+which one you mean. Where the competitive average is missing the university has
+not published one; say that rather than implying there is no bar.
 
 WHAT YOU MUST NOT DO
 - Do not name a major, course, institution or employer that is not in the catalog.
-- Do not state, estimate, imply or hint at any salary figure. The salary dataset
-  is not verified yet. If asked about pay, say those figures are still being
-  verified and point to the job listings, which show what employers posted.
-- Do not state Tawjihi stream requirements, minimum scores, or admission
-  averages. We have no verified Tawjihi data. Say so plainly if asked, and steer
-  to what you can speak to: what a major involves and where it leads.
-- Do not invent university degree offerings. The catalog records which
-  institutions *teach courses* in a subject, which is not the same as granting a
-  degree in it. Say "teaches courses in" unless the catalog says otherwise.
+- Do not invent a salary figure or an admission average that is not listed. If a
+  major has no band, say so.
+- Do not present an estimated job salary as confirmed. Listings marked "Est."
+  are market estimates, not what the employer published.
 
-Judges fact-check this platform against its sources. An honest "we're still
-verifying that" is worth more than a confident guess.
+Judges fact-check this platform against its sources. Every figure you quote can
+be traced back to a cited source, so quote them accurately and never round a
+range into a single confident number.
 
 WRITING
 Plain English, warm and direct. No bullet lists unless the student asks for a
@@ -46,7 +53,9 @@ const JOURNEY = {
 They have not chosen a major yet and may not know what these fields involve day
 to day. Explain in concrete terms — what someone in this field actually does on
 a Tuesday. Draw out what they enjoy and what they are good at before naming any
-major. Do not ask about GPA; ask what subjects they like.`,
+major. Do not ask about university GPA — they do not have one. Their Tawjihi
+average is the number that gates admission, so if they share it, tell them which
+programmes it actually opens and which are out of reach this year.`,
 
   undergraduate: `THIS STUDENT IS ALREADY STUDYING
 They may be reconsidering, or looking to add skills on top of their major rather
@@ -63,41 +72,70 @@ they already hold — the catalog's courses, certifications and training provide
 
 /** The grounding catalog. Same on every turn, so it caches cleanly. */
 async function loadCatalog() {
-  const [majors, courses, universities, jobs] = await Promise.all([
-    query(`SELECT name, data_quality FROM majors ORDER BY name`),
-    query(`SELECT major_name, sub_field, name, provider, cost_raw
+  const [majors, programmes, courses, jobs, benchmarks] = await Promise.all([
+    query(`SELECT name, data_quality, top_jobs,
+                  salary_entry_min_jod, salary_entry_max_jod,
+                  salary_3yr_min_jod, salary_3yr_max_jod,
+                  salary_5yr_min_jod, salary_5yr_max_jod
+             FROM majors ORDER BY name`),
+    query(`SELECT u.code, m.name AS major, um.program_name, um.duration_years,
+                  um.minimum_average, um.competitive_average
+             FROM university_majors um
+             JOIN universities u ON u.id = um.university_id
+             JOIN majors m ON m.id = um.major_id
+            ORDER BY m.name, u.code`),
+    query(`SELECT major_name, track, name, provider, cost_raw
              FROM courses ORDER BY major_name, name`),
-    query(`SELECT u.code, u.name, u.website,
-                  coalesce(string_agg(m.name, ', ' ORDER BY m.name), '') AS teaches
-             FROM universities u
-             LEFT JOIN university_majors um ON um.university_id = u.id
-             LEFT JOIN majors m ON m.id = um.major_id
-            GROUP BY u.id ORDER BY u.code`),
-    query(`SELECT company_name, title, required_majors, required_skills, salary_raw
-             FROM jobs ORDER BY company_name LIMIT 60`),
+    query(`SELECT company_name, title, required_majors, required_skills,
+                  salary_raw, salary_is_estimate
+             FROM jobs ORDER BY company_name LIMIT 80`),
+    query(`SELECT role_family, range_raw, source FROM salary_benchmarks ORDER BY role_family`),
   ]);
 
+  const band = (lo, hi) => (lo == null ? '—' : lo === hi ? `${lo}` : `${lo}-${hi}`);
+
   return [
-    'MAJORS',
-    majors.rows.map((m) => `- ${m.name}`).join('\n'),
-    '',
-    'COURSES (major | sub-field | course | provider | cost JOD)',
-    courses.rows
-      .map((c) =>
-        [c.major_name, c.sub_field ?? '-', c.name, c.provider ?? '-', c.cost_raw ?? '-'].join(' | '),
+    'MAJORS (name | entry JOD/mo | 3-yr | 5-yr | confidence)',
+    majors.rows
+      .map((m) =>
+        [m.name,
+         band(m.salary_entry_min_jod, m.salary_entry_max_jod),
+         band(m.salary_3yr_min_jod, m.salary_3yr_max_jod),
+         band(m.salary_5yr_min_jod, m.salary_5yr_max_jod),
+         m.data_quality].join(' | '),
       )
       .join('\n'),
     '',
-    'INSTITUTIONS (code | name | teaches courses in | site)',
-    universities.rows
-      .map((u) => [u.code, u.name, u.teaches || 'not recorded', u.website ?? '-'].join(' | '))
+    'TOP JOBS PER MAJOR',
+    majors.rows
+      .filter((m) => m.top_jobs?.length)
+      .map((m) => `${m.name}: ${m.top_jobs.join('; ')}`)
       .join('\n'),
     '',
-    'JOB LISTINGS (company | title | majors | skills)',
+    'DEGREE PROGRAMMES (university | major | programme | years | min avg | competitive avg)',
+    programmes.rows
+      .map((p) =>
+        [p.code, p.major, p.program_name, p.duration_years ?? '-',
+         p.minimum_average ?? '-', p.competitive_average ?? 'not published'].join(' | '),
+      )
+      .join('\n'),
+    '',
+    'COURSES (major | track | course | provider | cost JOD)',
+    courses.rows
+      .map((c) =>
+        [c.major_name ?? 'any', c.track ?? '-', c.name, c.provider ?? '-', c.cost_raw ?? '-'].join(' | '),
+      )
+      .join('\n'),
+    '',
+    'FRESH-GRAD BENCHMARKS (role family | JOD/mo)',
+    benchmarks.rows.map((b) => `${b.role_family} | ${b.range_raw}`).join('\n'),
+    '',
+    'JOB LISTINGS (company | title | majors | skills | salary — "Est." means market estimate)',
     jobs.rows
       .map((j) =>
         [j.company_name, j.title, (j.required_majors ?? []).join('/') || '-',
-         (j.required_skills ?? []).slice(0, 4).join(', ') || '-'].join(' | '),
+         (j.required_skills ?? []).slice(0, 4).join(', ') || '-',
+         j.salary_raw ?? '-'].join(' | '),
       )
       .join('\n'),
   ].join('\n');
@@ -107,7 +145,8 @@ function profileBlock(student) {
   const parts = [`Name: ${student.name}`];
   if (student.level) parts.push(`Level: ${student.level}`);
   if (student.interests?.length) parts.push(`Interests: ${student.interests.join(', ')}`);
-  if (student.gpa) parts.push(`GPA: ${student.gpa} / 4`);
+  if (student.gpa) parts.push(`University GPA: ${student.gpa} / 4`);
+  if (student.tawjihi_average) parts.push(`Tawjihi average: ${student.tawjihi_average}%`);
   if (student.location) parts.push(`Location: ${student.location}`);
   return `STUDENT PROFILE\n${parts.join('\n')}`;
 }

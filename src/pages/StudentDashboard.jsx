@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { api } from '../services/api.js';
 import ChatAdvisor from '../components/student/ChatAdvisor.jsx';
+import RecommendationCard from '../components/student/RecommendationCard.jsx';
 import Pathways from '../components/student/Pathways.jsx';
 import { useAuth } from '../services/auth.jsx';
 import {
-  Alert, Button, Card, Field, Shell, Tabs, inputClass, SalaryPending,
+  Alert, Button, Card, Field, Shell, Tabs, inputClass, Salary,
 } from '../components/common/ui.jsx';
 
 /** Mirrors slugify() in scripts/convert_xlsx.py, which generated majors.slug. */
@@ -45,8 +46,17 @@ export default function StudentDashboard() {
 
 function Recommendations({ profile, onGoToProfile, onSeePathway }) {
   const [result, setResult] = useState(null);
+  const [majors, setMajors] = useState([]);
+  const [savedIds, setSavedIds] = useState([]);
+  const [showAll, setShowAll] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+
+  const bySlug = (name) => majors.find((m) => m.name === name);
+
+  function loadSaved() {
+    api('/students/me/saved-majors').then((r) => setSavedIds(r.map((x) => x.id))).catch(() => {});
+  }
 
   async function run(refresh = false) {
     setBusy(true);
@@ -64,14 +74,21 @@ function Recommendations({ profile, onGoToProfile, onSeePathway }) {
     }
   }
 
+  async function save(major) {
+    await api('/students/me/saved-majors', { method: 'POST', body: { majorId: major.id } });
+    loadSaved();
+  }
+
   useEffect(() => {
+    api('/majors', { auth: false }).then(setMajors).catch(() => {});
+    loadSaved();
     if (profile?.interests?.length) run();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!profile?.interests?.length) {
     return (
       <Card title="Tell us what you're interested in">
-        <p className="text-gray-600 mb-4">
+        <p className="text-gray-600 mb-4 text-sm">
           Your recommendations are built from your interests and GPA. Add them to your profile to
           get started.
         </p>
@@ -80,6 +97,10 @@ function Recommendations({ profile, onGoToProfile, onSeePathway }) {
     );
   }
 
+  // The wireframe shows the top 3, with [SHOW ALL MAJORS] underneath.
+  const ranked = result?.recommendations ?? [];
+  const visible = showAll ? ranked : ranked.slice(0, 3);
+
   return (
     <>
       <Alert>{error}</Alert>
@@ -87,56 +108,42 @@ function Recommendations({ profile, onGoToProfile, onSeePathway }) {
       {result?.source === 'fallback' && (
         <Alert kind="warn">
           AI guidance is unavailable right now, so this ranking is rule-based, built from DARBI’s
-          verified course and job data.
+          verified course, salary and job data.
         </Alert>
       )}
 
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-gray-600">
-          {result?.cached ? 'Saved from your last profile update.' : 'Freshly generated.'}
-        </p>
+      <div className="flex items-center justify-between gap-3 mb-4 darbi-stack-mobile">
+        <h2 className="text-lg font-bold text-darbi-navy">
+          Your top {Math.min(visible.length, 3)} major recommendations
+        </h2>
         <Button variant="navy" onClick={() => run(true)} disabled={busy}>
-          {busy ? 'Thinking…' : 'Regenerate'}
+          {busy ? 'Thinking\u2026' : 'Regenerate'}
         </Button>
       </div>
 
-      {busy && !result && <Card>Analysing your profile…</Card>}
+      {busy && !result && <Card>Analysing your profile\u2026</Card>}
 
-      {result?.recommendations?.map((r) => (
-        <Card key={r.major} title={`${r.major} — ${r.fit_score}% fit`}>
-          <p className="text-gray-700 mb-3">{r.why}</p>
-          {r.matching_interests?.length > 0 && (
-            <p className="text-sm mb-3">
-              <span className="font-semibold text-darbi-navy">Matches your interests: </span>
-              {r.matching_interests.join(', ')}
-            </p>
-          )}
-          {r.suggested_courses?.length > 0 && (
-            <div className="text-sm">
-              <span className="font-semibold text-darbi-navy">Suggested courses:</span>
-              <ul className="list-disc ml-5 mt-1 text-gray-700">
-                {r.suggested_courses.map((c) => <li key={c}>{c}</li>)}
-              </ul>
-            </div>
-          )}
-          <div className="mt-3 flex items-center justify-between gap-4">
-            <SalaryPending />
-            {onSeePathway && (
-              <button
-                onClick={() => onSeePathway(slugify(r.major))}
-                className="text-sm font-bold underline shrink-0"
-                style={{ color: '#001a33' }}
-              >
-                See the pathway →
-              </button>
-            )}
-          </div>
-        </Card>
+      {visible.map((r, i) => (
+        <RecommendationCard
+          key={r.major}
+          rank={i + 1}
+          major={bySlug(r.major)}
+          recommendation={r}
+          saved={savedIds.includes(bySlug(r.major)?.id)}
+          onSave={save}
+          onLearnMore={onSeePathway}
+        />
       ))}
+
+      {ranked.length > 3 && (
+        <button onClick={() => setShowAll(!showAll)} className="darbi-btn darbi-btn-navy w-full">
+          {showAll ? 'Show top 3 only' : 'Show all majors'}
+        </button>
+      )}
 
       {result?.summary && (
         <Card title="Overall guidance" accent={false}>
-          <p className="text-gray-700">{result.summary}</p>
+          <p className="text-gray-700 text-sm">{result.summary}</p>
           <p className="text-xs text-gray-400 mt-3">Generated by {result.model}</p>
         </Card>
       )}

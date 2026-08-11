@@ -57,10 +57,13 @@ router.post(
     }
 
     const [{ rows: majors }, { rows: courses }, { rows: jobs }] = await Promise.all([
-      query(`SELECT m.name, count(c.id)::int AS course_count
-               FROM majors m LEFT JOIN courses c ON c.major_id = m.id
-              GROUP BY m.id, m.name ORDER BY m.name`),
-      query(`SELECT major_name, name, sub_field, provider FROM courses ORDER BY major_name, name`),
+      query(`SELECT m.name, m.salary_entry_min_jod, m.salary_entry_max_jod, m.top_jobs,
+                    (SELECT count(*)::int FROM courses c WHERE c.major_id = m.id) AS course_count,
+                    (SELECT coalesce(array_agg(DISTINCT u.code), '{}')
+                       FROM university_majors um JOIN universities u ON u.id = um.university_id
+                      WHERE um.major_id = m.id) AS universities
+               FROM majors m ORDER BY m.name`),
+      query(`SELECT major_name, name, track, provider FROM courses ORDER BY major_name, name`),
       query(`SELECT company_name, title, required_majors, required_skills FROM jobs`),
     ]);
 

@@ -2,6 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Design tokens are taken verbatim from the approved wireframe deliverable,
+ * docs/deliverables/Wireframes & Design/DARBI_Wireframes_and_Design_System.pdf
+ * (DESIGN SYSTEM & VISUAL GUIDELINES). Don't drift from these without an
+ * updated wireframe — the deck and the PDF both specify them.
+ */
+:root {
+  --darbi-navy: #001a33;
+  --darbi-gold: #d4af37;
+  --darbi-gold-dark: #b8952e; /* "Hover: slightly darker gold" */
+  --darbi-bg: #f5f6f8; /* "Background: White or Light Gray" */
+
+  --darbi-max-width: 800px; /* "Max width: 800px (centered)" */
+  --darbi-box-padding: 20px; /* "Padding inside boxes: 20px" */
+  --darbi-section-gap: 30px; /* "Margin between sections: 30px" */
+  --darbi-button-height: 45px; /* "Button height: 45px" */
+  --darbi-radius: 5px; /* "Rounded corners: 5px" */
+  --darbi-input-padding: 10px; /* "Padding: 10px" */
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -9,6 +29,86 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* "Font Family: Sans-serif (Arial, Segoe UI, or similar)" */
+  font-family: 'Segoe UI', Arial, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--darbi-bg);
+  color: #333;
   -webkit-font-smoothing: antialiased;
+}
+
+@layer components {
+  /* The 800px centred column the wireframe specifies. */
+  .darbi-container {
+    width: 100%;
+    max-width: var(--darbi-max-width);
+    margin-inline: auto;
+    padding-inline: 16px;
+  }
+
+  .darbi-box {
+    background: #fff;
+    border-radius: var(--darbi-radius);
+    padding: var(--darbi-box-padding);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
+  }
+
+  .darbi-section {
+    margin-bottom: var(--darbi-section-gap);
+  }
+
+  .darbi-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--darbi-button-height);
+    padding-inline: 24px;
+    border-radius: var(--darbi-radius);
+    font-weight: 700;
+    background: var(--darbi-gold);
+    color: var(--darbi-navy);
+    transition: background 0.15s ease;
+  }
+  .darbi-btn:hover:not(:disabled) {
+    background: var(--darbi-gold-dark);
+  }
+  .darbi-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  .darbi-btn-navy {
+    background: var(--darbi-navy);
+    color: #fff;
+  }
+  .darbi-btn-navy:hover:not(:disabled) {
+    background: #002a52;
+  }
+
+  /* "Border: light gray · Padding: 10px · Focus border: Gold · Background: White" */
+  .darbi-input {
+    width: 100%;
+    padding: var(--darbi-input-padding);
+    border: 1px solid #ccc;
+    border-radius: var(--darbi-radius);
+    background: #fff;
+    transition: border-color 0.15s ease;
+  }
+  .darbi-input:focus {
+    outline: none;
+    border-color: var(--darbi-gold);
+  }
+  .darbi-input:disabled {
+    background: #f1f1f1;
+  }
+}
+
+/* "Mobile responsive: Stack vertically on small screens" */
+@media (max-width: 640px) {
+  .darbi-box {
+    padding: 16px;
+  }
+  .darbi-stack-mobile {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }

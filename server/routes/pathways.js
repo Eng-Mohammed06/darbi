@@ -21,7 +21,10 @@ router.get(
 
     const { rows: majorRows } = await query(
       `SELECT id, slug, name, faculty, data_quality,
-              salary_entry_jod, salary_3yr_jod, salary_5yr_jod, salary_source
+              salary_entry_min_jod, salary_entry_max_jod, salary_entry_raw,
+              salary_3yr_min_jod, salary_3yr_max_jod,
+              salary_5yr_min_jod, salary_5yr_max_jod,
+              salary_source, salary_confidence, top_jobs
          FROM majors WHERE slug = $1`,
       [slug],
     );
@@ -31,19 +34,22 @@ router.get(
     // Listings whose required_majors mention this major. ILIKE rather than
     // equality because the spreadsheets write "Computer Science / Computer
     // Engineering" and similar.
-    const jobFilter = `EXISTS (SELECT 1 FROM unnest(required_majors) rm WHERE rm ILIKE '%' || $1 || '%')`;
+    // canonical_majors is the converter's mapping of the employer's free text
+    // onto our major list, so this is an exact match rather than a LIKE guess.
+    const jobFilter = `$1 = ANY(canonical_majors)`;
 
     const [taughtAt, courses, demand, roles, skills, employers] = await Promise.all([
       query(
-        `SELECT u.code, u.name, u.website, um.course_count, um.relation
+        `SELECT u.code, u.name, u.website, um.program_name, um.duration_years,
+                um.competitive_average, um.minimum_average, um.relation
            FROM university_majors um
            JOIN universities u ON u.id = um.university_id
           WHERE um.major_id = $1
-          ORDER BY um.course_count DESC, u.code`,
+          ORDER BY um.competitive_average DESC NULLS LAST, u.code`,
         [major.id],
       ),
       query(
-        `SELECT name, sub_field, provider, cost_raw, cost_min_jod, duration
+        `SELECT name, track, provider, cost_raw, cost_min_jod, duration, what_you_learn
            FROM courses WHERE major_id = $1
           ORDER BY cost_min_jod NULLS LAST, name
           LIMIT 6`,
@@ -107,15 +113,17 @@ router.get(
           : 0,
         total_listings_on_board: totals.rows[0].total,
       },
-      // Stated rather than silently omitted: the salary dataset is not in yet,
-      // and the card should say so rather than leave a suspicious blank.
+      // Approved figures from salaries_data.xlsx, carried with the source and
+      // the sheet's own confidence grade so a judge can trace either.
       salary: {
-        available: major.salary_entry_jod != null,
-        entry_jod: major.salary_entry_jod,
-        three_year_jod: major.salary_3yr_jod,
-        five_year_jod: major.salary_5yr_jod,
+        available: major.salary_entry_min_jod != null,
+        entry: { min: major.salary_entry_min_jod, max: major.salary_entry_max_jod },
+        three_year: { min: major.salary_3yr_min_jod, max: major.salary_3yr_max_jod },
+        five_year: { min: major.salary_5yr_min_jod, max: major.salary_5yr_max_jod },
         source: major.salary_source,
+        confidence: major.salary_confidence,
       },
+      top_jobs: major.top_jobs ?? [],
     });
   }),
 );
