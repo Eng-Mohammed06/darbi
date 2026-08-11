@@ -76,6 +76,25 @@ app.get('/api/jobs', async (req, res, next) => {
   }
 });
 
+// Career reference data — public, seeded from career_courses_ENGLISH.xlsx.
+app.get('/api/career/paths', async (_req, res, next) => {
+  try {
+    const { rows } = await pool.query(`SELECT * FROM career_paths ORDER BY track, title`);
+    res.json(rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/api/career/centres', async (_req, res, next) => {
+  try {
+    const { rows } = await pool.query(`SELECT * FROM training_centers ORDER BY field, name`);
+    res.json(rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/companies', companyRoutes);

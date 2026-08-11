@@ -1,29 +1,46 @@
-import { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './services/auth.jsx';
 import HomePage from './pages/HomePage.jsx';
+import AuthPage from './pages/AuthPage.jsx';
+import StudentDashboard from './pages/StudentDashboard.jsx';
+import CompanyDashboard from './pages/CompanyDashboard.jsx';
+import CareerDashboard from './pages/CareerDashboard.jsx';
 
-/**
- * Day-1 shell. Routing and the three dashboards land on day 2; for now this
- * renders the three-portal homepage and proves the API + Postgres wiring by
- * loading real seeded majors.
- */
+const DASHBOARDS = {
+  student: StudentDashboard,
+  company: CompanyDashboard,
+  career: CareerDashboard,
+};
+
+/** One route for all three portals — `users.role` decides what renders. */
+function Dashboard() {
+  const { user, loading } = useAuth();
+  if (loading) return <p className="p-8 text-gray-500">Loading…</p>;
+  if (!user) return <Navigate to="/" replace />;
+
+  const Component = DASHBOARDS[user.role];
+  return Component ? <Component /> : <p className="p-8">Unknown role: {user.role}</p>;
+}
+
+function Home() {
+  const { user, loading } = useAuth();
+  if (loading) return <p className="p-8 text-gray-500">Loading…</p>;
+  // Already signed in? Skip the portal picker.
+  if (user) return <Navigate to="/dashboard" replace />;
+  return <HomePage />;
+}
+
 export default function App() {
-  const [majors, setMajors] = useState(null);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    fetch('/api/majors')
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
-      .then(setMajors)
-      .catch((err) => setError(err.message));
-  }, []);
-
   return (
-    <HomePage
-      majors={majors}
-      error={error}
-      onSelectStudent={() => alert('Student portal — day 2')}
-      onSelectCompany={() => alert('Company portal — day 2')}
-      onSelectCareer={() => alert('Career Boost — day 2')}
-    />
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/portal/:role" element={<AuthPage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }

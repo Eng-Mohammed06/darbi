@@ -1,32 +1,45 @@
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { api } from '../services/api.js';
+
 const PORTALS = [
   {
-    key: 'student',
+    role: 'student',
     icon: '👨‍🎓',
     title: 'Student Portal',
     blurb: 'Discover engineering majors and get AI-powered career recommendations',
     cta: 'Get Started',
-    handler: 'onSelectStudent',
   },
   {
-    key: 'company',
+    role: 'company',
     icon: '🏢',
     title: 'Company Portal',
     blurb: 'Post jobs and find talented engineering students',
     cta: 'Sign In',
-    handler: 'onSelectCompany',
   },
   {
-    key: 'career',
+    role: 'career',
     icon: '📈',
     title: 'Career Boost',
     blurb: 'Advance your career with AI mentorship and industry insights',
     cta: 'Explore',
-    handler: 'onSelectCareer',
   },
 ];
 
-export default function HomePage(props) {
-  const { majors, error } = props;
+export default function HomePage() {
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    Promise.all([api('/majors', { auth: false }), api('/jobs', { auth: false })])
+      .then(([majors, jobs]) =>
+        setStats({
+          majors: majors.length,
+          courses: majors.reduce((n, m) => n + m.course_count, 0),
+          jobs: jobs.length,
+        }),
+      )
+      .catch(() => setStats(null));
+  }, []);
 
   return (
     <div
@@ -45,37 +58,31 @@ export default function HomePage(props) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl w-full">
         {PORTALS.map((p) => (
-          <button
-            key={p.key}
-            onClick={props[p.handler]}
-            className="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-2xl transition"
+          <Link
+            key={p.role}
+            to={`/portal/${p.role}`}
+            className="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-2xl transition flex flex-col"
             style={{ borderTop: '4px solid #d4af37' }}
           >
             <div className="text-5xl mb-4">{p.icon}</div>
             <h2 className="text-2xl font-bold text-darbi-navy mb-3">{p.title}</h2>
-            <p className="text-gray-600 mb-6">{p.blurb}</p>
+            <p className="text-gray-600 mb-6 flex-1">{p.blurb}</p>
             <div
               className="font-bold py-3 px-6 rounded-lg text-white"
               style={{ backgroundColor: '#001a33' }}
             >
               {p.cta}
             </div>
-          </button>
+          </Link>
         ))}
       </div>
 
-      {/* Live proof that the API and Postgres are wired up. Remove once the
-          dashboards render real data. */}
-      <section className="mt-12 text-center text-sm">
-        {error && <p className="text-red-300">API unreachable: {error}</p>}
-        {!error && !majors && <p className="text-gray-400">Loading majors…</p>}
-        {majors && (
-          <p className="text-gray-300">
-            {majors.length} majors ·{' '}
-            {majors.reduce((n, m) => n + m.course_count, 0)} verified courses in the database
-          </p>
-        )}
-      </section>
+      {stats && (
+        <p className="mt-12 text-gray-300 text-sm">
+          {stats.majors} majors · {stats.courses} verified courses · {stats.jobs} verified job
+          listings
+        </p>
+      )}
 
       <footer className="text-gray-400 text-sm mt-10">
         DARBI Phase 2 · JSYP 2026 Hackathon · Team Sparks
