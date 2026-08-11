@@ -4,6 +4,10 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { existsSync } from 'node:fs';
 import { pool } from './lib/db.js';
+import authRoutes from './routes/auth.js';
+import studentRoutes from './routes/students.js';
+import companyRoutes from './routes/companies.js';
+import recommendRoutes from './routes/recommend.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -72,8 +76,10 @@ app.get('/api/jobs', async (req, res, next) => {
   }
 });
 
-// TODO(day 2): mount ./routes/auth.js, ./routes/students.js,
-// ./routes/companies.js, ./routes/recommend.js
+app.use('/api/auth', authRoutes);
+app.use('/api/students', studentRoutes);
+app.use('/api/companies', companyRoutes);
+app.use('/api/recommend', recommendRoutes);
 
 // Serve the built React app. Any non-/api path falls through to index.html so
 // client-side routing works on refresh and deep links.

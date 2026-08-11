@@ -1,0 +1,54 @@
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+
+const SECRET = process.env.JWT_SECRET;
+const TOKEN_TTL = '7d';
+
+if (!SECRET) throw new Error('JWT_SECRET is not set — see .env.example');
+
+// A deploy running the placeholder secret would let anyone forge a token for
+// any account. Fail at boot rather than in front of judges.
+if (process.env.NODE_ENV === 'production' && SECRET === 'dev-only-change-me') {
+  throw new Error(
+    'JWT_SECRET is still the .env.example placeholder. Set a real one on Railway:\n' +
+      '  node -e "console.log(require(\'crypto\').randomBytes(48).toString(\'hex\'))"',
+  );
+}
+
+export const hashPassword = (plain) => bcrypt.hash(plain, 10);
+export const verifyPassword = (plain, hash) => bcrypt.compare(plain, hash);
+
+export const signToken = (user) =>
+  jwt.sign({ sub: user.id, role: user.role, email: user.email }, SECRET, {
+    expiresIn: TOKEN_TTL,
+  });
+
+/** Populates req.user from the Bearer token, or 401s. */
+export function requireAuth(req, res, next) {
+  const header = req.get('authorization') ?? '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  if (!token) return res.status(401).json({ error: 'missing_token' });
+
+  try {
+    const claims = jwt.verify(token, SECRET);
+    req.user = { id: claims.sub, role: claims.role, email: claims.email };
+    next();
+  } catch {
+    // Expired and malformed are the same to the client: log in again.
+    res.status(401).json({ error: 'invalid_token' });
+  }
+}
+
+/** Gate a route to one or more roles. Use after requireAuth. */
+export const requireRole =
+  (...roles) =>
+  (req, res, next) => {
+    if (!req.user) return res.status(401).json({ error: 'missing_token' });
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ error: 'wrong_role', need: roles, have: req.user.role });
+    }
+    next();
+  };
+
+/** Wraps an async handler so a rejected promise reaches the error middleware. */
+export const asyncRoute = (fn) => (req, res, next) => fn(req, res, next).catch(next);
