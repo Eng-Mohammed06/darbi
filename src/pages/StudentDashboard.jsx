@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import { api } from '../services/api.js';
+import ChatAdvisor from '../components/student/ChatAdvisor.jsx';
 import { useAuth } from '../services/auth.jsx';
 import {
   Alert, Button, Card, Field, Shell, Tabs, inputClass, SalaryPending,
 } from '../components/common/ui.jsx';
 
-const TABS = ['recommendations', 'profile', 'majors', 'jobs'];
+const TABS = ['advisor', 'recommendations', 'profile', 'majors', 'jobs'];
 
 export default function StudentDashboard() {
   const { profile, setProfile, logout } = useAuth();
-  const [tab, setTab] = useState('recommendations');
+  const [tab, setTab] = useState('advisor');
 
   return (
     <Shell
@@ -18,6 +19,9 @@ export default function StudentDashboard() {
       onLogout={logout}
     >
       <Tabs tabs={TABS} active={tab} onChange={setTab} />
+      {tab === 'advisor' && (
+        <ChatAdvisor student={profile} onFallback={() => setTab('recommendations')} />
+      )}
       {tab === 'recommendations' && <Recommendations profile={profile} onGoToProfile={() => setTab('profile')} />}
       {tab === 'profile' && <ProfileForm profile={profile} onSaved={setProfile} />}
       {tab === 'majors' && <MajorExplorer />}

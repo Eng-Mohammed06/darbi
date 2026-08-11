@@ -154,6 +154,16 @@ CREATE TABLE IF NOT EXISTS saved_majors (
   PRIMARY KEY (student_user_id, major_id)
 );
 
+-- The advisor conversation. Persisted so a refresh (or a laptop swap between
+-- presenters) doesn't lose the thread mid-demo.
+CREATE TABLE IF NOT EXISTS chat_messages (
+  id              SERIAL PRIMARY KEY,
+  student_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  role            TEXT NOT NULL CHECK (role IN ('user', 'assistant')),
+  content         TEXT NOT NULL,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 -- Claude responses are cached so a repeat dashboard visit costs nothing and the
 -- demo still works if the API is unreachable mid-presentation.
 CREATE TABLE IF NOT EXISTS recommendations (
@@ -170,3 +180,4 @@ CREATE INDEX IF NOT EXISTS idx_jobs_company        ON jobs(company_id);
 CREATE INDEX IF NOT EXISTS idx_jobs_majors         ON jobs USING GIN (required_majors);
 CREATE INDEX IF NOT EXISTS idx_students_gpa        ON students(gpa);
 CREATE INDEX IF NOT EXISTS idx_recs_student        ON recommendations(student_user_id, profile_hash);
+CREATE INDEX IF NOT EXISTS idx_chat_student        ON chat_messages(student_user_id, created_at);
