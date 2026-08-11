@@ -1,0 +1,121 @@
+[
+  {
+    "role_family": "Junior Software Developer",
+    "range_raw": "400 - 550",
+    "min_jod": 400,
+    "max_jod": 550,
+    "source": "Glassdoor Amman (2026); re-coded.com industry guide"
+  },
+  {
+    "role_family": "Junior Web Developer",
+    "range_raw": "500 - 600",
+    "min_jod": 500,
+    "max_jod": 600,
+    "source": "Glassdoor Amman (2026); re-coded.com industry guide"
+  },
+  {
+    "role_family": "Junior IT Support / Technician",
+    "range_raw": "550 - 700",
+    "min_jod": 550,
+    "max_jod": 700,
+    "source": "re-coded.com industry guide (2026)"
+  },
+  {
+    "role_family": "Junior Data Analyst / Data Scientist",
+    "range_raw": "700 - 900",
+    "min_jod": 700,
+    "max_jod": 900,
+    "source": "re-coded.com; Qureos in-demand jobs guide (2026)"
+  },
+  {
+    "role_family": "Junior Cybersecurity Analyst",
+    "range_raw": "800 - 900",
+    "min_jod": 800,
+    "max_jod": 900,
+    "source": "re-coded.com industry guide (2026)"
+  },
+  {
+    "role_family": "Software Engineer (avg, all exp. levels)",
+    "range_raw": "900 - 1,150",
+    "min_jod": 900,
+    "max_jod": 1150,
+    "source": "PayScale / Glassdoor Amman 2026 - wide range, rises fast with experience"
+  },
+  {
+    "role_family": "Engineering (general, fresh grad)",
+    "range_raw": "400 - 550",
+    "min_jod": 400,
+    "max_jod": 550,
+    "source": "SalaryExplorer Jordan Engineering 2024-26 (starting average ~430 JD)"
+  },
+  {
+    "role_family": "Telecom Engineer (fresh grad)",
+    "range_raw": "500 - 700",
+    "min_jod": 500,
+    "max_jod": 700,
+    "source": "Estimated from SalaryExplorer Engineering data + practitioner reports"
+  },
+  {
+    "role_family": "Banking / Finance (fresh grad, entry roles e.g. teller, junior officer)",
+    "range_raw": "400 - 550",
+    "min_jod": 400,
+    "max_jod": 550,
+    "source": "SalaryExplorer Jordan Banking 2024 (starting avg 550 JD); Glassdoor Bank Teller Amman"
+  },
+  {
+    "role_family": "Business/Operations/Admin (fresh grad)",
+    "range_raw": "450 - 600",
+    "min_jod": 450,
+    "max_jod": 600,
+    "source": "General market consensus for fresh/intermediate hires"
+  },
+  {
+    "role_family": "Overall Jordan fresh/intermediate average (all sectors)",
+    "range_raw": "450 - 550",
+    "min_jod": 450,
+    "max_jod": 550,
+    "source": "Widely cited market consensus, cross-checked with SalaryExplorer"
+  },
+  {
+    "role_family": "Electrical Engineering (fresh grad)",
+    "range_raw": "450 - 650",
+    "min_jod": 450,
+    "max_jod": 650,
+    "source": "SalaryExplorer Jordan Electrical Engineer 2024-25 (survey 'starting salary' avg ~770 JD, likely skewed by non-entry samples); general Engineering baseline ~430 JD; power/telecom/electronics demand supports upper end"
+  },
+  {
+    "role_family": "Civil Engineering (fresh grad)",
+    "range_raw": "400 - 550",
+    "min_jod": 400,
+    "max_jod": 550,
+    "source": "SalaryExplorer Jordan Civil Engineer 2024 (survey starting avg ~740 JD, small sample); market widely reported as saturated in Jordan, keeping true fresh-grad offers near general Engineering baseline"
+  },
+  {
+    "role_family": "Mechatronics Engineering (fresh grad)",
+    "range_raw": "450 - 650",
+    "min_jod": 450,
+    "max_jod": 650,
+    "source": "No dedicated Jordan salary survey found; estimated between Electrical/Mechanical benchmarks - growing demand in automation, robotics and smart-factory roles"
+  },
+  {
+    "role_family": "Biomedical Engineering (fresh grad)",
+    "range_raw": "400 - 550",
+    "min_jod": 400,
+    "max_jod": 550,
+    "source": "SalaryExplorer Jordan Biomedical Engineer 2024 (survey starting avg ~690 JD, small sample); local biomedical-specific job market is limited, many grads pivot to IT, data, or medical-device sales roles"
+  },
+  {
+    "role_family": "Chemical Engineering (fresh grad)",
+    "range_raw": "450 - 600",
+    "min_jod": 450,
+    "max_jod": 600,
+    "source": "SalaryExplorer Jordan Chemical Engineer (survey starting avg ~730 JD; Bachelor's-level avg 940 JD); phosphate/potash and pharma sectors can offer above-average entry pay"
+  },
+  {
+    "role_family": "Mechanical Engineering (fresh grad)",
+    "range_raw": "400 - 550",
+    "min_jod": 400,
+    "max_jod": 550,
+    "source": "SalaryExplorer Jordan Mechanical Engineer (survey starting avg ~800 JD, small sample); broad/saturated market keeps typical fresh-grad offers near general Engineering baseline"
+  }
+]

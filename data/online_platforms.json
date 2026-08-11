@@ -1,0 +1,142 @@
+[
+  {
+    "name": "Coursera",
+    "best_for": "University-taught fundamentals (structural theory, hydrology, GIS), some official certificates",
+    "pricing": "Free to audit most content; Certificates ~49–79 USD/course or Coursera Plus subscription ~59 USD/month",
+    "notes": "Good for theory; not for software-specific hands-on skills",
+    "source_sheet": "CE - Online Platforms"
+  },
+  {
+    "name": "Udemy",
+    "best_for": "Software tutorials: AutoCAD, ETABS, SAP2000, Revit, Primavera, Excel",
+    "pricing": "Per-course, usually 10–20 USD on sale (listed price often 80–150 USD)",
+    "notes": "Frequent sales make it very cheap; quality varies by instructor — check reviews",
+    "source_sheet": "CE - Online Platforms"
+  },
+  {
+    "name": "edX",
+    "best_for": "University-level engineering courses (MIT, Delft, Berkeley, etc.)",
+    "pricing": "Free to audit; verified certificate ~50–300 USD",
+    "notes": "Strong for rigorous theory (hydrology, transportation, geotechnical)",
+    "source_sheet": "CE - Online Platforms"
+  },
+  {
+    "name": "LinkedIn Learning",
+    "best_for": "Software basics, project management soft skills",
+    "pricing": "Subscription ~19.99–39.99 USD/month (often bundled free with LinkedIn Premium)",
+    "notes": "Good breadth but shallower depth than Udemy for CAD/analysis software",
+    "source_sheet": "CE - Online Platforms"
+  },
+  {
+    "name": "Autodesk (official)",
+    "best_for": "AutoCAD, Civil 3D, Revit, Navisworks official certification",
+    "pricing": "Free official tutorials; Certified User exam ≈120 USD, Certified Professional ≈200 USD",
+    "notes": "The only source for an official Autodesk-branded certificate",
+    "source_sheet": "CE - Online Platforms"
+  },
+  {
+    "name": "PMI (official)",
+    "best_for": "PMP, PMI-RMP, PMI-ACP certification exams",
+    "pricing": "PMP exam: 405 USD (member) / 555 USD (non-member); membership ≈139 USD/yr",
+    "notes": "Training course (35 contact hours) is mandatory and is bought separately from any REP provider",
+    "source_sheet": "CE - Online Platforms"
+  },
+  {
+    "name": "USGBC / GBCI (official)",
+    "best_for": "LEED Green Associate / LEED AP",
+    "pricing": "Green Associate exam ≈100 USD (student) / 250 USD (professional)",
+    "notes": "Study materials/prep courses available free-to-paid across many platforms",
+    "source_sheet": "CE - Online Platforms"
+  },
+  {
+    "name": "Bentley Institute",
+    "best_for": "PLAXIS, WaterCAD/WaterGEMS, OpenRoads, HEC-RAS-adjacent tools",
+    "pricing": "Many self-paced courses free; instructor-led courses vary, often 100–400 USD",
+    "notes": "Good free library for Bentley-owned geotechnical/water software",
+    "source_sheet": "CE - Online Platforms"
+  },
+  {
+    "name": "Esri Academy",
+    "best_for": "ArcGIS, spatial analysis",
+    "pricing": "Many free self-paced courses; paid instructor-led courses 100–300 USD",
+    "notes": "Official Esri training; strongest source for ArcGIS specifically",
+    "source_sheet": "CE - Online Platforms"
+  },
+  {
+    "name": "USACE HEC (official)",
+    "best_for": "HEC-RAS, HEC-HMS (hydrology/hydraulics)",
+    "pricing": "Free — software and official tutorials are both free",
+    "notes": "Best free resource for water-resources modeling skills",
+    "source_sheet": "CE - Online Platforms"
+  },
+  {
+    "name": "freeCodeCamp",
+    "best_for": "Full free curriculum: web dev, Python, data analysis",
+    "pricing": "Completely free (donation-supported)",
+    "notes": "One of the best free starting points for self-taught developers",
+    "source_sheet": "CS - Online Platforms"
+  },
+  {
+    "name": "Coursera",
+    "best_for": "University certificates: CS fundamentals, data science, AI, Google/IBM career certificates",
+    "pricing": "Free to audit; Certificates ~49–79 USD/course or Coursera Plus ~59 USD/month",
+    "notes": "Google & IBM career certificates are popular, affordable entry credentials",
+    "source_sheet": "CS - Online Platforms"
+  },
+  {
+    "name": "Udemy",
+    "best_for": "Practical skill courses: specific languages/frameworks (React, Python, Docker, etc.)",
+    "pricing": "Per-course, usually 10–20 USD on sale (listed 80–150 USD)",
+    "notes": "Frequent sales make this very cheap; quality varies by instructor",
+    "source_sheet": "CS - Online Platforms"
+  },
+  {
+    "name": "edX",
+    "best_for": "University-level CS courses (MIT, Harvard CS50, etc.)",
+    "pricing": "Free to audit; verified certificate ~50–300 USD",
+    "notes": "Harvard's CS50 is a widely respected free intro to CS",
+    "source_sheet": "CS - Online Platforms"
+  },
+  {
+    "name": "AWS Skill Builder",
+    "best_for": "AWS cloud skills and certification prep",
+    "pricing": "Large free course library; some paid subscription content",
+    "notes": "Official AWS training source",
+    "source_sheet": "CS - Online Platforms"
+  },
+  {
+    "name": "Microsoft Learn",
+    "best_for": "Azure, Power BI, Microsoft 365, DevOps skills",
+    "pricing": "Free — all official learning paths are free",
+    "notes": "Best free resource for Microsoft-stack certifications",
+    "source_sheet": "CS - Online Platforms"
+  },
+  {
+    "name": "Cisco Networking Academy",
+    "best_for": "Networking fundamentals, CCNA prep",
+    "pricing": "Free to low-cost when accessed through a partner institution",
+    "notes": "Partner-institution access is much cheaper than commercial CCNA courses",
+    "source_sheet": "CS - Online Platforms"
+  },
+  {
+    "name": "EC-Council (official)",
+    "best_for": "CEH and other cybersecurity certifications",
+    "pricing": "Exam voucher packages vary (~950–1,199 USD)",
+    "notes": "Confirm the current package price directly — EC-Council pricing structures change",
+    "source_sheet": "CS - Online Platforms"
+  },
+  {
+    "name": "Offensive Security",
+    "best_for": "OSCP and other hands-on penetration-testing certifications",
+    "pricing": "Bundled course + exam ≈1,600–2,000 USD",
+    "notes": "Advanced, highly respected practical credential",
+    "source_sheet": "CS - Online Platforms"
+  },
+  {
+    "name": "GitHub Skills / Atlassian University",
+    "best_for": "Git/GitHub workflow, Jira/Confluence",
+    "pricing": "Free official training",
+    "notes": "Good free resources for tools used on almost every dev team",
+    "source_sheet": "CS - Online Platforms"
+  }
+]

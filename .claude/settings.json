@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run dev:*)",
+      "Bash(npm run build)",
+      "Bash(npm run db:migrate)",
+      "Bash(npm run db:seed)",
+      "Bash(npm run db:up)",
+      "Bash(npm run db:down)",
+      "Bash(npm install)",
+      "Bash(npm ci)",
+      "Bash(node scripts/*)",
+      "Bash(python3 scripts/convert_xlsx.py:*)",
+      "Bash(docker compose ps)",
+      "Bash(docker compose logs:*)",
+      "Bash(curl -s localhost:*)",
+      "Bash(git status)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [
+      "Bash(npm run db:reset)",
+      "Bash(*ALLOW_DESTRUCTIVE*)",
+      "Read(.env)"
+    ]
+  }
+}

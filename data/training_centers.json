@@ -1,0 +1,353 @@
+[
+  {
+    "name": "Jordan Engineers Association (JEA) — Engineers Training Center",
+    "field": null,
+    "location": "Amman (Shmeisani) + 17 branches nationwide",
+    "specialty": "General engineering courses across all disciplines (250+ programs); mandatory for JEA licensing",
+    "notes": "The main professional body for engineers in Jordan; courses are JEA-accredited and count toward professional registration",
+    "website": "jea.org.jo",
+    "source_sheet": "CE - Jordan Training Centres"
+  },
+  {
+    "name": "JEA Engineers Academy for Training & Development",
+    "field": null,
+    "location": "Amman (Al-Shmesani)",
+    "specialty": "PMP, Agile/RMP, FIDIC contracts & claims, facility management, KNX/automation, real-estate appraisal",
+    "notes": "The only accredited body in Jordan (also serving Qatar & Kuwait) for FIDIC contracts/claims training; partners with PMI and USGBC/GBCI (LEED/EDGE)",
+    "website": "jea.org.jo (see 'Engineers Training Center')",
+    "source_sheet": "CE - Jordan Training Centres"
+  },
+  {
+    "name": "Pioneers Academy",
+    "field": null,
+    "location": "Amman (Queen Rania St. / Dahiet Al Rasheed)",
+    "specialty": "Software-heavy engineering courses: AutoCAD, Civil 3D, ETABS, SAFE, Primavera P6, plus IT & business courses",
+    "notes": "Largest private training institution in Jordan (est. 1993); also branches in UK, UAE, Qatar, Egypt",
+    "website": "pioneersacademy.com",
+    "source_sheet": "CE - Jordan Training Centres"
+  },
+  {
+    "name": "New Horizons Computer Learning Centers Jordan",
+    "field": null,
+    "location": "Amman",
+    "specialty": "IT & software skills: MS Project, Excel, AutoCAD basics, general computer certifications",
+    "notes": "International franchise training network, strong on software/IT rather than deep engineering theory",
+    "website": "newhorizons.com (Jordan branch)",
+    "source_sheet": "CE - Jordan Training Centres"
+  },
+  {
+    "name": "The Knowledge Academy (Jordan delivery)",
+    "field": null,
+    "location": "Amman (also delivers globally)",
+    "specialty": "AutoCAD, Primavera, project management courses",
+    "notes": "International training provider; pricing tends to be higher than local Jordanian centres",
+    "website": "theknowledgeacademy.com",
+    "source_sheet": "CE - Jordan Training Centres"
+  },
+  {
+    "name": "Royal Jordanian Geographic Centre (RJGC)",
+    "field": null,
+    "location": "Amman",
+    "specialty": "GIS, surveying, remote sensing, mapping",
+    "notes": "Government-affiliated centre; strongest option locally for GIS/geomatics training",
+    "website": "rjgc.gov.jo",
+    "source_sheet": "CE - Jordan Training Centres"
+  },
+  {
+    "name": "University Continuing Education Centres (University of Jordan, JUST, PSUT, GJU)",
+    "field": null,
+    "location": "Amman / Irbid",
+    "specialty": "Specialized short courses & workshops linked to civil engineering theory (hydrology, geotechnical, structural)",
+    "notes": "Offerings vary by semester; contact each university's continuing-education/community-service unit directly",
+    "website": "ju.edu.jo, just.edu.jo, psut.edu.jo, gju.edu.jo",
+    "source_sheet": "CE - Jordan Training Centres"
+  },
+  {
+    "name": "Bakkah (regional, Arabic online training)",
+    "field": null,
+    "location": "Online (MENA-focused, serves Jordan)",
+    "specialty": "PMP, project management, contracts — Arabic-language online delivery",
+    "notes": "Not a physical Jordan centre, but widely used by Jordanian engineers for Arabic PMP/PM prep",
+    "website": "bakkah.com",
+    "source_sheet": "CE - Jordan Training Centres"
+  },
+  {
+    "name": "ReBootKamp (RBK)",
+    "field": null,
+    "location": "Amman",
+    "specialty": "Intensive full-stack software engineering bootcamp (JavaScript/MongoDB/React/Node.js)",
+    "notes": "Job-focused, 18-week full-time program with a career fair; scholarship/sponsored seats often available for Jordanians and refugees",
+    "website": "rebootkamp.com",
+    "source_sheet": "CS - Jordan Training Centres"
+  },
+  {
+    "name": "Orange Coding Academy",
+    "field": null,
+    "location": "Amman, Irbid, other governorates",
+    "specialty": "6-month tuition-free coding training + 1-month internship, run with Simplon.co",
+    "notes": "Completely free; competitive selection process; reports ~85% graduate employment rate",
+    "website": "orange.jo (CSR / Coding Academy)",
+    "source_sheet": "CS - Jordan Training Centres"
+  },
+  {
+    "name": "Code Labs Academy",
+    "field": null,
+    "location": "Serves Amman (some tracks online)",
+    "specialty": "Bootcamps in Web Development, Data Science & AI, Cybersecurity, DevOps, UI/UX",
+    "notes": "International bootcamp network active across MENA; pairs training with career coaching",
+    "website": "codelabsacademy.com",
+    "source_sheet": "CS - Jordan Training Centres"
+  },
+  {
+    "name": "Pioneers Academy",
+    "field": null,
+    "location": "Amman (Queen Rania St. / Dahiet Al Rasheed)",
+    "specialty": "Broad IT/software courses: programming languages, cloud, PM tools, plus engineering software",
+    "notes": "Largest private training institution in Jordan (est. 1993); also delivers in UK, UAE, Qatar, Egypt",
+    "website": "pioneersacademy.com",
+    "source_sheet": "CS - Jordan Training Centres"
+  },
+  {
+    "name": "New Horizons Computer Learning Centers Jordan",
+    "field": null,
+    "location": "Amman",
+    "specialty": "IT fundamentals, networking (CCNA), Microsoft/Cisco tracks, Office/PM tools",
+    "notes": "International franchise network, strong on vendor-certified IT training",
+    "website": "newhorizons.com (Jordan branch)",
+    "source_sheet": "CS - Jordan Training Centres"
+  },
+  {
+    "name": "iCert Global (Amman delivery)",
+    "field": null,
+    "location": "Amman",
+    "specialty": "Certification exam-prep classroom training: CCNA, CEH, AWS, PMP, CAPM, Six Sigma",
+    "notes": "International certification-prep provider with periodic Amman classroom sessions",
+    "website": "icertglobal.com",
+    "source_sheet": "CS - Jordan Training Centres"
+  },
+  {
+    "name": "The Knowledge Academy (Jordan delivery)",
+    "field": null,
+    "location": "Amman (also delivers globally)",
+    "specialty": "Programming languages (Python, PHP, Ruby), AWS, project management",
+    "notes": "International training provider; pricing tends to be higher than local Jordanian centres",
+    "website": "theknowledgeacademy.com",
+    "source_sheet": "CS - Jordan Training Centres"
+  },
+  {
+    "name": "JEA Engineers Training Center",
+    "field": null,
+    "location": "Amman + 17 branches",
+    "specialty": "PMP, PM/Agile, general computer-skills courses relevant to engineers moving into tech-adjacent roles",
+    "notes": "Primarily for JEA-registered engineers; useful for the IT-project-management path specifically",
+    "website": "jea.org.jo",
+    "source_sheet": "CS - Jordan Training Centres"
+  },
+  {
+    "name": "int@j — Information Technology Association of Jordan",
+    "field": null,
+    "location": "Amman",
+    "specialty": "Industry body; runs/coordinates workforce-development and upskilling initiatives with member tech companies",
+    "notes": "Good source for up-to-date info on funded training programs and job-linked bootcamps",
+    "website": "intaj.net",
+    "source_sheet": "CS - Jordan Training Centres"
+  },
+  {
+    "name": "Cisco Networking Academy (via partner institutions)",
+    "field": null,
+    "location": "Delivered through partner universities/institutes in Jordan",
+    "specialty": "CCNA and networking fundamentals at discounted/free rates through academic partners",
+    "notes": "Check whether your university or a local partner institute is a registered Cisco Academy — pricing is much lower than commercial CCNA courses",
+    "website": "netacad.com",
+    "source_sheet": "CS - Jordan Training Centres"
+  },
+  {
+    "name": "Jordan Engineers Association (JEA) Training Academy",
+    "field": "CEMP, LEED/EDGE, PMP/Agile/RMP, HVAC lab, German language, KNX, AutoCAD, quantity surveying, facility management, real estate appraisal",
+    "location": "Amman, Jordan",
+    "specialty": "CEMP, LEED/EDGE, PMP/Agile/RMP, HVAC lab, German language, KNX, AutoCAD, quantity surveying, facility management, real estate appraisal",
+    "notes": "Best first stop — most courses are locally and internationally recognized and formally accepted for licensing and tenders",
+    "website": null,
+    "source_sheet": "Training Providers"
+  },
+  {
+    "name": "NEPCO Electrical Training Center (National Electric Power Company)",
+    "field": "Power systems field training, substations, transformers, utility staff upskilling",
+    "location": "Amman, Jordan",
+    "specialty": "Power systems field training, substations, transformers, utility staff upskilling",
+    "notes": "Runs the mandatory 2-month field internship for EE students (8 specialized modules)",
+    "website": null,
+    "source_sheet": "Training Providers"
+  },
+  {
+    "name": "Archizone Academy",
+    "field": "MV/LV design, lighting design, ELV, Revit, site execution",
+    "location": "Amman, Jordan",
+    "specialty": "MV/LV design, lighting design, ELV, Revit, site execution",
+    "notes": "Comprehensive 141+ hour package; on-site, online, and recorded options",
+    "website": null,
+    "source_sheet": "Training Providers"
+  },
+  {
+    "name": "Practika Academy Jordan",
+    "field": "Practical professional diplomas — HEV/EV vehicle maintenance",
+    "location": "Amman, Jordan",
+    "specialty": "Practical professional diplomas — HEV/EV vehicle maintenance",
+    "notes": "Targets HEV/EV technicians, diagnostics, BMS maintenance coordinators",
+    "website": null,
+    "source_sheet": "Training Providers"
+  },
+  {
+    "name": "Moonlight Training Academy",
+    "field": "Electrical, Mechanical, Industrial Engineering, ELV, Management courses",
+    "location": "Al Abdali, Aqarco Complex, 3rd Floor, Amman, Jordan",
+    "specialty": "Electrical, Mechanical, Industrial Engineering, ELV, Management courses",
+    "notes": "Does not publish public pricing — contact via Facebook/Instagram or visit in person",
+    "website": null,
+    "source_sheet": "Training Providers"
+  },
+  {
+    "name": "Abu Alhaj Group Training Center",
+    "field": "KNX smart building/home automation design, implementation & supply",
+    "location": "Jordan University Street, Amman, Jordan (abualhajknx.com)",
+    "specialty": "KNX smart building/home automation design, implementation & supply",
+    "notes": "Currently the main Jordan-based officially certified KNX training provider identified",
+    "website": null,
+    "source_sheet": "Training Providers"
+  },
+  {
+    "name": "Engineers Academy for Training and Development (LinkedIn page)",
+    "field": "KNX, AutoCAD, CEMP, pumps, quantity surveying, facility management, real estate appraisal",
+    "location": "Amman, Jordan (JEA-affiliated)",
+    "specialty": "KNX, AutoCAD, CEMP, pumps, quantity surveying, facility management, real estate appraisal",
+    "notes": "Regularly posts new course announcements with up to 60% discount for recent graduates",
+    "website": null,
+    "source_sheet": "Training Providers"
+  },
+  {
+    "name": "Arabic e-learning platforms (Bakkah, Ibn Rushd/Pioneers Academy, etc.)",
+    "field": "PMP exam prep, foundational electrical/mechanical courses, renewable energy intro",
+    "location": "Online (remote, Arabic-speaking region)",
+    "specialty": "PMP exam prep, foundational electrical/mechanical courses, renewable energy intro",
+    "notes": "Useful for remote self-paced preparation for international certifications, often at more competitive prices than in-person options",
+    "website": null,
+    "source_sheet": "Training Providers"
+  },
+  {
+    "name": "Luminus Technical University College (LTUC) - Abdul Aziz Al-Ghurair School (ASAC)",
+    "field": "General Programming (Full Stack / Web / Mobile)",
+    "location": "ltuc.com | Phone: 064000700",
+    "specialty": "In-person (Amman - Balad/Irbid)",
+    "notes": "Bachelor's in Cloud Computing, British BTEC Diploma (Software Engineering, Cybersecurity, Artificial Intelligence), Intensive programs (Bootcamp) in partnership with Code Fellows (Seattle) with international certification",
+    "website": null,
+    "source_sheet": "Jordan Training Centers"
+  },
+  {
+    "name": "Orange Programming Academy",
+    "field": "General Programming",
+    "location": "orange.jo/ar/corporate/csr/coding-academy",
+    "specialty": "In-person + Online (Orange Coursat Platform)",
+    "notes": "Free intensive courses (6 months) in partnership with Simplon.co in programming languages and employment skills, plus Coursat free e-learning platform and free Coursera courses through community digital centers",
+    "website": null,
+    "source_sheet": "Jordan Training Centers"
+  },
+  {
+    "name": "Programmers of Jordan (HelloGateJo Platform)",
+    "field": "General Programming (Beginners)",
+    "location": "hellogate.tech | cpf.jo",
+    "specialty": "Fully Online, Free",
+    "notes": "Short courses (6-7 weeks) in Arabic through Ministry of Digital Economy and Entrepreneurship and Crown Prince Foundation - Basic programming introduction (educational only without practical training or job opportunities)",
+    "website": null,
+    "source_sheet": "Jordan Training Centers"
+  },
+  {
+    "name": "re:coded Academy",
+    "field": "Programming / Cybersecurity (Marginalized Groups and Refugees)",
+    "location": "recoded.org",
+    "specialty": "In-person (Amman) + Online, Free for qualified candidates",
+    "notes": "Intensive bootcamp in web development (JavaScript Full-Stack) and cybersecurity, targeting youth and refugees with job placement opportunities",
+    "website": null,
+    "source_sheet": "Jordan Training Centers"
+  },
+  {
+    "name": "Coders - Software Leaders and Training Company",
+    "field": "Programming / Networks / Information Security (Private, Paid)",
+    "location": "Search: Programming Leaders Coders Amman",
+    "specialty": "In-person (Amman)",
+    "notes": "Programming, networking, information security, graphic design courses - technology company with government project experience and professional training",
+    "website": null,
+    "source_sheet": "Jordan Training Centers"
+  },
+  {
+    "name": "Falcons Training and Consulting Center",
+    "field": "Programming / Networks / Information Security (Diverse)",
+    "location": "falconstc.com",
+    "specialty": "In-person + Online",
+    "notes": "Various training plans in information technology and programming",
+    "website": null,
+    "source_sheet": "Jordan Training Centers"
+  },
+  {
+    "name": "New Horizons Jordan",
+    "field": "Networks (Cisco - CCNA/CCNP)",
+    "location": "newhorizons.com (Jordan Branch) - Wasfi Al Tel St, Al-Shmaisani",
+    "specialty": "In-person (Shmeisani, Amman) + Online (Live Virtual Classes)",
+    "notes": "Largest Cisco authorized training partner, official Microsoft, CompTIA and VMware partner - Comprehensive ICT courses with internationally accredited certificates",
+    "website": null,
+    "source_sheet": "Jordan Training Centers"
+  },
+  {
+    "name": "Institute of Information Technology (IIT)",
+    "field": "Networks and Information Security (CompTIA/Pearson VUE)",
+    "location": "iitlearning.com",
+    "specialty": "In-person (Amman)",
+    "notes": "Authorized partner for CompTIA (A+, Network+, Security+, Linux+) and Pearson VUE exam center accredited for local exam administration",
+    "website": null,
+    "source_sheet": "Jordan Training Centers"
+  },
+  {
+    "name": "The Knowledge Academy - Jordan Branch",
+    "field": "Networks (CCNA/CCNP - International Training Branch)",
+    "location": "theknowledgeacademy.com/jo",
+    "specialty": "In-person (Amman) + Online",
+    "notes": "CCNA and CCNP courses and networking bootcamp with authorized instructors",
+    "website": null,
+    "source_sheet": "Jordan Training Centers"
+  },
+  {
+    "name": "Hussein Technical University (HTU)",
+    "field": "Cybersecurity / Networks and AI (University Accredited)",
+    "location": "htu.edu.jo",
+    "specialty": "In-person (Amman)",
+    "notes": "Bachelor's and technical diploma programs accredited by Ministry of Higher Education in Software Engineering and other technical specializations aligned with labor market",
+    "website": null,
+    "source_sheet": "Jordan Training Centers"
+  },
+  {
+    "name": "University of Jordan / German-Jordanian University / PSUT (Continuing Education Center)",
+    "field": "Artificial Intelligence and Cloud Computing (University)",
+    "location": "Search for 'Continuing Education Center' on each university website (ju.edu.jo, gju.edu.jo, psut.edu.jo)",
+    "specialty": "In-person + Some online programs",
+    "notes": "University continuing education centers offer short professional diplomas in Artificial Intelligence, Data Science and Cloud Computing with accredited university certificates",
+    "website": null,
+    "source_sheet": "Jordan Training Centers"
+  },
+  {
+    "name": "Zain Digital Centers / Vocational Training Corporation (VTC)",
+    "field": "Free General Professional Training (Technical and Vocational)",
+    "location": "vtc.gov.jo",
+    "specialty": "In-person (Amman, Zarqa, Irbid, Tafilah, Karak, Salt)",
+    "notes": "Free courses supported by private sector (Zain) in partnership with VTC, including technical and device maintenance paths, with certified occupational licenses",
+    "website": null,
+    "source_sheet": "Jordan Training Centers"
+  },
+  {
+    "name": "42 Amman - Crown Prince Foundation",
+    "field": "General Programming (Teacher-less Education - Peer Learning)",
+    "location": "42amman.com | CPF",
+    "specialty": "Fully In-person (Amman) - Completely Free",
+    "notes": "Free computer science program within the global Ecole 42 network, with no teachers, lectures, or fees, project-based and peer learning approach, no prior experience or certification required, starts with intensive trial phase (Piscine) for one month, locally and internationally accredited certificate - in partnership with Ministry of Planning, International Cooperation and Advanced Professional Training College (CAVT) and French Embassy",
+    "website": null,
+    "source_sheet": "Jordan Training Centers"
+  }
+]

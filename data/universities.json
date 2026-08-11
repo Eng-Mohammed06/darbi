@@ -1,0 +1,68 @@
+[
+  {
+    "code": "BAU",
+    "name": "Balqa Applied University",
+    "name_in_source": "Balqa Applied University (BAU)",
+    "city": null,
+    "website": null,
+    "source_files": [
+      "Universities_majors.xlsx"
+    ],
+    "programs_note": null
+  },
+  {
+    "code": "GJU",
+    "name": "German Jordanian University",
+    "name_in_source": "German Jordanian University (GJU)",
+    "city": null,
+    "website": null,
+    "source_files": [
+      "Universities_majors.xlsx"
+    ],
+    "programs_note": null
+  },
+  {
+    "code": "HU",
+    "name": "Hashemite University",
+    "name_in_source": "Hashemite University (HU)",
+    "city": null,
+    "website": null,
+    "source_files": [
+      "Universities_majors.xlsx"
+    ],
+    "programs_note": null
+  },
+  {
+    "code": "JUST",
+    "name": "Jordan University of Science and Technology",
+    "name_in_source": "Jodan University of Science and Technology (JUST)",
+    "city": null,
+    "website": null,
+    "source_files": [
+      "Universities_majors.xlsx"
+    ],
+    "programs_note": null
+  },
+  {
+    "code": "PSUT",
+    "name": "Princess Sumaya University for Technology",
+    "name_in_source": "Princess Sumaya University for Technology(PSUT)",
+    "city": null,
+    "website": null,
+    "source_files": [
+      "Universities_majors.xlsx"
+    ],
+    "programs_note": null
+  },
+  {
+    "code": "UJ",
+    "name": "University of Jordan",
+    "name_in_source": "University of Jordan (UJ)",
+    "city": null,
+    "website": null,
+    "source_files": [
+      "Universities_majors.xlsx"
+    ],
+    "programs_note": null
+  }
+]

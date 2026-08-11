@@ -1,0 +1,4349 @@
+[
+  {
+    "company_name": "Orange Jordan",
+    "title": "Senior Workflow and Inventory Administrator",
+    "required_majors": [
+      "Telecom Engineering",
+      "Computer Engineering",
+      "Computer Science"
+    ],
+    "canonical_majors": [
+      "Computer Engineering",
+      "Computer Science"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 700-1,000 JD/mo (market estimate)",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1000,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Problem solving",
+      "English proficiency",
+      "communication",
+      "analytical & research skills",
+      "planning & follow-up",
+      "ITIL",
+      "Unix/Linux"
+    ],
+    "source": "jobs.orange.jo (job #548)",
+    "verified": true
+  },
+  {
+    "company_name": "Orange Jordan",
+    "title": "Power & AC Engineer",
+    "required_majors": [
+      "Electrical Engineering",
+      "Mechanical Engineering",
+      "Mechatronics Engineering"
+    ],
+    "canonical_majors": [
+      "Electrical Engineering",
+      "Mechanical Engineering",
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 500-750 JD/mo (market estimate)",
+    "salary_min_jod": 500,
+    "salary_max_jod": 750,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Power/AC troubleshooting",
+      "solar systems",
+      "firefighting systems",
+      "MS Office",
+      "driving license"
+    ],
+    "source": "jobs.orange.jo (job #547)",
+    "verified": true
+  },
+  {
+    "company_name": "Orange Jordan",
+    "title": "Network, Service Platform, IT & Services Supervisory Engineer",
+    "required_majors": [
+      "Telecommunications",
+      "Electronics & Computer Engineering"
+    ],
+    "canonical_majors": [],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 750-1,100 JD/mo (market estimate)",
+    "salary_min_jod": 750,
+    "salary_max_jod": 1100,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Mobile/Data/Transmission networks (LTE",
+      "3G",
+      "2G",
+      "ADSL",
+      "SDH)",
+      "IT systems",
+      "crisis management",
+      "English fluency"
+    ],
+    "source": "jobs.orange.jo (job #546)",
+    "verified": true
+  },
+  {
+    "company_name": "Zain Cash Jordan",
+    "title": "Frontend Specialist",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 600-900 JD/mo (market estimate)",
+    "salary_min_jod": 600,
+    "salary_max_jod": 900,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "React.js",
+      "React Native",
+      "API integration",
+      "UI components",
+      "mentoring",
+      "code reviews"
+    ],
+    "source": "Built In / Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Zain Cash Jordan",
+    "title": "Backend Specialist",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 600-900 JD/mo (market estimate)",
+    "salary_min_jod": 600,
+    "salary_max_jod": 900,
+    "salary_is_estimate": true,
+    "required_skills": [
+      ".NET Core",
+      "system integration",
+      "API design"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Zain Cash Jordan",
+    "title": "Customer Service Advisor (Tafileh)",
+    "required_majors": [
+      "Any Bachelor's degree"
+    ],
+    "canonical_majors": [],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 400-550 JD/mo (market estimate)",
+    "salary_min_jod": 400,
+    "salary_max_jod": 550,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Customer service",
+      "complaint resolution",
+      "sales opportunities",
+      "communication"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Umniah",
+    "title": "Oracle Applications Senior Developer",
+    "required_majors": [
+      "Computer Science",
+      "Information Systems"
+    ],
+    "canonical_majors": [
+      "Computer Science"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 800-1,200 JD/mo (market estimate)",
+    "salary_min_jod": 800,
+    "salary_max_jod": 1200,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Oracle applications development",
+      "database management"
+    ],
+    "source": "LinkedIn",
+    "verified": true
+  },
+  {
+    "company_name": "Umniah",
+    "title": "RAN Operations & Automation Engineer / Sr. Engineer",
+    "required_majors": [
+      "Telecommunications Engineering",
+      "Computer Engineering"
+    ],
+    "canonical_majors": [
+      "Computer Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 700-1,100 JD/mo (market estimate)",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1100,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "RAN operations",
+      "network automation",
+      "mobile networks"
+    ],
+    "source": "LinkedIn",
+    "verified": true
+  },
+  {
+    "company_name": "Umniah",
+    "title": "Power Rollout Senior Engineer",
+    "required_majors": [
+      "Electrical Engineering",
+      "Telecom Engineering"
+    ],
+    "canonical_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 700-1,100 JD/mo (market estimate)",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1100,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Power systems rollout",
+      "site installation",
+      "project management"
+    ],
+    "source": "LinkedIn",
+    "verified": true
+  },
+  {
+    "company_name": "Arab Bank",
+    "title": "Trade Finance & Network RM",
+    "required_majors": [
+      "Finance",
+      "Business Administration",
+      "Banking"
+    ],
+    "canonical_majors": [],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 700-1,100 JD/mo (market estimate)",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1100,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Trade finance products",
+      "MNC business development",
+      "English & Arabic fluency",
+      "negotiation"
+    ],
+    "source": "for9a.com",
+    "verified": true
+  },
+  {
+    "company_name": "Capital Bank",
+    "title": "Internal Auditor",
+    "required_majors": [
+      "Accounting",
+      "Finance"
+    ],
+    "canonical_majors": [],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 500-800 JD/mo (market estimate)",
+    "salary_min_jod": 500,
+    "salary_max_jod": 800,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Audit procedures",
+      "risk assessment",
+      "compliance",
+      "financial analysis"
+    ],
+    "source": "LinkedIn",
+    "verified": true
+  },
+  {
+    "company_name": "Capital Bank",
+    "title": "Business Intelligence Specialist",
+    "required_majors": [
+      "Computer Science",
+      "MIS",
+      "Business Analytics"
+    ],
+    "canonical_majors": [
+      "Computer Science"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 600-900 JD/mo (market estimate)",
+    "salary_min_jod": 600,
+    "salary_max_jod": 900,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "BI tools",
+      "data analysis",
+      "reporting",
+      "SQL"
+    ],
+    "source": "LinkedIn / capitalbank.jo",
+    "verified": true
+  },
+  {
+    "company_name": "Capital Bank",
+    "title": "Data Engineer",
+    "required_majors": [
+      "Computer Science",
+      "Computer Engineering"
+    ],
+    "canonical_majors": [
+      "Computer Engineering",
+      "Computer Science"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 600-950 JD/mo (market estimate)",
+    "salary_min_jod": 600,
+    "salary_max_jod": 950,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Data pipelines",
+      "ETL",
+      "SQL",
+      "cloud data platforms"
+    ],
+    "source": "LinkedIn",
+    "verified": true
+  },
+  {
+    "company_name": "Bank of Jordan",
+    "title": "Senior Relationship Manager - Corporate",
+    "required_majors": [
+      "Finance",
+      "Business Administration"
+    ],
+    "canonical_majors": [],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 900-1,400 JD/mo (market estimate)",
+    "salary_min_jod": 900,
+    "salary_max_jod": 1400,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Client portfolio management",
+      "financial analysis",
+      "corporate banking",
+      "communication"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Bank of Jordan",
+    "title": "Senior Financial Credit Analyst (Large Corporate)",
+    "required_majors": [
+      "Finance",
+      "Accounting"
+    ],
+    "canonical_majors": [],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 900-1,400 JD/mo (market estimate)",
+    "salary_min_jod": 900,
+    "salary_max_jod": 1400,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Financial statement analysis",
+      "credit risk assessment",
+      "5+ years experience"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Bank of Jordan",
+    "title": "Relationship Manager - SME",
+    "required_majors": [
+      "Finance",
+      "Business Administration"
+    ],
+    "canonical_majors": [],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 700-1,100 JD/mo (market estimate)",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1100,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "SME banking",
+      "relationship building",
+      "financial analysis",
+      "3+ years experience"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Amazon Payment Services",
+    "title": "Software Development Engineer (SDE-II)",
+    "required_majors": [
+      "Computer Science",
+      "Computer Engineering"
+    ],
+    "canonical_majors": [
+      "Computer Engineering",
+      "Computer Science"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 1,000-1,600 JD/mo (market estimate)",
+    "salary_min_jod": 1000,
+    "salary_max_jod": 1600,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Distributed systems",
+      "software architecture",
+      "coding standards",
+      "3+ years experience",
+      "mentoring"
+    ],
+    "source": "GulfTalent.com",
+    "verified": true
+  },
+  {
+    "company_name": "Optimiza",
+    "title": "Senior React Developer",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 800-1,200 JD/mo (market estimate)",
+    "salary_min_jod": 800,
+    "salary_max_jod": 1200,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "React",
+      "JavaScript",
+      "TypeScript",
+      "REST APIs",
+      "frontend architecture"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Maqsam",
+    "title": "Backend Software Engineer",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 600-950 JD/mo (market estimate)",
+    "salary_min_jod": 600,
+    "salary_max_jod": 950,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Backend development",
+      "SaaS",
+      "AI-powered systems"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Estarta Solutions",
+    "title": "Cloud Support Frontline Specialist (Fresh Graduates)",
+    "required_majors": [
+      "Computer Science",
+      "Networks",
+      "Computer Engineering"
+    ],
+    "canonical_majors": [
+      "Computer Engineering",
+      "Computer Science"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 450-600 JD/mo (market estimate)",
+    "salary_min_jod": 450,
+    "salary_max_jod": 600,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Networking",
+      "Java",
+      "Azure",
+      "troubleshooting",
+      "customer support"
+    ],
+    "source": "LinkedIn",
+    "verified": true
+  },
+  {
+    "company_name": "Estarta Solutions",
+    "title": "Cloud Support Engineer (PaaS)",
+    "required_majors": [
+      "Computer Science",
+      "Computer Engineering"
+    ],
+    "canonical_majors": [
+      "Computer Engineering",
+      "Computer Science"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 600-900 JD/mo (market estimate)",
+    "salary_min_jod": 600,
+    "salary_max_jod": 900,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Azure PaaS (Redis",
+      "Service Fabric",
+      "Service Bus)",
+      "C++/C#/Java",
+      "troubleshooting"
+    ],
+    "source": "LinkedIn",
+    "verified": true
+  },
+  {
+    "company_name": "MAF Future Solutions",
+    "title": "Software Engineer - Backend",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 500-800 JD/mo (market estimate)",
+    "salary_min_jod": 500,
+    "salary_max_jod": 800,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Backend development",
+      "APIs",
+      "customer solutions"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Tarjama",
+    "title": "Senior Software Engineer",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 700-1,100 JD/mo (market estimate)",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1100,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Full SDLC",
+      "frontend & backend",
+      "cross-functional collaboration",
+      "mentoring"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "KEO International Consultants",
+    "title": "Senior Application Developer",
+    "required_majors": [
+      "Computer Science",
+      "Computer Engineering"
+    ],
+    "canonical_majors": [
+      "Computer Engineering",
+      "Computer Science"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 800-1,200 JD/mo (market estimate)",
+    "salary_min_jod": 800,
+    "salary_max_jod": 1200,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Microsoft platforms",
+      "AI integration",
+      "cross-platform mobile apps"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "BlackStone eIT",
+    "title": "Outsystems Senior Developer",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 700-1,100 JD/mo (market estimate)",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1100,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "OutSystems low-code platform",
+      "application development"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Steady Solutions",
+    "title": "Senior Web Programmer (ASP.NET MVC)",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 700-1,000 JD/mo (market estimate)",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1000,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "ASP.NET MVC",
+      "web application development",
+      "mentoring junior developers"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "People Dynamics",
+    "title": "Senior Frontend Developer",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 700-1,000 JD/mo (market estimate)",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1000,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Angular",
+      "high-performance SEO-optimized web apps",
+      "frontend architecture"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Servme",
+    "title": "Senior Frontend Developer",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 700-1,000 JD/mo (market estimate)",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1000,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Frontend development",
+      "CRM/guest experience platforms"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Arabic.AI",
+    "title": "Pre-Sales AI Solution Engineer",
+    "required_majors": [
+      "Computer Science",
+      "AI",
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 700-1,100 JD/mo (market estimate)",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1100,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "AI solution design",
+      "validation",
+      "client presentation"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Noema Consulting",
+    "title": "Senior Frontend Software Engineer",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 700-1,100 JD/mo (market estimate)",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1100,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Web application development",
+      "mentoring",
+      "architectural decisions"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Aramex",
+    "title": "Corporate Operations Executive",
+    "required_majors": [
+      "Industrial Engineering"
+    ],
+    "canonical_majors": [],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 450-650 JD/mo (market estimate)",
+    "salary_min_jod": 450,
+    "salary_max_jod": 650,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Business analysis",
+      "API/EDI/FTP basics",
+      "stakeholder communication",
+      "0-2 yrs experience (fresh-grad friendly)"
+    ],
+    "source": "careers.aramex.com / LinkedIn",
+    "verified": true
+  },
+  {
+    "company_name": "Careem",
+    "title": "Software Engineer I",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 500-750 JD/mo (market estimate)",
+    "salary_min_jod": 500,
+    "salary_max_jod": 750,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Java",
+      "Spring Boot",
+      "AWS",
+      "backend systems - fresh graduates or up to 2 yrs experience"
+    ],
+    "source": "LinkedIn / Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Careem",
+    "title": "People Operations & Onboarding Specialist",
+    "required_majors": [
+      "Business Administration",
+      "HR",
+      "Any Bachelor's"
+    ],
+    "canonical_majors": [],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Est. 450-650 JD/mo (market estimate)",
+    "salary_min_jod": 450,
+    "salary_max_jod": 650,
+    "salary_is_estimate": true,
+    "required_skills": [
+      "Employee lifecycle",
+      "onboarding",
+      "Arabic & English fluency",
+      "communication"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Hikma Pharmaceuticals",
+    "title": "Production Engineer",
+    "required_majors": [
+      "Chemical Engineering"
+    ],
+    "canonical_majors": [
+      "Chemical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not Specified (Competitive)",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Chemical Engineering",
+      "0-2 years experience",
+      "Strong knowledge of GMP (Good Manufacturing Practices)",
+      "Fluent English",
+      "Shift flexibility."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Arab Potash Company (APC)",
+    "title": "Process Engineer",
+    "required_majors": [
+      "Chemical Engineering"
+    ],
+    "canonical_majors": [
+      "Chemical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "800 - 1,100",
+    "salary_min_jod": 800,
+    "salary_max_jod": 1100,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Chemical Engineering",
+      "2-4 years in heavy chemical or extraction industries",
+      "Mass & energy balance calculations",
+      "Aspen HYSYS/Plus."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Jordan Phosphate Mines Co. (JPMC)",
+    "title": "Plant Chemical Engineer",
+    "required_majors": [
+      "Chemical Engineering"
+    ],
+    "canonical_majors": [
+      "Chemical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "700 - 950",
+    "salary_min_jod": 700,
+    "salary_max_jod": 950,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Chemical Engineering",
+      "1-3 years in industrial plants",
+      "Troubleshooting reactors",
+      "Strict adherence to HSE (Health",
+      "Safety",
+      "Environment) standards."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "MS Pharma",
+    "title": "Quality Control (QC) Analyst",
+    "required_majors": [
+      "Chemical Engineering"
+    ],
+    "canonical_majors": [
+      "Chemical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "450 - 600",
+    "salary_min_jod": 450,
+    "salary_max_jod": 600,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Chemical Engineering or Chemistry",
+      "0-2 years experience",
+      "Hands-on experience with HPLC",
+      "GC",
+      "and spectrophotometry",
+      "High attention to detail."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Dar Al Dawa (DAD)",
+    "title": "Validation Engineer",
+    "required_majors": [
+      "Chemical Engineering"
+    ],
+    "canonical_majors": [
+      "Chemical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not Specified",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Chemical Engineering",
+      "2-3 years in pharmaceutical validation",
+      "Experience with IQ/OQ/PQ protocols and equipment calibration."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Jordan India Fertilizer Co. (JIFCO)",
+    "title": "Chemical Process Engineer",
+    "required_majors": [
+      "Chemical Engineering"
+    ],
+    "canonical_majors": [
+      "Chemical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not Specified",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Chemical Engineering",
+      "3+ years in acid/fertilizer plants",
+      "DCS (Distributed Control System) operation",
+      "Process optimization & root-cause analysis."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Engicon",
+    "title": "Water/Wastewater Engineer",
+    "required_majors": [
+      "Chemical Engineering"
+    ],
+    "canonical_majors": [
+      "Chemical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "600 - 850",
+    "salary_min_jod": 600,
+    "salary_max_jod": 850,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Chemical or Environmental Engineering",
+      "2-5 years in water treatment design",
+      "Knowledge of RO (Reverse Osmosis) systems & water chemistry",
+      "AutoCAD."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "United Pharmaceuticals",
+    "title": "Quality Assurance (QA) Specialist",
+    "required_majors": [
+      "Chemical Engineering"
+    ],
+    "canonical_majors": [
+      "Chemical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "500 - 650",
+    "salary_min_jod": 500,
+    "salary_max_jod": 650,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Chemical Engineering",
+      "1-3 years in pharma QA",
+      "Document control",
+      "CAPA (Corrective and Preventive Actions) handling",
+      "Internal auditing."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "National Chlorine Industries (NCI)",
+    "title": "HSE Engineer",
+    "required_majors": [
+      "Chemical Engineering"
+    ],
+    "canonical_majors": [
+      "Chemical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "500 - 700",
+    "salary_min_jod": 500,
+    "salary_max_jod": 700,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Chemical Engineering",
+      "2+ years in industrial safety",
+      "Risk assessment",
+      "OSHA or NEBOSH certification is highly preferred."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Jordan Petroleum Refinery Co. (JoPetrol)",
+    "title": "Operations Engineer",
+    "required_majors": [
+      "Chemical Engineering"
+    ],
+    "canonical_majors": [
+      "Chemical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "650 - 800",
+    "salary_min_jod": 650,
+    "salary_max_jod": 800,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Chemical Engineering",
+      "Fresh graduate to 2 years (requires passing entry exams)",
+      "Knowledge of distillation units",
+      "fluid mechanics",
+      "and heat exchangers."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Sayegh Group (National Paints)",
+    "title": "R&D Formulation Engineer",
+    "required_majors": [
+      "Chemical Engineering"
+    ],
+    "canonical_majors": [
+      "Chemical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not Specified",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Chemical Engineering",
+      "2-4 years in polymer/paint formulation",
+      "Color matching",
+      "Raw material testing and chemical coating tech."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Arwan Pharmaceutical Industries",
+    "title": "Production Supervisor",
+    "required_majors": [
+      "Chemical Engineering"
+    ],
+    "canonical_majors": [
+      "Chemical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not Specified",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Chemical Engineering",
+      "3+ years in sterile/injectable manufacturing",
+      "Aseptic techniques",
+      "Team management and GMP documentation."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Intermediate Petrochemicals Industries (IPI)",
+    "title": "Production & Process Engineer",
+    "required_majors": [
+      "Chemical Engineering"
+    ],
+    "canonical_majors": [
+      "Chemical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "450 - 600",
+    "salary_min_jod": 450,
+    "salary_max_jod": 600,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Chemical Engineering",
+      "1-3 years in resin or petrochemical manufacturing",
+      "Reactor scale-up",
+      "Mass balance calculations."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Fine Hygienic Holding",
+    "title": "Process Optimization Engineer",
+    "required_majors": [
+      "Chemical Engineering"
+    ],
+    "canonical_majors": [
+      "Chemical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not Specified (Competitive)",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Chemical or Industrial Engineering",
+      "1-3 years experience",
+      "Lean Six Sigma Green Belt is a major plus",
+      "Data analytics (Minitab/Excel)."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Aqua Treat (Water Technology)",
+    "title": "Technical Sales Engineer",
+    "required_majors": [
+      "Chemical Engineering"
+    ],
+    "canonical_majors": [
+      "Chemical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "450 - 600 + Comm.",
+    "salary_min_jod": 450,
+    "salary_max_jod": 600,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Chemical Engineering",
+      "1-3 years in sales/technical support for water treatment chemicals",
+      "Strong communication",
+      "Valid driving license."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Medpharma",
+    "title": "Tech Transfer Engineer",
+    "required_majors": [
+      "Chemical Engineering"
+    ],
+    "canonical_majors": [
+      "Chemical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not Specified",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Chemical Engineering",
+      "2-4 years experience",
+      "Scale-up of pharmaceutical batches from R&D to commercial manufacturing scales."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Jordan Chemical Industries (JCI)",
+    "title": "Laboratory Supervisor",
+    "required_majors": [
+      "Chemical Engineering"
+    ],
+    "canonical_majors": [
+      "Chemical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "500 - 650",
+    "salary_min_jod": 500,
+    "salary_max_jod": 650,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Chemical Engineering or Chemistry",
+      "3+ years in detergent/cosmetic testing",
+      "Raw material inspection",
+      "ISO 9001 standards knowledge."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Al-Hadaf International (Packaging)",
+    "title": "Plastics Process Engineer",
+    "required_majors": [
+      "Chemical Engineering"
+    ],
+    "canonical_majors": [
+      "Chemical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "400 - 550",
+    "salary_min_jod": 400,
+    "salary_max_jod": 550,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Chemical or Materials Engineering",
+      "1-3 years in plastic extrusion or thermoforming",
+      "Understanding of polymer behavior under heat."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Philadelphia Pharmaceuticals",
+    "title": "QA Documentation Officer",
+    "required_majors": [
+      "Chemical Engineering"
+    ],
+    "canonical_majors": [
+      "Chemical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "350 - 450",
+    "salary_min_jod": 350,
+    "salary_max_jod": 450,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Chemical Engineering",
+      "Fresh graduate to 1 year experience",
+      "High literacy in technical writing",
+      "Reviewing Batch Manufacturing Records (BMR)."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Jordan Industrial Chemical Co.",
+    "title": "Plant Utilities Engineer",
+    "required_majors": [
+      "Chemical Engineering"
+    ],
+    "canonical_majors": [
+      "Chemical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "550 - 700",
+    "salary_min_jod": 550,
+    "salary_max_jod": 700,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Chemical or Mechanical Engineering",
+      "2+ years managing plant utilities (boilers",
+      "chillers",
+      "cooling towers",
+      "water softening systems)."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Dar Al-Handasah (Shair & Partners)",
+    "title": "Structural Design Engineer",
+    "required_majors": [
+      "Civil Engineering"
+    ],
+    "canonical_majors": [
+      "Civil Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "850 - 1,200",
+    "salary_min_jod": 850,
+    "salary_max_jod": 1200,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Civil Engineering",
+      "2-5 years experience",
+      "Mastery of structural design tools (ETABS",
+      "SAP2000",
+      "SAFE)",
+      "Extensive knowledge of ACI & AISC codes",
+      "Strong technical writing."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Consolidated Contractors Company (CCC)",
+    "title": "Site Engineer",
+    "required_majors": [
+      "Civil Engineering"
+    ],
+    "canonical_majors": [
+      "Civil Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "650 - 900",
+    "salary_min_jod": 650,
+    "salary_max_jod": 900,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Civil Engineering",
+      "1-3 years experience",
+      "Direct site supervision",
+      "concrete works",
+      "and resource tracking",
+      "High mobility and willingness to relocate",
+      "Strong English."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Engicon",
+    "title": "Infrastructure Design Engineer",
+    "required_majors": [
+      "Civil Engineering"
+    ],
+    "canonical_majors": [
+      "Civil Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "600 - 900",
+    "salary_min_jod": 600,
+    "salary_max_jod": 900,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Civil/Environmental Engineering",
+      "2-4 years experience in infrastructure design",
+      "Advanced command of AutoCAD Civil 3D",
+      "WaterGEMS",
+      "and SewerGEMS."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Arab Center for Engineering Studies (ACES)",
+    "title": "Geotechnical Engineer",
+    "required_majors": [
+      "Civil Engineering"
+    ],
+    "canonical_majors": [
+      "Civil Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "550 - 750",
+    "salary_min_jod": 550,
+    "salary_max_jod": 750,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Civil Engineering (M.Sc. preferred)",
+      "1-3 years in soil mechanics",
+      "foundation engineering",
+      "and site investigation",
+      "Experience with Plaxis software."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Sigma Consulting Engineers",
+    "title": "Quantity Surveyor (QS) Engineer",
+    "required_majors": [
+      "Civil Engineering"
+    ],
+    "canonical_majors": [
+      "Civil Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "550 - 800",
+    "salary_min_jod": 550,
+    "salary_max_jod": 800,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Civil Engineering",
+      "2-5 years experience",
+      "Expert in quantity take-offs",
+      "BOQ preparation",
+      "and cost estimation",
+      "Proficient in PlanSwift and MS Excel."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Mid Contracting",
+    "title": "Planning & Scheduling Engineer",
+    "required_majors": [
+      "Civil Engineering"
+    ],
+    "canonical_majors": [
+      "Civil Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "700 - 1,000",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1000,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Civil Engineering",
+      "3-5 years experience",
+      "Expert level in Primavera P6",
+      "Solid understanding of critical path analysis",
+      "scheduling",
+      "and project variance reporting."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Arab Towers Contracting Company (ATCCO)",
+    "title": "QA/QC Civil Engineer",
+    "required_majors": [
+      "Civil Engineering"
+    ],
+    "canonical_majors": [
+      "Civil Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "550 - 750",
+    "salary_min_jod": 550,
+    "salary_max_jod": 750,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Civil Engineering",
+      "2-4 years experience in contracting quality systems",
+      "Implementation of concrete/material testing protocols",
+      "Familiarity with ISO 9001."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Consolidated Consultants (CC) for Design",
+    "title": "Highways & Transportation Engineer",
+    "required_majors": [
+      "Civil Engineering"
+    ],
+    "canonical_majors": [
+      "Civil Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "750 - 1,100",
+    "salary_min_jod": 750,
+    "salary_max_jod": 1100,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Civil Engineering",
+      "3-6 years in geometric highway design",
+      "Mastery of Autodesk Civil 3D",
+      "traffic safety principles",
+      "and pavement structural design."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Hussein Atieh Corporation (HAC)",
+    "title": "Senior Structural Engineer",
+    "required_majors": [
+      "Civil Engineering"
+    ],
+    "canonical_majors": [
+      "Civil Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "1,300 - 1,800",
+    "salary_min_jod": 1300,
+    "salary_max_jod": 1800,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Civil Engineering",
+      "7+ years experience in heavy industrial/commercial buildings",
+      "Seismic analysis and design",
+      "Advanced troubleshooting",
+      "JEA Consultant Rank."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Omrania",
+    "title": "BIM Modeler (Structural)",
+    "required_majors": [
+      "Civil Engineering"
+    ],
+    "canonical_majors": [
+      "Civil Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "500 - 750",
+    "salary_min_jod": 500,
+    "salary_max_jod": 750,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Civil Engineering",
+      "1-3 years experience utilizing Autodesk Revit Structure and Navisworks",
+      "Expertise in structural detailing and clash detection protocols."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Al-Asala Engineering",
+    "title": "Project Engineer (Water Structures)",
+    "required_majors": [
+      "Civil Engineering"
+    ],
+    "canonical_majors": [
+      "Civil Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "600 - 800",
+    "salary_min_jod": 600,
+    "salary_max_jod": 800,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Civil Engineering",
+      "2-4 years experience in execution of water reservoirs",
+      "pumping stations",
+      "and wastewater structures",
+      "On-site sub-contractor management."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Masar United Contracting",
+    "title": "Procurement Engineer (Civil)",
+    "required_majors": [
+      "Civil Engineering"
+    ],
+    "canonical_majors": [
+      "Civil Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "600 - 850",
+    "salary_min_jod": 600,
+    "salary_max_jod": 850,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Civil Engineering",
+      "2-5 years in local and international procurement of construction materials",
+      "Technical evaluation of sub-contractor offers."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Associated Consulting Engineers (ACE)",
+    "title": "Hydraulic Modeler / Water Engineer",
+    "required_majors": [
+      "Civil Engineering"
+    ],
+    "canonical_majors": [
+      "Civil Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "650 - 900",
+    "salary_min_jod": 650,
+    "salary_max_jod": 900,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Civil Engineering",
+      "2-4 years in water distribution and drainage design",
+      "Advanced hydraulic modeling via InfoWorks or EPAnet",
+      "GIS applications."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Modern Construction Company",
+    "title": "Assistant Site Engineer",
+    "required_majors": [
+      "Civil Engineering"
+    ],
+    "canonical_majors": [
+      "Civil Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "350 - 450",
+    "salary_min_jod": 350,
+    "salary_max_jod": 450,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Civil Engineering",
+      "Fresh graduate to 1 year experience",
+      "Active JEA membership",
+      "Support in daily progress logging",
+      "site layouts",
+      "and AutoCAD draft review."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Al-Awn Advanced Contracting",
+    "title": "Materials Engineer (Asphalt/Concrete)",
+    "required_majors": [
+      "Civil Engineering"
+    ],
+    "canonical_majors": [
+      "Civil Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "700 - 950",
+    "salary_min_jod": 700,
+    "salary_max_jod": 950,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Civil or Materials Engineering",
+      "3-5 years experience in infrastructure/highway labs",
+      "Supervision of concrete and asphalt mix designs."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Ruwwad Al-Bina' Contracting",
+    "title": "Estimation & Tendering Engineer",
+    "required_majors": [
+      "Civil Engineering"
+    ],
+    "canonical_majors": [
+      "Civil Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "500 - 750",
+    "salary_min_jod": 500,
+    "salary_max_jod": 750,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Civil Engineering",
+      "2-4 years in construction tendering",
+      "Reviewing architectural/structural blueprints",
+      "Direct pricing and commercial bidding."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Ghiath Sukhtian Contracting (GSC)",
+    "title": "Site Health & Safety (HSE) Engineer",
+    "required_majors": [
+      "Civil Engineering"
+    ],
+    "canonical_majors": [
+      "Civil Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "550 - 750",
+    "salary_min_jod": 550,
+    "salary_max_jod": 750,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Civil or Safety Engineering",
+      "2+ years experience in site safety enforcement",
+      "OSHA or NEBOSH certification",
+      "Risk identification and compliance monitoring."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Dimensions Engineering Consult",
+    "title": "Light Gauge Steel Structural Designer",
+    "required_majors": [
+      "Civil Engineering"
+    ],
+    "canonical_majors": [
+      "Civil Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "450 - 650",
+    "salary_min_jod": 450,
+    "salary_max_jod": 650,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Civil Engineering",
+      "1-3 years in cold-formed steel framing design",
+      "Proficiency in specialized software like FrameCAD",
+      "Vertex BD",
+      "or specialized SAP2000."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Akel Engineering",
+    "title": "Land Surveyor / Site Layout Engineer",
+    "required_majors": [
+      "Civil Engineering"
+    ],
+    "canonical_majors": [
+      "Civil Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "450 - 600",
+    "salary_min_jod": 450,
+    "salary_max_jod": 600,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Civil or Surveying Engineering",
+      "2+ years in advanced field layouts",
+      "Expert command of Total Station",
+      "GPS hardware",
+      "and AutoCAD Civil 3D."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "International Contracting & Investment Co (ICICO)",
+    "title": "Contract Administrator",
+    "required_majors": [
+      "Civil Engineering"
+    ],
+    "canonical_majors": [
+      "Civil Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "1,000 - 1,500",
+    "salary_min_jod": 1000,
+    "salary_max_jod": 1500,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Civil Engineering (Legal diploma is a plus)",
+      "5+ years experience handling contract variations",
+      "Extension of Time (EOT) claims",
+      "and FIDIC guidelines."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "King Hussein Cancer Center (KHCC)",
+    "title": "Clinical Biomedical Engineer",
+    "required_majors": [
+      "Biomedical Engineering"
+    ],
+    "canonical_majors": [
+      "Biomedical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "650 - 850",
+    "salary_min_jod": 650,
+    "salary_max_jod": 850,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Biomedical/Medical Engineering",
+      "1-3 years experience",
+      "Preventive maintenance planning (PPM)",
+      "Calibration techniques for radiotherapy & diagnostic imaging systems",
+      "Understanding of JCI guidelines."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Scientific & Medical Supplies Co. (SMS)",
+    "title": "Field Service Engineer (FSE)",
+    "required_majors": [
+      "Biomedical Engineering"
+    ],
+    "canonical_majors": [
+      "Biomedical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "600 - 900",
+    "salary_min_jod": 600,
+    "salary_max_jod": 900,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Biomedical or Electronics Engineering",
+      "0-2 years experience",
+      "Basic troubleshooting of high-end diagnostic systems (GE Healthcare systems like CT/MRI)",
+      "Valid driving license",
+      "Advanced English."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Al-Faisaliah Medical Systems (FMS)",
+    "title": "Product / Application Specialist",
+    "required_majors": [
+      "Biomedical Engineering"
+    ],
+    "canonical_majors": [
+      "Biomedical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "500 - 750 + Comm.",
+    "salary_min_jod": 500,
+    "salary_max_jod": 750,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Biomedical Engineering",
+      "1-3 years experience",
+      "Outstanding communication",
+      "In-depth knowledge of ICU monitoring and ventilation lines",
+      "Ability to deliver clinical demos to physicians."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Abdali Hospital",
+    "title": "Biomedical Maintenance Engineer",
+    "required_majors": [
+      "Biomedical Engineering"
+    ],
+    "canonical_majors": [
+      "Biomedical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "550 - 750",
+    "salary_min_jod": 550,
+    "salary_max_jod": 750,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Biomedical Engineering",
+      "1-3 years experience in modern hospital operations",
+      "Experience using Electrical Safety Analyzers and Defibrillator testers",
+      "Shift flexibility."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Electronic Health Solutions (EHS - Hakeem)",
+    "title": "Healthcare IT / PACS Specialist",
+    "required_majors": [
+      "Biomedical Engineering"
+    ],
+    "canonical_majors": [
+      "Biomedical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "600 - 850",
+    "salary_min_jod": 600,
+    "salary_max_jod": 850,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Biomedical",
+      "Computer Engineering",
+      "or Health Informatics",
+      "0-2 years experience",
+      "Familiarity with DICOM",
+      "HL7 networking protocols",
+      "PACS archiving",
+      "and Linux/SQL basics."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Munir Sukhtian Group (Medical Div.)",
+    "title": "Biomedical Sales Engineer",
+    "required_majors": [
+      "Biomedical Engineering"
+    ],
+    "canonical_majors": [
+      "Biomedical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "500 - 700 + Comm.",
+    "salary_min_jod": 500,
+    "salary_max_jod": 700,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Biomedical Engineering or Biotechnology",
+      "1-4 years experience in commercial sales of medical laboratory diagnostics & IVD equipment",
+      "Aggressive target driven",
+      "Valid driving license."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Tahboub Medical Supplies",
+    "title": "Field Service Engineer (Anesthesia/ICU)",
+    "required_majors": [
+      "Biomedical Engineering"
+    ],
+    "canonical_majors": [
+      "Biomedical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "550 - 800",
+    "salary_min_jod": 550,
+    "salary_max_jod": 800,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Biomedical Engineering",
+      "2-4 years experience",
+      "Direct exposure to premium ICU Ventilators and Anesthesia workstations",
+      "Vendor technical training certificates are highly preferred."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "The Specialty Hospital",
+    "title": "Senior Biomedical Engineer",
+    "required_majors": [
+      "Biomedical Engineering"
+    ],
+    "canonical_majors": [
+      "Biomedical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "850 - 1,200",
+    "salary_min_jod": 850,
+    "salary_max_jod": 1200,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Biomedical Engineering",
+      "5+ years experience in hospital setup",
+      "Management of equipment medical inventory",
+      "vendor service-level agreements (SLA)",
+      "and clinical safety compliance."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Hikma Pharmaceuticals",
+    "title": "Regulatory Affairs Specialist (Medical Devices)",
+    "required_majors": [
+      "Biomedical Engineering"
+    ],
+    "canonical_majors": [
+      "Biomedical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "600 - 800",
+    "salary_min_jod": 600,
+    "salary_max_jod": 800,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Biomedical Engineering or Pharmacy",
+      "1-3 years in regulatory sectors",
+      "Understanding of JFDA (Jordan FDA)",
+      "CE-marking",
+      "and ISO 13485 standards for combination products/devices."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Ideal Medical Applications (IMA)",
+    "title": "Application Specialist (Ultrasound)",
+    "required_majors": [
+      "Biomedical Engineering"
+    ],
+    "canonical_majors": [
+      "Biomedical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "500 - 700",
+    "salary_min_jod": 500,
+    "salary_max_jod": 700,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Biomedical Engineering",
+      "1-3 years experience",
+      "High technical acumen in ultrasound transducer physics",
+      "OB/GYN and cardiac clinical imaging presets",
+      "Strong training delivery."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Arab Medical Center (AMC)",
+    "title": "Biomedical Technician / Engineer",
+    "required_majors": [
+      "Biomedical Engineering"
+    ],
+    "canonical_majors": [
+      "Biomedical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "450 - 600",
+    "salary_min_jod": 450,
+    "salary_max_jod": 600,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. or Diploma in Biomedical Engineering",
+      "0-2 years experience",
+      "Rapid troubleshooting of general hospital assets (infusion pumps",
+      "surgical beds",
+      "suction units)",
+      "Highly organized."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "United Medical Supplies (Unimed)",
+    "title": "Field Service Engineer (Renal Care)",
+    "required_majors": [
+      "Biomedical Engineering"
+    ],
+    "canonical_majors": [
+      "Biomedical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "550 - 750",
+    "salary_min_jod": 550,
+    "salary_max_jod": 750,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Biomedical Engineering",
+      "2+ years experience in servicing Hemodialysis machines and water treatment loops for dialysis centers",
+      "On-call shift availability."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Dar Al Dawa (DAD)",
+    "title": "Medical Device QA Compliance Officer",
+    "required_majors": [
+      "Biomedical Engineering"
+    ],
+    "canonical_majors": [
+      "Biomedical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "450 - 600",
+    "salary_min_jod": 450,
+    "salary_max_jod": 600,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Biomedical or Chemical Engineering",
+      "1-3 years experience",
+      "Auditing medical device assembly or storage centers",
+      "Solid grasp of ISO 13485 quality systems and validation metrics."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Jordan Hospital",
+    "title": "Medical Equipment Calibration Specialist",
+    "required_majors": [
+      "Biomedical Engineering"
+    ],
+    "canonical_majors": [
+      "Biomedical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "400 - 550",
+    "salary_min_jod": 400,
+    "salary_max_jod": 550,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Biomedical Engineering",
+      "1-3 years experience focusing strictly on quality management",
+      "accuracy tracking",
+      "and executing device calibration using standard testing master kits."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Kabbani Medical Systems",
+    "title": "Bio-Medical Sales Representative (Surgical)",
+    "required_majors": [
+      "Biomedical Engineering"
+    ],
+    "canonical_majors": [
+      "Biomedical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "500 - 700 + Comm.",
+    "salary_min_jod": 500,
+    "salary_max_jod": 700,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Biomedical Engineering",
+      "1-3 years experience",
+      "Focus on operating room (OR) portfolios",
+      "surgical instruments",
+      "and implants",
+      "Requires regular attendance inside OR cases for support."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Global Medical Solutions (GMS)",
+    "title": "Service Engineer (Endoscopy Systems)",
+    "required_majors": [
+      "Biomedical Engineering"
+    ],
+    "canonical_majors": [
+      "Biomedical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "550 - 750",
+    "salary_min_jod": 550,
+    "salary_max_jod": 750,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Biomedical or Electronics Engineering",
+      "2-5 years experience",
+      "Maintenance and camera/fiber optic repair of rigid and flexible endoscopy towers (e.g.",
+      "Olympus/Karl Storz lines)."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Farah Medical Campus",
+    "title": "Clinical Engineering Supervisor",
+    "required_majors": [
+      "Biomedical Engineering"
+    ],
+    "canonical_majors": [
+      "Biomedical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "900 - 1,300",
+    "salary_min_jod": 900,
+    "salary_max_jod": 1300,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Biomedical Engineering",
+      "5+ years experience",
+      "Managing a team of BME technicians",
+      "Designing asset lifecycles",
+      "replacement costs",
+      "and managing heavy medical facility installations."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Al-Khalidi Medical Center",
+    "title": "Junior Biomedical Engineer (Graduate Intern)",
+    "required_majors": [
+      "Biomedical Engineering"
+    ],
+    "canonical_majors": [
+      "Biomedical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "350 - 450",
+    "salary_min_jod": 350,
+    "salary_max_jod": 450,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Biomedical Engineering",
+      "Fresh graduate (0-1 year experience)",
+      "Active JEA membership",
+      "Highly motivated to learn hospital workflows",
+      "basic maintenance logs",
+      "and asset tagging."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Med-Ray Healthcare",
+    "title": "Field Service Engineer (X-Ray & Radiology)",
+    "required_majors": [
+      "Biomedical Engineering"
+    ],
+    "canonical_majors": [
+      "Biomedical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "600 - 850",
+    "salary_min_jod": 600,
+    "salary_max_jod": 850,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Biomedical or Electrical Engineering",
+      "2-4 years experience",
+      "Deep knowledge of radiation safety",
+      "high-voltage generators",
+      "digital radiography (DR/CR) systems calibration."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Bio-Diagnostics Co.",
+    "title": "Medical Laboratory Specialist (IVD)",
+    "required_majors": [
+      "Biomedical Engineering"
+    ],
+    "canonical_majors": [
+      "Biomedical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "500 - 700",
+    "salary_min_jod": 500,
+    "salary_max_jod": 700,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Biomedical Engineering or Biochemistry",
+      "1-3 years experience",
+      "Maintenance and app support for automated biochemistry & hematology analyzers",
+      "Familiarity with liquid handling systems."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Petra Engineering Industries",
+    "title": "Automation & Control Production Engineer",
+    "required_majors": [
+      "Mechatronics Engineering"
+    ],
+    "canonical_majors": [
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "500 - 700",
+    "salary_min_jod": 500,
+    "salary_max_jod": 700,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Mechatronics or Electrical Engineering",
+      "0-2 years experience",
+      "Knowledge of PLC troubleshooting (Siemens/Omron)",
+      "Ability to read electrical wiring diagrams and schematic layouts",
+      "Basic CNC machinery operation."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Fine Hygienic Holding",
+    "title": "Automation Maintenance Engineer",
+    "required_majors": [
+      "Mechatronics Engineering"
+    ],
+    "canonical_majors": [
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "750 - 1,000",
+    "salary_min_jod": 750,
+    "salary_max_jod": 1000,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Mechatronics Engineering",
+      "1-3 years experience in high-speed packaging production lines",
+      "High proficiency in Allen-Bradley or Siemens PLCs",
+      "VFD configuration",
+      "pneumatic actuators",
+      "and servo motors."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Hikma Pharmaceuticals",
+    "title": "Instrumentation & Calibration Engineer",
+    "required_majors": [
+      "Mechatronics Engineering"
+    ],
+    "canonical_majors": [
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "650 - 850",
+    "salary_min_jod": 650,
+    "salary_max_jod": 850,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Mechatronics or Electronics Engineering",
+      "1-3 years experience",
+      "Experience in calibrating industrial sensors (temperature",
+      "pressure",
+      "flow meters) within GMP-regulated environments",
+      "Instrument testing tools."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Jordan Petroleum Refinery Co. (JoPetrol)",
+    "title": "Instrumentation & Control Engineer",
+    "required_majors": [
+      "Mechatronics Engineering"
+    ],
+    "canonical_majors": [
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "700 - 900",
+    "salary_min_jod": 700,
+    "salary_max_jod": 900,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Mechatronics or Control Engineering",
+      "Fresh graduate to 2 years experience (requires passing admission exams)",
+      "Deep understanding of SCADA architectures",
+      "DCS systems",
+      "and industrial valves."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Arab Potash Company (APC)",
+    "title": "Control Systems Maintenance Engineer",
+    "required_majors": [
+      "Mechatronics Engineering"
+    ],
+    "canonical_majors": [
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "850 - 1,250",
+    "salary_min_jod": 850,
+    "salary_max_jod": 1250,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Mechatronics or Electrical Engineering",
+      "2-4 years experience in heavy process industries",
+      "Preventive maintenance of industrial sensors",
+      "heavy actuator feedback loops",
+      "and fieldbus networks."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "PepsiCo (Jordan Ice & Aerated Water)",
+    "title": "Automation & SCADA Engineer",
+    "required_majors": [
+      "Mechatronics Engineering"
+    ],
+    "canonical_majors": [
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "700 - 950",
+    "salary_min_jod": 700,
+    "salary_max_jod": 950,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Mechatronics Engineering",
+      "2-4 years experience in automated bottling lines",
+      "Maintenance of centralized SCADA systems",
+      "HMI terminal programming",
+      "industrial Ethernet protocols",
+      "and safety PLC configurations."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Engicon",
+    "title": "SCADA / Automation Design Engineer",
+    "required_majors": [
+      "Mechatronics Engineering"
+    ],
+    "canonical_majors": [
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "600 - 900",
+    "salary_min_jod": 600,
+    "salary_max_jod": 900,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Mechatronics or Control Engineering",
+      "2-5 years experience in infrastructure design (water treatment/pumping stations)",
+      "Selection of PLCs",
+      "RTUs",
+      "instrumentation data sheets",
+      "and telemetry systems."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Al-Manaseer Industrial Complexes",
+    "title": "Automation & Plant Maintenance Engineer",
+    "required_majors": [
+      "Mechatronics Engineering"
+    ],
+    "canonical_majors": [
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "550 - 750",
+    "salary_min_jod": 550,
+    "salary_max_jod": 750,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Mechatronics Engineering",
+      "1-3 years experience in continuous bulk manufacturing",
+      "Dynamic troubleshooting of weight-feeders",
+      "heavy conveyor drive control loops",
+      "and hydraulic pressure networks."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Dar Al-Handasah (Shair & Partners)",
+    "title": "BMS / Instrumentation Design Engineer",
+    "required_majors": [
+      "Mechatronics Engineering"
+    ],
+    "canonical_majors": [
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "850 - 1,200",
+    "salary_min_jod": 850,
+    "salary_max_jod": 1200,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Mechatronics or Mechanical Engineering",
+      "2-5 years experience",
+      "Expert in designing Building Management Systems (BMS) layouts",
+      "HVAC control loops",
+      "DDC panel scheduling",
+      "and low-voltage systems."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Sigma Consulting Engineers",
+    "title": "BIM Modeler / BMS Engineer",
+    "required_majors": [
+      "Mechatronics Engineering"
+    ],
+    "canonical_majors": [
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "500 - 750",
+    "salary_min_jod": 500,
+    "salary_max_jod": 750,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Mechatronics or Civil/Mech Engineering",
+      "1-3 years experience utilizing Autodesk Revit for MEP/BMS modeling",
+      "Strong familiarity with control field networks like BACnet",
+      "Modbus",
+      "and KNX protocols."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Coca-Cola HBC (Jordan)",
+    "title": "Shift Maintenance Engineer (Mechatronics)",
+    "required_majors": [
+      "Mechatronics Engineering"
+    ],
+    "canonical_majors": [
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "500 - 650",
+    "salary_min_jod": 500,
+    "salary_max_jod": 650,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Mechatronics Engineering",
+      "0-2 years experience",
+      "High technical acumen in electro-pneumatic systems",
+      "proximity/optical sensors",
+      "and continuous production troubleshooting",
+      "Shift-rotation flexibility."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "ETA Max Energy Solutions",
+    "title": "Building Automation & Energy Engineer",
+    "required_majors": [
+      "Mechatronics Engineering"
+    ],
+    "canonical_majors": [
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "450 - 650",
+    "salary_min_jod": 450,
+    "salary_max_jod": 650,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Mechatronics Engineering",
+      "1-3 years experience",
+      "Auditing energy usage via HVAC automation adjustments",
+      "smart metering networks",
+      "and deploying tailored DDC control routines."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Nuqul Group (Al-Bardi Paper Mill)",
+    "title": "Electro-Mechanical Maintenance Engineer",
+    "required_majors": [
+      "Mechatronics Engineering"
+    ],
+    "canonical_majors": [
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "650 - 900",
+    "salary_min_jod": 650,
+    "salary_max_jod": 900,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Mechatronics or Mechanical Engineering",
+      "2-4 years experience in heavy machinery maintenance",
+      "Advanced alignment of servo drives",
+      "hydraulic pumps",
+      "and multi-axis automated tracking systems."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Arab Technical Automation (ATA)",
+    "title": "PLC / HMI Application Engineer",
+    "required_majors": [
+      "Mechatronics Engineering"
+    ],
+    "canonical_majors": [
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "500 - 700",
+    "salary_min_jod": 500,
+    "salary_max_jod": 700,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Mechatronics Engineering",
+      "1-3 years experience in control panel building and software commissioning",
+      "Developing logic from scratch using Siemens TIA Portal or Beckhoff TwinCAT."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "TEKNA / Specialized Automation Solutions",
+    "title": "Field Service Engineer (CNC & Robotics)",
+    "required_majors": [
+      "Mechatronics Engineering"
+    ],
+    "canonical_majors": [
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "450 - 650 + Tech Allow.",
+    "salary_min_jod": 450,
+    "salary_max_jod": 650,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Mechatronics Engineering",
+      "0-2 years experience",
+      "High affinity for mechanical and electrical assembly",
+      "Troubleshooting multi-axis CNC routers and robotic arms",
+      "Valid driving license."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Amman Pharmaceutical Industries (API)",
+    "title": "Validation & Metrology Engineer",
+    "required_majors": [
+      "Mechatronics Engineering"
+    ],
+    "canonical_majors": [
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "400 - 550",
+    "salary_min_jod": 400,
+    "salary_max_jod": 550,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Mechatronics Engineering",
+      "Fresh graduate to 2 years experience",
+      "Focus on equipment operational validation (IQ/OQ/PQ)",
+      "temperature mapping",
+      "and sensor compliance logging."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Robotna / High-Tech Educational Hubs",
+    "title": "Robotics & Embedded Systems Developer",
+    "required_majors": [
+      "Mechatronics Engineering"
+    ],
+    "canonical_majors": [
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "450 - 600",
+    "salary_min_jod": 450,
+    "salary_max_jod": 600,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Mechatronics or Computer Engineering",
+      "Strong knowledge of Embedded C",
+      "microcontrollers (ESP32",
+      "STM32)",
+      "basic PCB design (Altium/Eagle)",
+      "and ROS (Robot Operating System)."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Aramex International",
+    "title": "Sortation System Automation Engineer",
+    "required_majors": [
+      "Mechatronics Engineering"
+    ],
+    "canonical_majors": [
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "600 - 800",
+    "salary_min_jod": 600,
+    "salary_max_jod": 800,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Mechatronics or Electrical Engineering",
+      "1-3 years experience",
+      "Maintenance of high-volume conveyor belt systems",
+      "barcode scanners",
+      "variable speed drives",
+      "and optical sorting gates."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Zalatimo Sweets (Industrial Div.)",
+    "title": "Packaging Line Automation Engineer",
+    "required_majors": [
+      "Mechatronics Engineering"
+    ],
+    "canonical_majors": [
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "450 - 600",
+    "salary_min_jod": 450,
+    "salary_max_jod": 600,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Mechatronics or Mechanical Engineering",
+      "1-3 years experience",
+      "Maintenance of specialized automated packaging",
+      "vacuum sealing",
+      "and metal detection machinery",
+      "Food safety compliance."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Global Technical Automation Co.",
+    "title": "Technical Sales Engineer (Automation Components)",
+    "required_majors": [
+      "Mechatronics Engineering"
+    ],
+    "canonical_majors": [
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "450 - 600 + Comm.",
+    "salary_min_jod": 450,
+    "salary_max_jod": 600,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Mechatronics Engineering",
+      "1-3 years experience in commercial sales of low-voltage switchgear",
+      "proximity sensors",
+      "PLCs",
+      "and pneumatic valves",
+      "Excellent communication",
+      "Valid driving license."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Amazon Jordan",
+    "title": "Software Development Engineer (SDE I)",
+    "required_majors": [
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "1,200 - 1,600",
+    "salary_min_jod": 1200,
+    "salary_max_jod": 1600,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Computer Science or Software Engineering",
+      "Strong command of Java",
+      "C++",
+      "or Python",
+      "Deep understanding of object-oriented programming (OOP)",
+      "Data Structures",
+      "and Algorithms",
+      "Basic cloud concepts."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "ProgressSoft",
+    "title": "Backend Developer (.NET Core)",
+    "required_majors": [
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "700 - 1,000",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1000,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Software Engineering",
+      "0-2 years experience",
+      "Proficient in C#",
+      "ASP.NET Core",
+      "SQL Server",
+      "and Entity Framework",
+      "Understanding of RESTful Web APIs",
+      "clean architecture",
+      "and unit testing."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Mawdoo3",
+    "title": "Full Stack Engineer (MERN)",
+    "required_majors": [
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "800 - 1,100",
+    "salary_min_jod": 800,
+    "salary_max_jod": 1100,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Software Engineering or equivalent",
+      "1-3 years experience",
+      "Mastery of JavaScript/TypeScript",
+      "Node.js",
+      "React.js",
+      "and MongoDB",
+      "Experience with Next.js",
+      "Git workflows",
+      "and Agile methodologies."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Arab Bank (IT Sector)",
+    "title": "DevOps Engineer",
+    "required_majors": [
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "900 - 1,300",
+    "salary_min_jod": 900,
+    "salary_max_jod": 1300,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Software Engineering or Computer Networks",
+      "1-3 years experience",
+      "Experience building CI/CD pipelines (Jenkins or GitHub Actions)",
+      "Strong knowledge of Docker",
+      "Kubernetes",
+      "and Linux administration."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "IrisGuard",
+    "title": "Embedded Software Engineer",
+    "required_majors": [
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "800 - 1,200",
+    "salary_min_jod": 800,
+    "salary_max_jod": 1200,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Computer/Software/Mechatronics Engineering",
+      "1-3 years experience",
+      "Mastery of C/C++ in Linux environments",
+      "Knowledge of RTOS",
+      "microcontroller interfacing",
+      "and hardware debugging tools."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Expedia Group (Amman Hub)",
+    "title": "Front End Engineer",
+    "required_majors": [
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "1,100 - 1,500",
+    "salary_min_jod": 1100,
+    "salary_max_jod": 1500,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Software Engineering or Computer Science",
+      "1-3 years experience",
+      "High proficiency in modern React.js",
+      "TypeScript",
+      "HTML5/CSS3",
+      "and responsive design",
+      "Understanding of state management (Redux)."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Jeeny",
+    "title": "Mobile Software Engineer (iOS)",
+    "required_majors": [
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "900 - 1,300",
+    "salary_min_jod": 900,
+    "salary_max_jod": 1300,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Software Engineering",
+      "1-3 years experience in native mobile application development",
+      "Deep proficiency in Swift",
+      "Xcode",
+      "and MVVM architectural design patterns",
+      "RESTful API integration."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Labiba AI",
+    "title": "AI / NLP Software Engineer",
+    "required_majors": [
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "800 - 1,150",
+    "salary_min_jod": 800,
+    "salary_max_jod": 1150,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Computer Science or Software Engineering",
+      "1-3 years experience",
+      "Strong Python programming",
+      "Familiarity with NLP concepts",
+      "machine learning libraries (scikit-learn",
+      "TensorFlow)",
+      "and FastAPI frameworks."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Optimiza",
+    "title": "Java Enterprise Developer",
+    "required_majors": [
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "650 - 900",
+    "salary_min_jod": 650,
+    "salary_max_jod": 900,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Software Engineering",
+      "1-3 years experience",
+      "Solid foundation in Java EE (JEE)",
+      "Spring Boot framework",
+      "Oracle Databases",
+      "PL/SQL",
+      "JPA",
+      "and Hibernate frameworks."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "WebOps",
+    "title": "QA Automation Engineer",
+    "required_majors": [
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "600 - 850",
+    "salary_min_jod": 600,
+    "salary_max_jod": 850,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Software Engineering",
+      "1-3 years experience",
+      "Hands-on experience writing automated test scripts using Selenium WebDriver",
+      "Cypress",
+      "or Playwright",
+      "Proficient in JavaScript or Python."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Aspire Jordan",
+    "title": "Associate Software Engineer (PHP/Laravel)",
+    "required_majors": [
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "450 - 650",
+    "salary_min_jod": 450,
+    "salary_max_jod": 650,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Computer Science or Software Engineering",
+      "0-2 years experience",
+      "Practical knowledge of PHP",
+      "Laravel framework",
+      "MySQL databases",
+      "OOP rules",
+      "and Git version control system."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Cisco Jordan",
+    "title": "Technical Software Engineer",
+    "required_majors": [
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "1,000 - 1,400",
+    "salary_min_jod": 1000,
+    "salary_max_jod": 1400,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Computer Science/Software Engineering",
+      "Fresh graduate to 2 years experience",
+      "Scripting mastery in Python or Go",
+      "Foundational understanding of network layers (TCP/IP)",
+      "Linux commands",
+      "and APIs."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "MadfooatCom (eFAWATEERcom)",
+    "title": "Senior Backend Engineer (Java)",
+    "required_majors": [
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "1,400 - 1,900",
+    "salary_min_jod": 1400,
+    "salary_max_jod": 1900,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Software Engineering",
+      "4+ years experience in high-transaction processing environments",
+      "Java",
+      "Spring Boot",
+      "Microservices architecture",
+      "Kafka/RabbitMQ message brokers",
+      "and SQL tuning."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Liwwa",
+    "title": "Python / Django Software Engineer",
+    "required_majors": [
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "800 - 1,100",
+    "salary_min_jod": 800,
+    "salary_max_jod": 1100,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Computer Science or Software Engineering",
+      "1-3 years experience",
+      "Deep knowledge of Python",
+      "Django or Flask frameworks",
+      "PostgreSQL",
+      "celery task queues",
+      "Docker environments",
+      "and unit testing tools."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "OpenSooq",
+    "title": "Android Application Developer",
+    "required_majors": [
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "750 - 1,050",
+    "salary_min_jod": 750,
+    "salary_max_jod": 1050,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Software Engineering",
+      "1-3 years experience",
+      "Mastery of Kotlin",
+      "Android SDK",
+      "Android Jetpack components",
+      "architectural patterns (MVVM/MVI)",
+      "Retrofit",
+      "and coroutines."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Estarta Solutions",
+    "title": "Cloud Software Engineer",
+    "required_majors": [
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "650 - 900",
+    "salary_min_jod": 650,
+    "salary_max_jod": 900,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Software Engineering",
+      "1-3 years experience",
+      "Practical development using AWS or Microsoft Azure services",
+      "Infrastructure as Code (IaC) using Terraform",
+      "Scripting in Node.js or Python."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Pioneers IT",
+    "title": "Junior Full-Stack Developer",
+    "required_majors": [
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "400 - 550",
+    "salary_min_jod": 400,
+    "salary_max_jod": 550,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Software Engineering or Computer Science",
+      "Fresh graduate (0-1 year experience)",
+      "Understanding of Angular frontend framework",
+      "ASP.NET Core Web APIs",
+      "SQL Server",
+      "and HTML/CSS/JavaScript."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Bayt.com (Amman Tech Office)",
+    "title": "Data Engineer",
+    "required_majors": [
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "900 - 1,300",
+    "salary_min_jod": 900,
+    "salary_max_jod": 1300,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Computer Science or Software Engineering",
+      "1-3 years experience",
+      "Building ETL/ELT pipelines using Python",
+      "Advanced SQL optimization",
+      "Experience with Big Data tools (Apache Spark) or cloud warehouses."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Atypon (Amman)",
+    "title": "Software Engineer in Test (SDET)",
+    "required_majors": [
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "700 - 1,000",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1000,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Software Engineering",
+      "1-3 years experience bridging code development and QA",
+      "Writing automation test frameworks in Java with JUnit/TestNG and Selenium",
+      "CI/CD pipeline integration."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "RealSoft Advanced Applications",
+    "title": "Database Software Engineer",
+    "required_majors": [
+      "Software Engineering"
+    ],
+    "canonical_majors": [
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "550 - 800",
+    "salary_min_jod": 550,
+    "salary_max_jod": 800,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. in Software Engineering or Computer Science",
+      "1-3 years experience",
+      "Advanced relational database design",
+      "query optimization",
+      "Oracle PL/SQL",
+      "structural reporting engines",
+      "and data modeling."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "KEO International Consultants",
+    "title": "Senior Electrical Design Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "canonical_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "1,200 - 1,800 JOD",
+    "salary_min_jod": 1200,
+    "salary_max_jod": 1800,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Strong experience in electrical infrastructure and power distribution for mega urban projects",
+      "advanced proficiency in modern BIM (Revit) modeling",
+      "experience mentoring draftsmen and CAD engineers",
+      "thorough understanding of international building codes (e.g.",
+      "NFPA",
+      "SBC)."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "alfanar Group",
+    "title": "Electrical Design Engineer - Low Voltage",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "canonical_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "600 - 900 JOD",
+    "salary_min_jod": 600,
+    "salary_max_jod": 900,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Bachelor's degree in Electrical Engineering",
+      "solid knowledge of Low Voltage (LV) switchgear design",
+      "load calculations",
+      "and voltage drop analysis",
+      "proficiency in AutoCAD and reading industrial technical standards."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Optimiza",
+    "title": "Low Current Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "canonical_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "450 - 700 JOD",
+    "salary_min_jod": 450,
+    "salary_max_jod": 700,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "1+ years of experience in designing and procuring fire alarm systems",
+      "CCTV",
+      "Access Control",
+      "and data networks",
+      "ability to perform site surveys and prepare schematics using CAD software."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "MOSTAQBAL Engineering & Environmental Consultants",
+    "title": "Electrical Supervision Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "canonical_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "550 - 850 JOD",
+    "salary_min_jod": 550,
+    "salary_max_jod": 850,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Bachelor's degree in Electrical Engineering",
+      "experience in field supervision and matching on-site execution with approved drawings",
+      "high skill in preparing technical reports and resolving engineering issues on site."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Fine Hygienic Holding",
+    "title": "Electrical Maintenance Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "canonical_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "600 - 950 JOD",
+    "salary_min_jod": 600,
+    "salary_max_jod": 950,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Maintain and troubleshoot electrical systems in manufacturing plants",
+      "manage preventive maintenance for large transformers and heavy motors",
+      "high proficiency in electrical troubleshooting to minimize factory downtime."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Hikma Pharmaceuticals / Dar Al Dawa",
+    "title": "Automation / Instrumentation Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "canonical_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "550 - 800 JOD",
+    "salary_min_jod": 550,
+    "salary_max_jod": 800,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Deep understanding of precision instrumentation systems",
+      "maintenance and calibration of sensors and measurement equipment in sensitive environments",
+      "proficient in reading complex electrical and mechanical schematics."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "TECHNO Group",
+    "title": "Industrial Automation Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "canonical_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "500 - 750 JOD",
+    "salary_min_jod": 500,
+    "salary_max_jod": 750,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Advanced skills in programming PLC devices (e.g.",
+      "Siemens",
+      "Schneider)",
+      "handling SCADA systems and HMI control screens",
+      "strong understanding of classic control panels."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "United Technology Establishment (UniTec)",
+    "title": "Electrical & Instrumentation Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "canonical_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "500 - 800 JOD",
+    "salary_min_jod": 500,
+    "salary_max_jod": 800,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Troubleshoot faults in electrical distribution boards",
+      "maintain integrated mechatronic systems",
+      "knowledge of electrical spare parts estimation for production lines."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "The Specialized Cable Manufacture Co.",
+    "title": "Sales Engineer (Cables)",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "canonical_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "400 - 600 JOD (+ Comm.)",
+    "salary_min_jod": 400,
+    "salary_max_jod": 600,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Excellent negotiation and communication skills with contractors and consultancy firms",
+      "full understanding of technical specifications",
+      "ampacity",
+      "and applications of electrical cables in construction projects."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Leading Electrical Engineering & Trading Co.",
+    "title": "Estimation & Technical Support Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "canonical_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "450 JOD + Bonuses",
+    "salary_min_jod": 450,
+    "salary_max_jod": 450,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Reading and understanding Bill of Quantities (BOQ) and schematics to price distribution boards and electrical materials",
+      "providing technical support to contractors and clients."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Commercial Control Systems & Sales Co.",
+    "title": "Sales Engineer (Control Systems - Fresh Graduate)",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "canonical_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "300 JOD + Comm.",
+    "salary_min_jod": 300,
+    "salary_max_jod": 300,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Background in Electrical Engineering or Mechatronics",
+      "passion for field sales",
+      "strong persuasion and communication skills",
+      "owning a car and valid driving license is highly preferred."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Omnix International",
+    "title": "Presales Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "canonical_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "700 - 1000 JOD",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1000,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Studying major tenders and projects prior to execution",
+      "formulating precise technical and financial proposals",
+      "aligning client requirements with available software and electromechanical solutions."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Moayana Technical Consultancy",
+    "title": "Telecom Engineer (Compliance Assessment)",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "canonical_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "350 - 500 JOD",
+    "salary_min_jod": 350,
+    "salary_max_jod": 500,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Suitable for fresh graduates (0-2 years)",
+      "technical compliance assessment of devices and systems",
+      "basic knowledge of RF networks",
+      "supporting telecom operators (Zain",
+      "Orange",
+      "Uminiah)."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Zoho Corporation (Jordan Office)",
+    "title": "Partner Solutions Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "canonical_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "600 - 1000 JOD",
+    "salary_min_jod": 600,
+    "salary_max_jod": 1000,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Strong engineering or technical background",
+      "skills in resolving technical issues and implementing system integrations",
+      "excellent communication skills to bridge software solutions with engineering workflows."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Diyar United Company",
+    "title": "Systems / Support Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "canonical_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "500 - 750 JOD",
+    "salary_min_jod": 500,
+    "salary_max_jod": 750,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Maintenance and troubleshooting of electrical and electronic systems related to technical infrastructure",
+      "handling server hardware and sensitive wiring for retail and mall sectors."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Dabouq Village for Property Management",
+    "title": "Maintenance Engineer (Facilities & Malls)",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "canonical_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "700 - 1,060 JOD",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1060,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "3-5 years of experience",
+      "high skill in troubleshooting and repairing low voltage electrical systems",
+      "large fans",
+      "and main distribution boards",
+      "supervising electrical and HVAC technicians."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Hilton Worldwide",
+    "title": "Chief Engineer / Electrical Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "canonical_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Based on Exp. (+ Housing & Benefits)",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Maintenance of standby generators",
+      "hotel electrical distribution boards",
+      "and monitoring preventive maintenance schedules for rooms and major facilities",
+      "managing technician teams under pressure."
+    ],
+    "source": "Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Jordan Bio-Industries",
+    "title": "Mechanical / Industrial Engineer",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Bachelor's degree in Mechanical or Industrial Engineering"
+    ],
+    "source": "Tanqeeb",
+    "verified": true
+  },
+  {
+    "company_name": "Dolphin World for Water Treatment (Amman)",
+    "title": "Mechanical & Automation Engineer",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Expertise in machine assembly",
+      "3D design software",
+      "PLC programming and CNC machines"
+    ],
+    "source": "Tanqeeb",
+    "verified": true
+  },
+  {
+    "company_name": "Not disclosed - HVAC equipment supplier (Amman)",
+    "title": "Mechanical Engineer - Technical Support (Projects Dept.)",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Mechanical Engineering degree",
+      "technical support/projects background"
+    ],
+    "source": "Tanqeeb",
+    "verified": true
+  },
+  {
+    "company_name": "Not disclosed - large industrial company (South Jordan)",
+    "title": "Mechanical Engineer",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Reports to Projects Manager",
+      "oversees day-to-day mechanical activities"
+    ],
+    "source": "Tanqeeb",
+    "verified": true
+  },
+  {
+    "company_name": "Not disclosed - large industrial company (South Jordan)",
+    "title": "Projects Superintendent - Mechanical Engineer",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Min. 10 years in industrial projects",
+      "strong knowledge of codes & standards",
+      "excellent English"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Engineering Consultancy - Industrial/Chemical Project, Aqaba",
+    "title": "Project Manager (Mechanical)",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. Mechanical Engineering",
+      "minimum 20 years of experience"
+    ],
+    "source": "Tanqeeb",
+    "verified": true
+  },
+  {
+    "company_name": "Engineering Consultancy - Industrial Project, Ghor Al Safi",
+    "title": "Project Manager - Civil/Mechanical Engineer",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Civil or Mechanical Engineering degree",
+      "15+ years of experience"
+    ],
+    "source": "Tanqeeb",
+    "verified": true
+  },
+  {
+    "company_name": "Not disclosed - contracting/construction company (Amman)",
+    "title": "Mechanical Engineer (Hospital Projects, Site)",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Bachelor's in Mechanical Engineering",
+      "5+ years' experience",
+      "strong HVAC",
+      "plumbing & fire-protection knowledge"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Not disclosed - contracting/construction company (Amman)",
+    "title": "Mechanical Technical Engineer",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Up to 2,500 JOD/month",
+    "salary_min_jod": 2500,
+    "salary_max_jod": 2500,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Mechanical Engineering degree",
+      "design-software proficiency",
+      "bilingual Arabic/English",
+      "10+ years' experience"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Not disclosed - engineering office (chemical process plants)",
+    "title": "Mechanical Design Engineer",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Degree in Mechanical Engineering",
+      "design experience",
+      "preferably chemical process plants",
+      "guides CAD teams"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "UNOPS - Amman Multi-Country Office",
+    "title": "Mechanical Site Engineer",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "UN salary scale (not published)",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "B.Sc. Mechanical Engineering + 4 yrs experience (or Professional License + 3 yrs)",
+      "AutoCAD proficiency",
+      "HVAC",
+      "plumbing",
+      "fire-fighting & medical-gas systems design"
+    ],
+    "source": "UNjobs.org",
+    "verified": true
+  },
+  {
+    "company_name": "Not disclosed - engineering & contracting company (Amman HQ)",
+    "title": "Sales Engineer",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Mechanical",
+      "Industrial or Chemical Engineering degree"
+    ],
+    "source": "Akhtaboot",
+    "verified": true
+  },
+  {
+    "company_name": "Not disclosed - renewable energy & automation company",
+    "title": "Electrical/Automation/Mechatronics/Renewable Energy Engineer",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Relevant engineering degree",
+      "interest in renewable energy & automation"
+    ],
+    "source": "Akhtaboot",
+    "verified": true
+  },
+  {
+    "company_name": "Philip Morris International (Amman)",
+    "title": "Technical/Mechanical Engineer (Medical Gases System Design)",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Strong analytical skills",
+      "team player",
+      "self-organized"
+    ],
+    "source": "Tanqeeb",
+    "verified": true
+  },
+  {
+    "company_name": "Jordan Hill International (Middle East) Limited",
+    "title": "Mechanical Engineer (Institutional & Recreational Buildings)",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Mechanical engineering design experience: buildings",
+      "transit facilities",
+      "parking structures",
+      "water systems"
+    ],
+    "source": "Tanqeeb",
+    "verified": true
+  },
+  {
+    "company_name": "Not disclosed - leading contracting company",
+    "title": "Turning Technician / Mechanical Manufacturing",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "5+ years' mechanical work experience",
+      "strong knowledge of engineering drawings",
+      "safety focus"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Not disclosed - leading healthcare solutions provider (Amman)",
+    "title": "Biomedical Sales Engineer (Fresh Graduate)",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Biomedical Engineering degree",
+      "motivation & negotiation skills",
+      "fresh-graduate friendly"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Kelvin for Industrial Equipment Trading Co. (Amman)",
+    "title": "Mechatronics Engineer / Mechanical Engineer (Fresh Graduate)",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Mechatronics or Mechanical Engineering degree",
+      "leads technical support team"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "ECEC Engineering Consultants (Amman)",
+    "title": "Mechanical Design Engineer",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Prepares detailed mechanical design calculations/analyses per codes & standards",
+      "mechanical drawings & documentation"
+    ],
+    "source": "Akhtaboot",
+    "verified": true
+  },
+  {
+    "company_name": "Not disclosed - HVAC design firm (Amman)",
+    "title": "Principal Engineer - HVAC",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Extensive HVAC design leadership experience",
+      "leads and mentors design team on large-scale projects"
+    ],
+    "source": "Dr.Job",
+    "verified": true
+  },
+  {
+    "company_name": "Likely Jordan Phosphate Mines Co. (DAP production)",
+    "title": "Principal Engineer - Material Handling (DAP Production)",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Experience optimizing material-handling systems in DAP (fertilizer) production processes"
+    ],
+    "source": "Dr.Job",
+    "verified": true
+  },
+  {
+    "company_name": "Not disclosed - MEP design firm (Amman)",
+    "title": "Computational Programmer - MEP Systems",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Software-development background applied to Mechanical/Electrical/Plumbing design & analysis"
+    ],
+    "source": "Dr.Job",
+    "verified": true
+  },
+  {
+    "company_name": "Not disclosed - international design firm (Amman)",
+    "title": "Senior Mechanical Engineer",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Experience on diverse international projects",
+      "from master plans to individual buildings"
+    ],
+    "source": "Dr.Job",
+    "verified": true
+  },
+  {
+    "company_name": "Not disclosed - industrial company (Karak, Jordan)",
+    "title": "Mechanical Engineer (Plant Operations)",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Competitive benefits (amount not disclosed)",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Ensures plant-operation efficiency",
+      "conducts inspections",
+      "manages maintenance",
+      "trains teams"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Not disclosed - shopping mall (Amman)",
+    "title": "Maintenance Engineer",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "3-5 years' experience",
+      "strong knowledge of HVAC systems and electrical mechanisms"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Hilton Worldwide - Hilton Dead Sea Resort & Spa",
+    "title": "Assistant Chief Engineer",
+    "required_majors": [
+      "Mechanical Engineering"
+    ],
+    "canonical_majors": [
+      "Mechanical Engineering"
+    ],
+    "min_gpa": null,
+    "min_gpa_raw": "Not stated",
+    "salary_raw": "Not disclosed",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "salary_is_estimate": false,
+    "required_skills": [
+      "Oversees hotel maintenance",
+      "mechanical & electrical systems knowledge",
+      "hands-on repair experience"
+    ],
+    "source": "Tanqeeb",
+    "verified": true
+  }
+]

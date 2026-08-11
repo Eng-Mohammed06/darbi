@@ -1,0 +1,241 @@
+-- DARBI schema (PostgreSQL)
+-- Applied by: npm run db:migrate   (scripts/migrate.mjs)
+-- Safe to re-run: every statement is IF NOT EXISTS.
+--
+-- Shape follows the approved Phase 2 deliverables (docs/deliverables). Where a
+-- figure came from a spreadsheet, the row keeps both the parsed number and the
+-- original string, plus the source the file cited — judges fact-check this.
+
+-- ---------------------------------------------------------------- accounts --
+-- One row per login. `role` drives which portal the user lands in.
+CREATE TABLE IF NOT EXISTS users (
+  id            SERIAL PRIMARY KEY,
+  email         TEXT NOT NULL UNIQUE,          -- always stored lowercased
+  password_hash TEXT NOT NULL,
+  role          TEXT NOT NULL CHECK (role IN ('student', 'company', 'career')),
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS students (
+  user_id       INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  name          TEXT NOT NULL,
+  level         TEXT CHECK (level IN ('highschool', 'undergraduate', 'graduate')),
+  interests     TEXT[] NOT NULL DEFAULT '{}',
+  gpa           NUMERIC(3, 2) CHECK (gpa >= 0 AND gpa <= 4),
+  -- Tawjihi percentage, for the school-student journey. Distinct from `gpa`,
+  -- which is a university GPA out of 4.
+  tawjihi_average NUMERIC(5, 2) CHECK (tawjihi_average >= 0 AND tawjihi_average <= 100),
+  location      TEXT,
+  salary_pref   TEXT
+);
+
+CREATE TABLE IF NOT EXISTS companies (
+  user_id       INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  name          TEXT NOT NULL,
+  industry      TEXT,
+  website       TEXT
+);
+
+CREATE TABLE IF NOT EXISTS career_profiles (
+  user_id           INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  name              TEXT NOT NULL,
+  current_title     TEXT,
+  years_experience  INTEGER CHECK (years_experience >= 0),
+  major             TEXT,
+  skills            TEXT[] NOT NULL DEFAULT '{}',
+  career_goals      TEXT[] NOT NULL DEFAULT '{}'
+);
+
+-- ------------------------------------------------------- reference catalog --
+CREATE TABLE IF NOT EXISTS universities (
+  id             SERIAL PRIMARY KEY,
+  code           TEXT UNIQUE,                  -- UJ, JUST, GJU, HU, BAU, PSUT
+  name           TEXT NOT NULL,
+  name_in_source TEXT,                         -- verbatim, incl. the JUST typo
+  city           TEXT,
+  website        TEXT,
+  website_source TEXT,
+  source_files   TEXT[] NOT NULL DEFAULT '{}',
+  programs_note  TEXT
+);
+
+-- Salary figures come from salaries_data.xlsx, which grades its own confidence
+-- per major; `data_quality` mirrors that grade and `salary_confidence` keeps
+-- the sheet's full wording. `salary_source` is the citation to show a judge.
+CREATE TABLE IF NOT EXISTS majors (
+  id                   SERIAL PRIMARY KEY,
+  slug                 TEXT NOT NULL UNIQUE,
+  name                 TEXT NOT NULL,
+  faculty              TEXT,
+  duration_years       NUMERIC(2, 1),
+  entry_requirements   TEXT,
+  top_jobs             TEXT[] NOT NULL DEFAULT '{}',
+  salary_entry_min_jod INTEGER,
+  salary_entry_max_jod INTEGER,
+  salary_entry_raw     TEXT,
+  salary_3yr_min_jod   INTEGER,
+  salary_3yr_max_jod   INTEGER,
+  salary_3yr_raw       TEXT,
+  salary_5yr_min_jod   INTEGER,
+  salary_5yr_max_jod   INTEGER,
+  salary_5yr_raw       TEXT,
+  salary_source        TEXT,
+  salary_confidence    TEXT,
+  data_quality         TEXT NOT NULL DEFAULT 'pending'
+                       CHECK (data_quality IN ('high', 'medium', 'low', 'pending'))
+);
+
+-- One row per degree programme an institution offers. The averages are Tawjihi
+-- admission percentages: `minimum_average` is the floor to apply,
+-- `competitive_average` is what the last admitted student actually scored.
+-- competitive_average is NULL where the source recorded N/A — that is "not
+-- published", not "no requirement".
+CREATE TABLE IF NOT EXISTS university_majors (
+  university_id       INTEGER NOT NULL REFERENCES universities(id) ON DELETE CASCADE,
+  major_id            INTEGER NOT NULL REFERENCES majors(id) ON DELETE CASCADE,
+  program_name        TEXT,                    -- as the university lists it
+  faculty             TEXT,
+  duration_years      INTEGER,
+  parallel_average    NUMERIC(5, 2),
+  competitive_average NUMERIC(5, 2),
+  minimum_average     NUMERIC(5, 2),
+  relation            TEXT NOT NULL DEFAULT 'offers_degree'
+                      CHECK (relation IN ('provides_courses', 'offers_degree')),
+  evidence            TEXT,
+  PRIMARY KEY (university_id, major_id, program_name)
+);
+
+CREATE TABLE IF NOT EXISTS courses (
+  id                 SERIAL PRIMARY KEY,
+  major_id           INTEGER REFERENCES majors(id) ON DELETE SET NULL,
+  major_name         TEXT,                     -- null for cross-cutting courses
+  track              TEXT,
+  name               TEXT NOT NULL,
+  what_you_learn     TEXT,
+  provider           TEXT,
+  accreditation      TEXT,
+  online_alternative TEXT,
+  duration           TEXT,
+  cost_raw           TEXT,
+  cost_min_jod       INTEGER,
+  cost_max_jod       INTEGER,
+  cost_online_usd    TEXT,
+  notes              TEXT,
+  source_sheet       TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS career_paths (
+  id             SERIAL PRIMARY KEY,
+  major_id       INTEGER REFERENCES majors(id) ON DELETE SET NULL,
+  major_name     TEXT,
+  name           TEXT NOT NULL,
+  focus          TEXT,
+  typical_roles  TEXT,
+  tools          TEXT,
+  skills         TEXT,
+  coursera       TEXT,
+  udemy          TEXT,
+  jordan_centers TEXT,
+  source_sheet   TEXT
+);
+
+CREATE TABLE IF NOT EXISTS training_centers (
+  id           SERIAL PRIMARY KEY,
+  name         TEXT NOT NULL,
+  field        TEXT,
+  location     TEXT,
+  specialty    TEXT,
+  notes        TEXT,
+  website      TEXT,
+  source_sheet TEXT
+);
+
+CREATE TABLE IF NOT EXISTS online_platforms (
+  id           SERIAL PRIMARY KEY,
+  name         TEXT NOT NULL,
+  best_for     TEXT,
+  pricing      TEXT,
+  notes        TEXT,
+  source_sheet TEXT
+);
+
+-- Fresh-graduate pay by role family, from the Jobs workbook's second tab.
+-- Broader than `majors.salary_*`, which is per-major.
+CREATE TABLE IF NOT EXISTS salary_benchmarks (
+  id          SERIAL PRIMARY KEY,
+  role_family TEXT NOT NULL,
+  range_raw   TEXT,
+  min_jod     INTEGER,
+  max_jod     INTEGER,
+  source      TEXT
+);
+
+-- The [R1]…[Rn] citations that majors.salary_source points at.
+CREATE TABLE IF NOT EXISTS salary_references (
+  id        TEXT PRIMARY KEY,
+  source    TEXT NOT NULL,
+  role      TEXT,
+  provided  TEXT,
+  link      TEXT
+);
+
+-- ---------------------------------------------------------------- job board --
+-- Seeded rows have company_id NULL (gathered listings, no account behind them).
+-- Rows posted through the company portal carry company_id.
+CREATE TABLE IF NOT EXISTS jobs (
+  id                 SERIAL PRIMARY KEY,
+  company_id         INTEGER REFERENCES companies(user_id) ON DELETE CASCADE,
+  company_name       TEXT NOT NULL,
+  title              TEXT NOT NULL,
+  required_majors    TEXT[] NOT NULL DEFAULT '{}',   -- as the employer wrote them
+  canonical_majors   TEXT[] NOT NULL DEFAULT '{}',   -- mapped onto our major list
+  min_gpa            NUMERIC(3, 2),
+  min_gpa_raw        TEXT,
+  salary_raw         TEXT,
+  salary_min_jod     INTEGER,
+  salary_max_jod     INTEGER,
+  salary_is_estimate BOOLEAN NOT NULL DEFAULT false,
+  required_skills    TEXT[] NOT NULL DEFAULT '{}',
+  location           TEXT,
+  description        TEXT,
+  source             TEXT,
+  verified           BOOLEAN NOT NULL DEFAULT false,
+  posted_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS saved_majors (
+  student_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  major_id        INTEGER NOT NULL REFERENCES majors(id) ON DELETE CASCADE,
+  saved_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (student_user_id, major_id)
+);
+
+-- The advisor conversation. Persisted so a refresh (or a laptop swap between
+-- presenters) doesn't lose the thread mid-demo.
+CREATE TABLE IF NOT EXISTS chat_messages (
+  id              SERIAL PRIMARY KEY,
+  student_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  role            TEXT NOT NULL CHECK (role IN ('user', 'assistant')),
+  content         TEXT NOT NULL,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Claude responses are cached so a repeat dashboard visit costs nothing and the
+-- demo still works if the API is unreachable mid-presentation.
+CREATE TABLE IF NOT EXISTS recommendations (
+  id              SERIAL PRIMARY KEY,
+  student_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  profile_hash    TEXT NOT NULL,
+  payload         JSONB NOT NULL,
+  model           TEXT NOT NULL,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_courses_major   ON courses(major_id);
+CREATE INDEX IF NOT EXISTS idx_paths_major     ON career_paths(major_id);
+CREATE INDEX IF NOT EXISTS idx_jobs_company    ON jobs(company_id);
+CREATE INDEX IF NOT EXISTS idx_jobs_majors     ON jobs USING GIN (canonical_majors);
+CREATE INDEX IF NOT EXISTS idx_students_gpa    ON students(gpa);
+CREATE INDEX IF NOT EXISTS idx_recs_student    ON recommendations(student_user_id, profile_hash);
+CREATE INDEX IF NOT EXISTS idx_chat_student    ON chat_messages(student_user_id, created_at);

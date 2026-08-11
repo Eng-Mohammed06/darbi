@@ -1,0 +1,24 @@
+# Local Postgres only. Railway provides the real one in production.
+#   npm run db:up     start
+#   npm run db:down   stop
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: darbi-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: darbi
+      POSTGRES_PASSWORD: darbi
+      POSTGRES_DB: darbi
+    ports:
+      - '5434:5432' # non-default host port so it can't clash with another Postgres
+    volumes:
+      - darbi_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U darbi -d darbi']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  darbi_pgdata:
