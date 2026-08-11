@@ -19,6 +19,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const drop = process.argv.includes('--drop');
 
 const TABLES = [
+  'onboarding_analysis',
   'chat_messages',
   'online_platforms',
   'salary_benchmarks',

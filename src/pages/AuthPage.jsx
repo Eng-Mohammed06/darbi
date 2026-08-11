@@ -31,6 +31,7 @@ export default function AuthPage() {
     try {
       if (mode === 'login') {
         await login(form.email, form.password);
+        navigate('/dashboard');
       } else {
         await signup({
           email: form.email,
@@ -49,8 +50,11 @@ export default function AuthPage() {
           yearsExperience: form.yearsExperience ? Number(form.yearsExperience) : null,
           major: form.major || null,
         });
+        // Students answer the onboarding questionnaire before landing on their
+        // dashboard, so the chat advisor has something to ground its first
+        // reply in. Other roles have no such flow yet.
+        navigate(role === 'student' ? '/onboarding' : '/dashboard');
       }
-      navigate('/dashboard');
     } catch (err) {
       setError(
         {

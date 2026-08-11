@@ -232,6 +232,22 @@ CREATE TABLE IF NOT EXISTS recommendations (
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- The post-signup onboarding questionnaire, plus Claude's structured read on
+-- it. One row per student — re-answering overwrites it. The chat advisor
+-- folds `analysis` into its system prompt so a conversation starts already
+-- knowing what onboarding surfaced. `source` is 'fallback' when Claude was
+-- unavailable at analysis time, in which case `analysis` holds the student's
+-- own words rather than an inferred summary — never a guess presented as one.
+CREATE TABLE IF NOT EXISTS onboarding_analysis (
+  student_user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  answers         JSONB NOT NULL,
+  analysis        JSONB NOT NULL,
+  model           TEXT NOT NULL,
+  source          TEXT NOT NULL DEFAULT 'claude' CHECK (source IN ('claude', 'fallback')),
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 CREATE INDEX IF NOT EXISTS idx_courses_major   ON courses(major_id);
 CREATE INDEX IF NOT EXISTS idx_paths_major     ON career_paths(major_id);
 CREATE INDEX IF NOT EXISTS idx_jobs_company    ON jobs(company_id);

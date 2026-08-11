@@ -82,6 +82,12 @@ router.post(
     const student = rows[0];
     if (!student) return res.status(404).json({ error: 'no_profile' });
 
+    const { rows: analysisRows } = await query(
+      `SELECT analysis FROM onboarding_analysis WHERE student_user_id = $1`,
+      [req.user.id],
+    );
+    const analysis = analysisRows[0]?.analysis ?? null;
+
     // Persist the question before generating, so it survives a failed reply.
     await query(
       `INSERT INTO chat_messages (student_user_id, role, content) VALUES ($1,'user',$2)`,
@@ -97,7 +103,7 @@ router.post(
 
     let full = '';
     try {
-      for await (const chunk of streamReply({ student, history })) {
+      for await (const chunk of streamReply({ student, analysis, history })) {
         full += chunk;
         res.write(`${JSON.stringify({ delta: chunk })}\n`);
       }

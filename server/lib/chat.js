@@ -152,14 +152,43 @@ function profileBlock(student) {
 }
 
 /**
+ * The structured read on the student's onboarding answers (see
+ * server/lib/onboarding.js), folded in so the advisor already knows this
+ * before the first message — not something to re-derive fact by fact.
+ */
+function analysisBlock(analysis) {
+  const parts = [];
+  if (analysis.interest_summary) parts.push(`Interests: ${analysis.interest_summary}`);
+  if (analysis.strengths?.length) parts.push(`Strengths: ${analysis.strengths.join(', ')}`);
+  if (analysis.values_priorities?.length) parts.push(`Career priorities: ${analysis.values_priorities.join(', ')}`);
+  if (analysis.constraints?.length) parts.push(`Constraints: ${analysis.constraints.join(', ')}`);
+  if (analysis.suggested_focus_areas?.length) {
+    parts.push(`Focus areas worth exploring: ${analysis.suggested_focus_areas.join(', ')}`);
+  }
+  if (analysis.advisor_notes) parts.push(`Notes: ${analysis.advisor_notes}`);
+  if (!parts.length) return '';
+  return `ONBOARDING ANALYSIS (from this student's signup questions — use it to personalize, ` +
+    `but still ground every fact in the catalog above)\n${parts.join('\n')}`;
+}
+
+/**
  * Stream a reply. Yields text chunks; the caller forwards them to the client
  * and persists the assembled result.
  */
-export async function* streamReply({ student, history }) {
+export async function* streamReply({ student, analysis, history }) {
   if (!client) throw new Error('chat_not_configured');
 
   const catalog = await loadCatalog();
   const journey = JOURNEY[student.level] ?? '';
+
+  const system = [
+    { type: 'text', text: BASE_PROMPT },
+    journey && { type: 'text', text: journey },
+    // Stable across the whole conversation, so cache from here back.
+    { type: 'text', text: `CATALOG\n${catalog}`, cache_control: { type: 'ephemeral' } },
+    { type: 'text', text: profileBlock(student) },
+    analysis && { type: 'text', text: analysisBlock(analysis) },
+  ].filter((block) => block && block.text);
 
   const stream = client.messages.stream({
     model: MODEL,
@@ -167,13 +196,7 @@ export async function* streamReply({ student, history }) {
     // Lower effort keeps a conversational turn snappy. Thinking stays on:
     // disabling it on this model risks internal tags leaking into the reply.
     output_config: { effort: 'medium' },
-    system: [
-      { type: 'text', text: BASE_PROMPT },
-      { type: 'text', text: journey },
-      // Stable across the whole conversation, so cache from here back.
-      { type: 'text', text: `CATALOG\n${catalog}`, cache_control: { type: 'ephemeral' } },
-      { type: 'text', text: profileBlock(student) },
-    ],
+    system,
     messages: history.map((m) => ({ role: m.role, content: m.content })),
   });
 

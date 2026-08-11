@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { query } from '../lib/db.js';
 import { requireAuth, requireRole, asyncRoute } from '../lib/auth.js';
+import { ONBOARDING_QUESTIONS, analyzeOnboarding, analyzeOnboardingFallback } from '../lib/onboarding.js';
 
 const router = Router();
 
@@ -44,6 +45,90 @@ router.put(
     );
     if (!rows[0]) return res.status(404).json({ error: 'no_profile' });
     res.json(rows[0]);
+  }),
+);
+
+/** GET /api/students/me/onboarding-questions — the fixed post-signup question set. */
+router.get(
+  '/me/onboarding-questions',
+  asyncRoute(async (_req, res) => {
+    res.json({
+      questions: ONBOARDING_QUESTIONS.map(({ id, question, required }) => ({ id, question, required })),
+    });
+  }),
+);
+
+/** GET /api/students/me/onboarding — has this student completed it, and with what. */
+router.get(
+  '/me/onboarding',
+  asyncRoute(async (req, res) => {
+    const { rows } = await query(
+      `SELECT analysis, model, source, created_at FROM onboarding_analysis WHERE student_user_id = $1`,
+      [req.user.id],
+    );
+    const row = rows[0];
+    res.json({
+      completed: Boolean(row),
+      analysis: row?.analysis ?? null,
+      model: row?.model ?? null,
+      source: row?.source ?? null,
+    });
+  }),
+);
+
+/**
+ * POST /api/students/me/onboarding  { answers: [{ id, answer }] }
+ * Analyzes the answers with Claude — falling back to storing them unprocessed
+ * if the API is unavailable — and saves the result for the chat advisor.
+ */
+router.post(
+  '/me/onboarding',
+  asyncRoute(async (req, res) => {
+    const submitted = Array.isArray(req.body?.answers) ? req.body.answers : null;
+    if (!submitted) return res.status(400).json({ error: 'missing_answers' });
+
+    const byId = new Map(submitted.map((a) => [a?.id, String(a?.answer ?? '').trim()]));
+    for (const q of ONBOARDING_QUESTIONS) {
+      if (q.required && !byId.get(q.id)) {
+        return res.status(400).json({ error: 'missing_answer', questionId: q.id });
+      }
+    }
+
+    const answers = ONBOARDING_QUESTIONS.map((q) => ({
+      id: q.id,
+      question: q.question,
+      answer: byId.get(q.id) ?? '',
+    }));
+
+    const { rows: studentRows } = await query(`SELECT name FROM students WHERE user_id = $1`, [req.user.id]);
+    const student = studentRows[0];
+    if (!student) return res.status(404).json({ error: 'no_profile' });
+
+    let result;
+    try {
+      result = await analyzeOnboarding({ name: student.name, answers });
+    } catch (err) {
+      console.warn('[onboarding] analysis failed, using fallback:', err.message);
+      result = analyzeOnboardingFallback(answers);
+    }
+
+    await query(
+      `INSERT INTO onboarding_analysis (student_user_id, answers, analysis, model, source)
+       VALUES ($1,$2,$3,$4,$5)
+       ON CONFLICT (student_user_id) DO UPDATE SET
+         answers    = EXCLUDED.answers,
+         analysis   = EXCLUDED.analysis,
+         model      = EXCLUDED.model,
+         source     = EXCLUDED.source,
+         updated_at = now()`,
+      // `answers` is a JS array — pg serializes arrays as Postgres array
+      // literals, not JSON, so it needs an explicit stringify for the jsonb
+      // column. `result.data` is a plain object, which pg does stringify
+      // automatically.
+      [req.user.id, JSON.stringify(answers), result.data, result.model, result.source],
+    );
+
+    res.json({ analysis: result.data, model: result.model, source: result.source });
   }),
 );
 
