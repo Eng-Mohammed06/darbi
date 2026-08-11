@@ -1,0 +1,93 @@
+[
+  {
+    "field": "General Programming (Full Stack / Web / Mobile)",
+    "name": "Luminus Technical University College (LTUC) - Abdul Aziz Al-Ghurair School (ASAC)",
+    "study_type": "In-person (Amman - Balad/Irbid)",
+    "details": "Bachelor's in Cloud Computing, British BTEC Diploma (Software Engineering, Cybersecurity, Artificial Intelligence), Intensive programs (Bootcamp) in partnership with Code Fellows (Seattle) with international certification",
+    "contact": "ltuc.com | Phone: 064000700"
+  },
+  {
+    "field": "General Programming",
+    "name": "Orange Programming Academy",
+    "study_type": "In-person + Online (Orange Coursat Platform)",
+    "details": "Free intensive courses (6 months) in partnership with Simplon.co in programming languages and employment skills, plus Coursat free e-learning platform and free Coursera courses through community digital centers",
+    "contact": "orange.jo/ar/corporate/csr/coding-academy"
+  },
+  {
+    "field": "General Programming (Beginners)",
+    "name": "Programmers of Jordan (HelloGateJo Platform)",
+    "study_type": "Fully Online, Free",
+    "details": "Short courses (6-7 weeks) in Arabic through Ministry of Digital Economy and Entrepreneurship and Crown Prince Foundation - Basic programming introduction (educational only without practical training or job opportunities)",
+    "contact": "hellogate.tech | cpf.jo"
+  },
+  {
+    "field": "Programming / Cybersecurity (Marginalized Groups and Refugees)",
+    "name": "re:coded Academy",
+    "study_type": "In-person (Amman) + Online, Free for qualified candidates",
+    "details": "Intensive bootcamp in web development (JavaScript Full-Stack) and cybersecurity, targeting youth and refugees with job placement opportunities",
+    "contact": "recoded.org"
+  },
+  {
+    "field": "Programming / Networks / Information Security (Private, Paid)",
+    "name": "Coders - Software Leaders and Training Company",
+    "study_type": "In-person (Amman)",
+    "details": "Programming, networking, information security, graphic design courses - technology company with government project experience and professional training",
+    "contact": "Search: Programming Leaders Coders Amman"
+  },
+  {
+    "field": "Programming / Networks / Information Security (Diverse)",
+    "name": "Falcons Training and Consulting Center",
+    "study_type": "In-person + Online",
+    "details": "Various training plans in information technology and programming",
+    "contact": "falconstc.com"
+  },
+  {
+    "field": "Networks (Cisco - CCNA/CCNP)",
+    "name": "New Horizons Jordan",
+    "study_type": "In-person (Shmeisani, Amman) + Online (Live Virtual Classes)",
+    "details": "Largest Cisco authorized training partner, official Microsoft, CompTIA and VMware partner - Comprehensive ICT courses with internationally accredited certificates",
+    "contact": "newhorizons.com (Jordan Branch) - Wasfi Al Tel St, Al-Shmaisani"
+  },
+  {
+    "field": "Networks and Information Security (CompTIA/Pearson VUE)",
+    "name": "Institute of Information Technology (IIT)",
+    "study_type": "In-person (Amman)",
+    "details": "Authorized partner for CompTIA (A+, Network+, Security+, Linux+) and Pearson VUE exam center accredited for local exam administration",
+    "contact": "iitlearning.com"
+  },
+  {
+    "field": "Networks (CCNA/CCNP - International Training Branch)",
+    "name": "The Knowledge Academy - Jordan Branch",
+    "study_type": "In-person (Amman) + Online",
+    "details": "CCNA and CCNP courses and networking bootcamp with authorized instructors",
+    "contact": "theknowledgeacademy.com/jo"
+  },
+  {
+    "field": "Cybersecurity / Networks and AI (University Accredited)",
+    "name": "Hussein Technical University (HTU)",
+    "study_type": "In-person (Amman)",
+    "details": "Bachelor's and technical diploma programs accredited by Ministry of Higher Education in Software Engineering and other technical specializations aligned with labor market",
+    "contact": "htu.edu.jo"
+  },
+  {
+    "field": "Artificial Intelligence and Cloud Computing (University)",
+    "name": "University of Jordan / German-Jordanian University / PSUT (Continuing Education Center)",
+    "study_type": "In-person + Some online programs",
+    "details": "University continuing education centers offer short professional diplomas in Artificial Intelligence, Data Science and Cloud Computing with accredited university certificates",
+    "contact": "Search for 'Continuing Education Center' on each university website (ju.edu.jo, gju.edu.jo, psut.edu.jo)"
+  },
+  {
+    "field": "Free General Professional Training (Technical and Vocational)",
+    "name": "Zain Digital Centers / Vocational Training Corporation (VTC)",
+    "study_type": "In-person (Amman, Zarqa, Irbid, Tafilah, Karak, Salt)",
+    "details": "Free courses supported by private sector (Zain) in partnership with VTC, including technical and device maintenance paths, with certified occupational licenses",
+    "contact": "vtc.gov.jo"
+  },
+  {
+    "field": "General Programming (Teacher-less Education - Peer Learning)",
+    "name": "42 Amman - Crown Prince Foundation",
+    "study_type": "Fully In-person (Amman) - Completely Free",
+    "details": "Free computer science program within the global Ecole 42 network, with no teachers, lectures, or fees, project-based and peer learning approach, no prior experience or certification required, starts with intensive trial phase (Piscine) for one month, locally and internationally accredited certificate - in partnership with Ministry of Planning, International Cooperation and Advanced Professional Training College (CAVT) and French Embassy",
+    "contact": "42amman.com | CPF"
+  }
+]

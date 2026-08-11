@@ -1,0 +1,170 @@
+[
+  {
+    "track": "Software Engineering",
+    "title": "Backend Developer",
+    "skills": "• Programming Language: Node.js or Python or Java or Go\n• Databases: SQL (PostgreSQL/MySQL) and NoSQL (MongoDB)\n• API Design and Development (REST and GraphQL)\n• Authentication & Authorization (JWT, OAuth)\n• Caching (Redis)\n• Containerization: Docker\n• Testing: Unit & Integration Testing",
+    "coursera": "Meta Back-End Developer Professional Certificate\nhttps://www.coursera.org/professional-certificates/meta-back-end-developer",
+    "udemy": "The Complete JavaScript Course\nhttps://www.udemy.com/course/the-complete-javascript-course/",
+    "jordan_centers": "Luminus (ASAC) – BTEC Software Engineering Diploma, In-person\nCoders – Amman, In-person\nFalcons Training Center – In-person/Online\n42 Amman – Completely free, In-person, No prior experience required, Project-based learning (Crown Prince Foundation)"
+  },
+  {
+    "track": "Software Engineering",
+    "title": "Frontend Developer",
+    "skills": "• Web Fundamentals: HTML5 and CSS3\n• Modern JavaScript (ES6+) and TypeScript\n• Framework: React or Vue or Angular\n• State Management (Redux/Context API)\n• Responsive Design\n• Web Performance Optimization\n• Build Tools (Vite/Webpack)",
+    "coursera": "Meta Front-End Developer Professional Certificate\nhttps://www.coursera.org/professional-certificates/meta-front-end-developer",
+    "udemy": "The Complete JavaScript Course\nhttps://www.udemy.com/course/the-complete-javascript-course/",
+    "jordan_centers": "Luminus (ASAC) – BTEC Software Engineering Diploma, In-person\nOrange Programming Academy – Free, In-person + Online Coursات\nCoders – Amman, In-person\n42 Amman – Completely free, In-person, Project-based learning (Crown Prince Foundation)"
+  },
+  {
+    "track": "Software Engineering",
+    "title": "Full Stack Developer",
+    "skills": "• Integrating Frontend and Backend skills\n• Building and connecting APIs\n• Databases (SQL and NoSQL)\n• Version Control: Git & GitHub\n• Deployment: Cloud Hosting\n• DevOps Basics for Continuous Deployment",
+    "coursera": "IBM Full-Stack Software Developer Professional Certificate\nhttps://www.coursera.org/professional-certificates/ibm-full-stack-cloud-developer",
+    "udemy": "The Complete Full-Stack Web Development Bootcamp (Angela Yu)\nhttps://www.udemy.com/course/the-complete-web-development-bootcamp/",
+    "jordan_centers": "Luminus (ASAC) – Full-Stack JS/Python Bootcamp in partnership with Code Fellows, In-person\nre:coded – Free bootcamp for qualified candidates, In-person and Online\nOrange Programming Academy – Free\n42 Amman – Completely free, In-person, Project-based learning"
+  },
+  {
+    "track": "Software Engineering",
+    "title": "Software Architect",
+    "skills": "• System Design Fundamentals\n• Design Patterns\n• Architectural Patterns: Microservices vs Monolith\n• Scalability & Load Balancing\n• Cloud Architecture\n• Technical Documentation",
+    "coursera": "Software Design and Architecture Specialization (Alberta)\nhttps://www.coursera.org/specializations/software-design-architecture",
+    "udemy": "Search: udemy.com/courses/search/?q=software%20architecture",
+    "jordan_centers": "Hussein Technical University (HTU) – Bachelor's in Software Engineering, In-person\nUniversity Continuing Education Centers (University of Jordan / GJU / PSUT) – Professional Diplomas, In-person"
+  },
+  {
+    "track": "Software Engineering",
+    "title": "Software Design & Architecture",
+    "skills": "• SOLID Principles\n• Design Patterns: Creational, Structural, Behavioral\n• Architectural Patterns: Monolith, Microservices, Event-Driven\n• UML Diagrams\n• Object-Oriented Analysis and Design",
+    "coursera": "Software Design and Architecture Specialization (Alberta)\nhttps://www.coursera.org/specializations/software-design-architecture",
+    "udemy": "Search: udemy.com/courses/search/?q=design%20patterns",
+    "jordan_centers": "Hussein Technical University (HTU) – In-person\nUniversity Continuing Education Centers – In-person\nLuminus (ASAC) – Advanced BTEC courses"
+  },
+  {
+    "track": "Software Engineering",
+    "title": "QA / Test Engineer",
+    "skills": "• Types of Testing: Unit, Integration, End-to-End (E2E)\n• Test Automation (Selenium, Playwright, Cypress)\n• API Testing (Postman)\n• CI/CD Pipeline Integration\n• Test Plans & Cases",
+    "coursera": "Search Coursera for \"software testing\"",
+    "udemy": "Search: udemy.com/courses/search/?q=selenium%20webdriver",
+    "jordan_centers": "Falcons Training Center – In-person/Online\nCoders – Amman, In-person\nSearch for ISTQB courses at New Horizons Jordan"
+  },
+  {
+    "track": "Software Engineering",
+    "title": "DevOps Engineer",
+    "skills": "• Linux Fundamentals and Command Line\n• Version Control: Git\n• CI/CD Pipelines\n• Containerization: Docker & Kubernetes\n• Cloud Computing: AWS or Azure\n• Infrastructure as Code (Terraform)\n• Monitoring & Logging",
+    "coursera": "IBM DevOps and Software Engineering Professional Certificate\nhttps://www.coursera.org/professional-certificates/devops-and-software-engineering",
+    "udemy": "Docker and Kubernetes: The Complete Guide (Stephen Grider)\nhttps://www.udemy.com/course/docker-and-kubernetes-the-complete-guide/",
+    "jordan_centers": "Luminus (ASAC) – Bachelor's in Cloud Computing, In-person\nNew Horizons Jordan – Microsoft/CompTIA/VMware Partner, In-person and Online\nFalcons Training Center"
+  },
+  {
+    "track": "Software Engineering",
+    "title": "API Design",
+    "skills": "• REST Principles\n• GraphQL as a flexible alternative\n• API Versioning\n• Authentication: OAuth and JWT\n• API Documentation: OpenAPI / Swagger",
+    "coursera": "(Part of Meta Back-End Developer Certificate)",
+    "udemy": "Search: udemy.com/courses/search/?q=rest%20api%20flask%20python",
+    "jordan_centers": "Luminus (ASAC) – Part of Software Engineering programs, In-person\nCoders – Amman"
+  },
+  {
+    "track": "Software Engineering",
+    "title": "System Design",
+    "skills": "• Scalability\n• Load Balancing\n• Caching Strategies\n• Database Sharding\n• Message Queues\n• CAP Theorem",
+    "coursera": "No dedicated Coursera course",
+    "udemy": "Search: udemy.com/courses/search/?q=system%20design%20interview",
+    "jordan_centers": "Government Universities (University of Jordan, HTU, GJU) – Part of Software Engineering courses, In-person\nUniversity Continuing Education Centers"
+  },
+  {
+    "track": "Software Engineering",
+    "title": "Data Structures & Algorithms",
+    "skills": "• Fundamental Structures: Arrays, Linked Lists, Stacks, Queues\n• Trees and Graphs\n• Sorting & Searching Algorithms\n• Big-O Notation and Time Complexity Analysis\n• Interview-style Problem Solving (LeetCode-style)",
+    "coursera": "Data Structures and Algorithms Specialization (UC San Diego)\nhttps://www.coursera.org/specializations/data-structures-algorithms",
+    "udemy": "Search: udemy.com/courses/search/?q=master%20the%20coding%20interview",
+    "jordan_centers": "Government Universities – Computer Science courses, In-person\nCoders – May offer introductory courses"
+  },
+  {
+    "track": "Software Engineering",
+    "title": "Game Developer",
+    "skills": "• Game Engines: Unity or Unreal Engine\n• Graphics Programming\n• Physics Engines\n• Game Design Patterns",
+    "coursera": "Not available as dedicated course",
+    "udemy": "Search: udemy.com/courses/search/?q=unity%20game%20developer",
+    "jordan_centers": "SAE Institute Amman (part of Luminus Education) – Digital Media and Game Design programs, In-person\nNo Jordan-exclusive game development center available yet"
+  },
+  {
+    "track": "Computer Engineering",
+    "title": "Computer Science Fundamentals",
+    "skills": "• Data Structures & Algorithms\n• Computer Architecture (CPU, Memory)\n• Operating Systems\n• Networking Basics\n• Databases",
+    "coursera": "CS50: Introduction to Computer Science (Harvard) - Search on Coursera/edX",
+    "udemy": "Search: udemy.com/courses/search/?q=computer%20science%20fundamentals",
+    "jordan_centers": "Hussein Technical University (HTU) – Bachelor's Degree, In-person\nPSUT / University of Jordan / GJU – Computer Science programs, In-person\n42 Amman – Completely free, In-person, Project-based learning (Crown Prince Foundation)"
+  },
+  {
+    "track": "Computer Engineering",
+    "title": "Backend Developer",
+    "skills": "• Programming Language: Node.js or Python or Java or Go\n• Databases: SQL and NoSQL\n• API Design and Development\n• Authentication & Authorization\n• Containerization: Docker",
+    "coursera": "Meta Back-End Developer Professional Certificate\nhttps://www.coursera.org/professional-certificates/meta-back-end-developer",
+    "udemy": "The Complete JavaScript Course\nhttps://www.udemy.com/course/the-complete-javascript-course/",
+    "jordan_centers": "Luminus (ASAC) – BTEC Software Engineering Diploma, In-person\nCoders – Amman, In-person\n42 Amman – Completely free, In-person, Project-based learning"
+  },
+  {
+    "track": "Computer Engineering",
+    "title": "DevOps Engineer",
+    "skills": "• Linux Fundamentals and Networking\n• CI/CD Pipeline\n• Containerization: Docker & Kubernetes\n• Cloud Infrastructure (AWS/Azure)\n• Infrastructure as Code",
+    "coursera": "IBM DevOps and Software Engineering Professional Certificate\nhttps://www.coursera.org/professional-certificates/devops-and-software-engineering",
+    "udemy": "Docker and Kubernetes: The Complete Guide (Stephen Grider)\nhttps://www.udemy.com/course/docker-and-kubernetes-the-complete-guide/",
+    "jordan_centers": "Luminus (ASAC) – Bachelor's in Cloud Computing, In-person\nNew Horizons Jordan – Cisco/Microsoft/VMware Partner, In-person and Online"
+  },
+  {
+    "track": "Computer Engineering",
+    "title": "Cyber Security",
+    "skills": "• Network Security\n• Cryptography\n• Penetration Testing\n• Security Operations (SIEM)\n• Risk Assessment",
+    "coursera": "Google Cybersecurity Professional Certificate\nhttps://www.coursera.org/professional-certificates/google-cybersecurity",
+    "udemy": "Search: udemy.com/courses/search/?q=complete%20cyber%20security%20course",
+    "jordan_centers": "Luminus (ASAC) – BTEC Cybersecurity Diploma, In-person\nre:coded – Cybersecurity Bootcamp, In-person and Online\nNew Horizons Jordan / IIT – CompTIA Security+, In-person"
+  },
+  {
+    "track": "Computer Engineering",
+    "title": "Network Engineer",
+    "skills": "• TCP/IP Protocols\n• Routing & Switching\n• Firewalls\n• Network Troubleshooting\n• CCNA as practical reference",
+    "coursera": "Google IT Support Professional Certificate\nhttps://www.coursera.org/professional-certificates/google-it-support",
+    "udemy": "Search: udemy.com/courses/search/?q=ccna%20200-301",
+    "jordan_centers": "New Horizons Jordan – Cisco CCNA/CCNP, In-person and Online\nInstitute of Information Technology (IIT) – CompTIA Network+, In-person and Pearson VUE exam center\nThe Knowledge Academy – Jordan Branch, In-person and Online"
+  },
+  {
+    "track": "Computer Engineering",
+    "title": "AI Engineer",
+    "skills": "• Machine Learning Basics\n• Large Language Models (LLMs)\n• Prompt Engineering\n• Model Deployment\n• Python as primary language",
+    "coursera": "IBM AI Engineering Professional Certificate\nhttps://www.coursera.org/professional-certificates/ai-engineer",
+    "udemy": "Search: udemy.com/courses/search/?q=ai%20engineer%20bootcamp",
+    "jordan_centers": "Luminus (ASAC) – BTEC Artificial Intelligence Diploma, In-person\nUniversity Continuing Education Centers (PSUT / University of Jordan) – Short professional diplomas"
+  },
+  {
+    "track": "Computer Engineering",
+    "title": "AI and Data Scientist",
+    "skills": "• Statistics\n• Python for Data Analysis\n• Machine Learning Algorithms\n• Deep Learning\n• Data Visualization",
+    "coursera": "Machine Learning Specialization (Andrew Ng)\nhttps://www.coursera.org/specializations/machine-learning-introduction",
+    "udemy": "Search: udemy.com/courses/search/?q=machine%20learning%20a-z",
+    "jordan_centers": "University Continuing Education Centers (PSUT / University of Jordan / GJU) – In-person\nLuminus (ASAC) – Part of AI and Cloud programs"
+  },
+  {
+    "track": "Computer Engineering",
+    "title": "Data Engineer",
+    "skills": "• ETL: Extract, Transform, Load\n• SQL and NoSQL Databases\n• Data Warehousing\n• Big Data Tools: Spark, Kafka\n• Cloud Data Platforms",
+    "coursera": "IBM Data Engineering Professional Certificate\nhttps://www.coursera.org/professional-certificates/ibm-data-engineer",
+    "udemy": "Search: udemy.com/courses/search/?q=data%20engineering%20bootcamp",
+    "jordan_centers": "No prominent Jordan-specific center - Universities (Data Science specializations) recommended as starting point"
+  },
+  {
+    "track": "Computer Engineering",
+    "title": "MLOps",
+    "skills": "• Model Deployment & Monitoring\n• CI/CD for ML\n• Model Versioning\n• ML Workflow Automation",
+    "coursera": "MLOps Specialization (Duke University)\nhttps://www.coursera.org/specializations/mlops-machine-learning-duke",
+    "udemy": "Search: udemy.com/courses/search/?q=mlops",
+    "jordan_centers": "No Jordan-specific center - Primarily relies on international platforms (Coursera/Udemy)"
+  },
+  {
+    "track": "Computer Engineering",
+    "title": "System Design",
+    "skills": "• Scalability\n• Load Balancing\n• Caching Strategies\n• CAP Theorem",
+    "coursera": "No dedicated Coursera course",
+    "udemy": "Search: udemy.com/courses/search/?q=system%20design%20interview",
+    "jordan_centers": "Government Universities (HTU, University of Jordan, GJU) – Advanced Software Engineering courses, In-person"
+  }
+]

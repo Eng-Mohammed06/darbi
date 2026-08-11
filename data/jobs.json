@@ -1,0 +1,985 @@
+[
+  {
+    "company_name": "Amazon Payment Services",
+    "title": "Software Development Engineer (SDE-II)",
+    "required_majors": [
+      "Computer Science",
+      "Computer Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "000-1,600",
+    "salary_min_jod": null,
+    "salary_max_jod": 1600,
+    "required_skills": [
+      "Distributed systems",
+      "software architecture",
+      "coding standards",
+      "3+ years experience",
+      "mentoring"
+    ],
+    "source": "GulfTalent.com",
+    "verified": true
+  },
+  {
+    "company_name": "Arab Bank",
+    "title": "Trade Finance & Network RM",
+    "required_majors": [
+      "Finance",
+      "Business Administration",
+      "Banking"
+    ],
+    "min_gpa": null,
+    "salary_raw": "700-1,100",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1100,
+    "required_skills": [
+      "Trade finance products",
+      "MNC business development",
+      "English & Arabic fluency",
+      "negotiation"
+    ],
+    "source": "for9a.com",
+    "verified": true
+  },
+  {
+    "company_name": "Arabic.AI",
+    "title": "Pre-Sales AI Solution Engineer",
+    "required_majors": [
+      "Computer Science",
+      "AI",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "700-1,100",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1100,
+    "required_skills": [
+      "AI solution design",
+      "validation",
+      "client presentation"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Aramex",
+    "title": "Corporate Operations Executive",
+    "required_majors": [
+      "Industrial Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "450-650",
+    "salary_min_jod": 450,
+    "salary_max_jod": 650,
+    "required_skills": [
+      "Business analysis",
+      "API/EDI/FTP basics",
+      "stakeholder communication",
+      "0-2 yrs experience (fresh-grad friendly)"
+    ],
+    "source": "careers.aramex.com / LinkedIn",
+    "verified": true
+  },
+  {
+    "company_name": "Bank of Jordan",
+    "title": "Relationship Manager - SME",
+    "required_majors": [
+      "Finance",
+      "Business Administration"
+    ],
+    "min_gpa": null,
+    "salary_raw": "700-1,100",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1100,
+    "required_skills": [
+      "SME banking",
+      "relationship building",
+      "financial analysis",
+      "3+ years experience"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Bank of Jordan",
+    "title": "Senior Financial Credit Analyst (Large Corporate)",
+    "required_majors": [
+      "Finance",
+      "Accounting"
+    ],
+    "min_gpa": null,
+    "salary_raw": "900-1,400",
+    "salary_min_jod": 900,
+    "salary_max_jod": 1400,
+    "required_skills": [
+      "Financial statement analysis",
+      "credit risk assessment",
+      "5+ years experience"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Bank of Jordan",
+    "title": "Senior Relationship Manager - Corporate",
+    "required_majors": [
+      "Finance",
+      "Business Administration"
+    ],
+    "min_gpa": null,
+    "salary_raw": "900-1,400",
+    "salary_min_jod": 900,
+    "salary_max_jod": 1400,
+    "required_skills": [
+      "Client portfolio management",
+      "financial analysis",
+      "corporate banking",
+      "communication"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "BlackStone eIT",
+    "title": "Outsystems Senior Developer",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "700-1,100",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1100,
+    "required_skills": [
+      "OutSystems low-code platform",
+      "application development"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Capital Bank",
+    "title": "Business Intelligence Specialist",
+    "required_majors": [
+      "Computer Science",
+      "MIS",
+      "Business Analytics"
+    ],
+    "min_gpa": null,
+    "salary_raw": "600-900",
+    "salary_min_jod": 600,
+    "salary_max_jod": 900,
+    "required_skills": [
+      "BI tools",
+      "data analysis",
+      "reporting",
+      "SQL"
+    ],
+    "source": "LinkedIn / capitalbank.jo",
+    "verified": true
+  },
+  {
+    "company_name": "Capital Bank",
+    "title": "Data Engineer",
+    "required_majors": [
+      "Computer Science",
+      "Computer Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "600-950",
+    "salary_min_jod": 600,
+    "salary_max_jod": 950,
+    "required_skills": [
+      "Data pipelines",
+      "ETL",
+      "SQL",
+      "cloud data platforms"
+    ],
+    "source": "LinkedIn",
+    "verified": true
+  },
+  {
+    "company_name": "Capital Bank",
+    "title": "Internal Auditor",
+    "required_majors": [
+      "Accounting",
+      "Finance"
+    ],
+    "min_gpa": null,
+    "salary_raw": "500-800",
+    "salary_min_jod": 500,
+    "salary_max_jod": 800,
+    "required_skills": [
+      "Audit procedures",
+      "risk assessment",
+      "compliance",
+      "financial analysis"
+    ],
+    "source": "LinkedIn",
+    "verified": true
+  },
+  {
+    "company_name": "Careem",
+    "title": "People Operations & Onboarding Specialist",
+    "required_majors": [
+      "Business Administration",
+      "HR",
+      "Any Bachelor's"
+    ],
+    "min_gpa": null,
+    "salary_raw": "450-650",
+    "salary_min_jod": 450,
+    "salary_max_jod": 650,
+    "required_skills": [
+      "Employee lifecycle",
+      "onboarding",
+      "Arabic & English fluency",
+      "communication"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Careem",
+    "title": "Software Engineer I",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "500-750",
+    "salary_min_jod": 500,
+    "salary_max_jod": 750,
+    "required_skills": [
+      "Java",
+      "Spring Boot",
+      "AWS",
+      "backend systems - fresh graduates or up to 2 yrs experience"
+    ],
+    "source": "LinkedIn / Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Commercial Control Systems & Sales Co.",
+    "title": "Sales Engineer (Control Systems - Fresh Graduate)",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "300 JOD + Comm.",
+    "salary_min_jod": 300,
+    "salary_max_jod": null,
+    "required_skills": [
+      "Background in Electrical Engineering or Mechatronics",
+      "passion for field sales",
+      "strong persuasion and communication skills",
+      "owning a car and valid driving license is highly preferred."
+    ],
+    "source": "Jordan Engineering Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Dabouq Village for Property Management",
+    "title": "Maintenance Engineer (Facilities & Malls)",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "700 - 1,060 JOD",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1060,
+    "required_skills": [
+      "3-5 years of experience",
+      "high skill in troubleshooting and repairing low voltage electrical systems",
+      "large fans",
+      "and main distribution boards",
+      "supervising electrical and HVAC technicians."
+    ],
+    "source": "Jordan Engineering Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Diyar United Company",
+    "title": "Systems / Support Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "500 - 750 JOD",
+    "salary_min_jod": 500,
+    "salary_max_jod": 750,
+    "required_skills": [
+      "Maintenance and troubleshooting of electrical and electronic systems related to technical infrastructure",
+      "handling server hardware and sensitive wiring for retail and mall sectors."
+    ],
+    "source": "Jordan Engineering Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Estarta Solutions",
+    "title": "Cloud Support Engineer (PaaS)",
+    "required_majors": [
+      "Computer Science",
+      "Computer Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "600-900",
+    "salary_min_jod": 600,
+    "salary_max_jod": 900,
+    "required_skills": [
+      "Azure PaaS (Redis",
+      "Service Fabric",
+      "Service Bus)",
+      "C++/C#/Java",
+      "troubleshooting"
+    ],
+    "source": "LinkedIn",
+    "verified": true
+  },
+  {
+    "company_name": "Estarta Solutions",
+    "title": "Cloud Support Frontline Specialist (Fresh Graduates)",
+    "required_majors": [
+      "Computer Science",
+      "Networks",
+      "Computer Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "450-600",
+    "salary_min_jod": 450,
+    "salary_max_jod": 600,
+    "required_skills": [
+      "Networking",
+      "Java",
+      "Azure",
+      "troubleshooting",
+      "customer support"
+    ],
+    "source": "LinkedIn",
+    "verified": true
+  },
+  {
+    "company_name": "Fine Hygienic Holding",
+    "title": "Electrical Maintenance Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "600 - 950 JOD",
+    "salary_min_jod": 600,
+    "salary_max_jod": 950,
+    "required_skills": [
+      "Maintain and troubleshoot electrical systems in manufacturing plants",
+      "manage preventive maintenance for large transformers and heavy motors",
+      "high proficiency in electrical troubleshooting to minimize factory downtime."
+    ],
+    "source": "Jordan Engineering Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Hikma Pharmaceuticals / Dar Al Dawa",
+    "title": "Automation / Instrumentation Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "550 - 800 JOD",
+    "salary_min_jod": 550,
+    "salary_max_jod": 800,
+    "required_skills": [
+      "Deep understanding of precision instrumentation systems",
+      "maintenance and calibration of sensors and measurement equipment in sensitive environments",
+      "proficient in reading complex electrical and mechanical schematics."
+    ],
+    "source": "Jordan Engineering Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Hilton Worldwide",
+    "title": "Chief Engineer / Electrical Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "Based on Exp. (+ Housing & Benefits)",
+    "salary_min_jod": null,
+    "salary_max_jod": null,
+    "required_skills": [
+      "Maintenance of standby generators",
+      "hotel electrical distribution boards",
+      "and monitoring preventive maintenance schedules for rooms and major facilities",
+      "managing technician teams under pressure."
+    ],
+    "source": "Jordan Engineering Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "KEO International Consultants",
+    "title": "Senior Application Developer",
+    "required_majors": [
+      "Computer Science",
+      "Computer Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "800-1,200",
+    "salary_min_jod": 800,
+    "salary_max_jod": 1200,
+    "required_skills": [
+      "Microsoft platforms",
+      "AI integration",
+      "cross-platform mobile apps"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "KEO International Consultants",
+    "title": "Senior Electrical Design Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "1,200 - 1,800 JOD",
+    "salary_min_jod": 1200,
+    "salary_max_jod": 1800,
+    "required_skills": [
+      "Strong experience in electrical infrastructure and power distribution for mega urban projects",
+      "advanced proficiency in modern BIM (Revit) modeling",
+      "experience mentoring draftsmen and CAD engineers",
+      "thorough understanding of international building codes (e.g.",
+      "NFPA",
+      "SBC)."
+    ],
+    "source": "Jordan Engineering Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Leading Electrical Engineering & Trading Co.",
+    "title": "Estimation & Technical Support Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "450 JOD + Bonuses",
+    "salary_min_jod": 450,
+    "salary_max_jod": null,
+    "required_skills": [
+      "Reading and understanding Bill of Quantities (BOQ) and schematics to price distribution boards and electrical materials",
+      "providing technical support to contractors and clients."
+    ],
+    "source": "Jordan Engineering Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "MAF Future Solutions",
+    "title": "Software Engineer - Backend",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "500-800",
+    "salary_min_jod": 500,
+    "salary_max_jod": 800,
+    "required_skills": [
+      "Backend development",
+      "APIs",
+      "customer solutions"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "MOSTAQBAL Engineering & Environmental Consultants",
+    "title": "Electrical Supervision Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "550 - 850 JOD",
+    "salary_min_jod": 550,
+    "salary_max_jod": 850,
+    "required_skills": [
+      "Bachelor's degree in Electrical Engineering",
+      "experience in field supervision and matching on-site execution with approved drawings",
+      "high skill in preparing technical reports and resolving engineering issues on site."
+    ],
+    "source": "Jordan Engineering Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Maqsam",
+    "title": "Backend Software Engineer",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "600-950",
+    "salary_min_jod": 600,
+    "salary_max_jod": 950,
+    "required_skills": [
+      "Backend development",
+      "SaaS",
+      "AI-powered systems"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Moayana Technical Consultancy",
+    "title": "Telecom Engineer (Compliance Assessment)",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "350 - 500 JOD",
+    "salary_min_jod": 350,
+    "salary_max_jod": 500,
+    "required_skills": [
+      "Suitable for fresh graduates (0-2 years)",
+      "technical compliance assessment of devices and systems",
+      "basic knowledge of RF networks",
+      "supporting telecom operators (Zain",
+      "Orange",
+      "Uminiah)."
+    ],
+    "source": "Jordan Engineering Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Noema Consulting",
+    "title": "Senior Frontend Software Engineer",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "700-1,100",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1100,
+    "required_skills": [
+      "Web application development",
+      "mentoring",
+      "architectural decisions"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Omnix International",
+    "title": "Presales Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "700 - 1000 JOD",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1000,
+    "required_skills": [
+      "Studying major tenders and projects prior to execution",
+      "formulating precise technical and financial proposals",
+      "aligning client requirements with available software and electromechanical solutions."
+    ],
+    "source": "Jordan Engineering Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Optimiza",
+    "title": "Low Current Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "450 - 700 JOD",
+    "salary_min_jod": 450,
+    "salary_max_jod": 700,
+    "required_skills": [
+      "1+ years of experience in designing and procuring fire alarm systems",
+      "CCTV",
+      "Access Control",
+      "and data networks",
+      "ability to perform site surveys and prepare schematics using CAD software."
+    ],
+    "source": "Jordan Engineering Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Optimiza",
+    "title": "Senior React Developer",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "800-1,200",
+    "salary_min_jod": 800,
+    "salary_max_jod": 1200,
+    "required_skills": [
+      "React",
+      "JavaScript",
+      "TypeScript",
+      "REST APIs",
+      "frontend architecture"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Orange Jordan",
+    "title": "Network, Service Platform, IT & Services Supervisory Engineer",
+    "required_majors": [
+      "Telecommunications",
+      "Electronics & Computer Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "750-1,100",
+    "salary_min_jod": 750,
+    "salary_max_jod": 1100,
+    "required_skills": [
+      "Mobile/Data/Transmission networks (LTE",
+      "3G",
+      "2G",
+      "ADSL",
+      "SDH)",
+      "IT systems",
+      "crisis management",
+      "English fluency"
+    ],
+    "source": "jobs.orange.jo (job #546)",
+    "verified": true
+  },
+  {
+    "company_name": "Orange Jordan",
+    "title": "Power & AC Engineer",
+    "required_majors": [
+      "Electrical Engineering",
+      "Mechanical Engineering",
+      "Mechatronics Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "500-750",
+    "salary_min_jod": 500,
+    "salary_max_jod": 750,
+    "required_skills": [
+      "Power/AC troubleshooting",
+      "solar systems",
+      "firefighting systems",
+      "MS Office",
+      "driving license"
+    ],
+    "source": "jobs.orange.jo (job #547)",
+    "verified": true
+  },
+  {
+    "company_name": "Orange Jordan",
+    "title": "Senior Workflow and Inventory Administrator",
+    "required_majors": [
+      "Telecom Engineering",
+      "Computer Engineering",
+      "Computer Science"
+    ],
+    "min_gpa": null,
+    "salary_raw": "700-1,000",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1000,
+    "required_skills": [
+      "Problem solving",
+      "English proficiency",
+      "communication",
+      "analytical & research skills",
+      "planning & follow-up",
+      "ITIL",
+      "Unix/Linux"
+    ],
+    "source": "jobs.orange.jo (job #548)",
+    "verified": true
+  },
+  {
+    "company_name": "People Dynamics",
+    "title": "Senior Frontend Developer",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "700-1,000",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1000,
+    "required_skills": [
+      "Angular",
+      "high-performance SEO-optimized web apps",
+      "frontend architecture"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Servme",
+    "title": "Senior Frontend Developer",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "700-1,000",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1000,
+    "required_skills": [
+      "Frontend development",
+      "CRM/guest experience platforms"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Steady Solutions",
+    "title": "Senior Web Programmer (ASP.NET MVC)",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "700-1,000",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1000,
+    "required_skills": [
+      "ASP.NET MVC",
+      "web application development",
+      "mentoring junior developers"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "TECHNO Group",
+    "title": "Industrial Automation Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "500 - 750 JOD",
+    "salary_min_jod": 500,
+    "salary_max_jod": 750,
+    "required_skills": [
+      "Advanced skills in programming PLC devices (e.g.",
+      "Siemens",
+      "Schneider)",
+      "handling SCADA systems and HMI control screens",
+      "strong understanding of classic control panels."
+    ],
+    "source": "Jordan Engineering Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Tarjama",
+    "title": "Senior Software Engineer",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "700-1,100",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1100,
+    "required_skills": [
+      "Full SDLC",
+      "frontend & backend",
+      "cross-functional collaboration",
+      "mentoring"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "The Specialized Cable Manufacture Co.",
+    "title": "Sales Engineer (Cables)",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "400 - 600 JOD (+ Comm.)",
+    "salary_min_jod": 400,
+    "salary_max_jod": 600,
+    "required_skills": [
+      "Excellent negotiation and communication skills with contractors and consultancy firms",
+      "full understanding of technical specifications",
+      "ampacity",
+      "and applications of electrical cables in construction projects."
+    ],
+    "source": "Jordan Engineering Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Umniah",
+    "title": "Oracle Applications Senior Developer",
+    "required_majors": [
+      "Computer Science",
+      "Information Systems"
+    ],
+    "min_gpa": null,
+    "salary_raw": "800-1,200",
+    "salary_min_jod": 800,
+    "salary_max_jod": 1200,
+    "required_skills": [
+      "Oracle applications development",
+      "database management"
+    ],
+    "source": "LinkedIn",
+    "verified": true
+  },
+  {
+    "company_name": "Umniah",
+    "title": "Power Rollout Senior Engineer",
+    "required_majors": [
+      "Electrical Engineering",
+      "Telecom Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "700-1,100",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1100,
+    "required_skills": [
+      "Power systems rollout",
+      "site installation",
+      "project management"
+    ],
+    "source": "LinkedIn",
+    "verified": true
+  },
+  {
+    "company_name": "Umniah",
+    "title": "RAN Operations & Automation Engineer / Sr. Engineer",
+    "required_majors": [
+      "Telecommunications Engineering",
+      "Computer Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "700-1,100",
+    "salary_min_jod": 700,
+    "salary_max_jod": 1100,
+    "required_skills": [
+      "RAN operations",
+      "network automation",
+      "mobile networks"
+    ],
+    "source": "LinkedIn",
+    "verified": true
+  },
+  {
+    "company_name": "United Technology Establishment (UniTec)",
+    "title": "Electrical & Instrumentation Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "500 - 800 JOD",
+    "salary_min_jod": 500,
+    "salary_max_jod": 800,
+    "required_skills": [
+      "Troubleshoot faults in electrical distribution boards",
+      "maintain integrated mechatronic systems",
+      "knowledge of electrical spare parts estimation for production lines."
+    ],
+    "source": "Jordan Engineering Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "Zain Cash Jordan",
+    "title": "Backend Specialist",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "600-900",
+    "salary_min_jod": 600,
+    "salary_max_jod": 900,
+    "required_skills": [
+      ".NET Core",
+      "system integration",
+      "API design"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Zain Cash Jordan",
+    "title": "Customer Service Advisor (Tafileh)",
+    "required_majors": [
+      "Any Bachelor's degree"
+    ],
+    "min_gpa": null,
+    "salary_raw": "400-550",
+    "salary_min_jod": 400,
+    "salary_max_jod": 550,
+    "required_skills": [
+      "Customer service",
+      "complaint resolution",
+      "sales opportunities",
+      "communication"
+    ],
+    "source": "Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Zain Cash Jordan",
+    "title": "Frontend Specialist",
+    "required_majors": [
+      "Computer Science",
+      "Software Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "600-900",
+    "salary_min_jod": 600,
+    "salary_max_jod": 900,
+    "required_skills": [
+      "React.js",
+      "React Native",
+      "API integration",
+      "UI components",
+      "mentoring",
+      "code reviews"
+    ],
+    "source": "Built In / Bayt.com",
+    "verified": true
+  },
+  {
+    "company_name": "Zoho Corporation (Jordan Office)",
+    "title": "Partner Solutions Engineer",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "600 - 1000 JOD",
+    "salary_min_jod": 600,
+    "salary_max_jod": 1000,
+    "required_skills": [
+      "Strong engineering or technical background",
+      "skills in resolving technical issues and implementing system integrations",
+      "excellent communication skills to bridge software solutions with engineering workflows."
+    ],
+    "source": "Jordan Engineering Master Directory",
+    "verified": true
+  },
+  {
+    "company_name": "alfanar Group",
+    "title": "Electrical Design Engineer - Low Voltage",
+    "required_majors": [
+      "Electrical Engineering"
+    ],
+    "min_gpa": null,
+    "salary_raw": "600 - 900 JOD",
+    "salary_min_jod": 600,
+    "salary_max_jod": 900,
+    "required_skills": [
+      "Bachelor's degree in Electrical Engineering",
+      "solid knowledge of Low Voltage (LV) switchgear design",
+      "load calculations",
+      "and voltage drop analysis",
+      "proficiency in AutoCAD and reading industrial technical standards."
+    ],
+    "source": "Jordan Engineering Master Directory",
+    "verified": true
+  }
+]

@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DARBI Phase 2 - 1 Month Sprint Plan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 4px solid #001a33;
+            padding-bottom: 30px;
+        }
+        
+        .logo-title {
+            font-size: 48px;
+            font-weight: bold;
+            color: #001a33;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            font-size: 24px;
+            color: #d4af37;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .document-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 15px;
+        }
+        
+        .executive-summary {
+            background: #f0f4f8;
+            padding: 25px;
+            margin: 30px 0;
+            border-left: 5px solid #d4af37;
+            border-radius: 5px;
+        }
+        
+        .summary-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #001a33;
+            margin-bottom: 12px;
+        }
+        
+        .summary-item {
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        
+        .summary-item strong {
+            color: #d4af37;
+        }
+        
+        section {
+            margin: 40px 0;
+            page-break-inside: avoid;
+        }
+        
+        .section-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #001a33;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #d4af37;
+        }
+        
+        .subsection-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #001a33;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+        }
+        
+        table th {
+            background: #001a33;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+        }
+        
+        table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        table tr:hover {
+            background: #f0f4f8;
+        }
+        
+        .week-card {
+            background: #f9f9f9;
+            border-left: 5px solid #d4af37;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .week-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #001a33;
+            margin-bottom: 12px;
+        }
+        
+        .week-content {
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        
+        .task-item {
+            margin: 10px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .task-item:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #d4af37;
+            font-weight: bold;
+        }
+        
+        .team-section {
+            background: #f0f4f8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .role {
+            background: white;
+            padding: 15px;
+            margin: 12px 0;
+            border-left: 4px solid #d4af37;
+            border-radius: 3px;
+        }
+        
+        .role-name {
+            font-weight: bold;
+            color: #001a33;
+            font-size: 14px;
+        }
+        
+        .role-tasks {
+            font-size: 13px;
+            margin-top: 8px;
+            color: #555;
+        }
+        
+        .checklist {
+            list-style: none;
+            margin: 15px 0;
+        }
+        
+        .checklist li {
+            padding: 8px 0 8px 25px;
+            position: relative;
+            font-size: 13px;
+        }
+        
+        .checklist li:before {
+            content: "□";
+            position: absolute;
+            left: 0;
+            color: #d4af37;
+            font-size: 16px;
+        }
+        
+        .key-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .metric-box {
+            background: #001a33;
+            color: #d4af37;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .metric-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            color: white;
+        }
+        
+        .timeline-bar {
+            background: linear-gradient(to right, #001a33 0%, #d4af37 50%, #001a33 100%);
+            height: 40px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+            font-weight: bold;
+            margin: 20px 0;
+            font-size: 12px;
+        }
+        
+        .important {
+            background: #fff3cd;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 3px;
+        }
+        
+        .important-title {
+            font-weight: bold;
+            color: #ff6f00;
+            margin-bottom: 8px;
+        }
+        
+        .deliverable {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+        
+        .deliverable-title {
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        
+        .footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+            text-align: center;
+            font-size: 11px;
+            color: #999;
+        }
+        
+        .highlight {
+            color: #d4af37;
+            font-weight: bold;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+            section {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <header>
+            <div class="logo-title">DARBI</div>
+            <div class="subtitle">Phase 2 Sprint Plan</div>
+            <div class="document-info">
+                Team Sparks | Deadline: August 15, 2026 | Target: Early August Completion<br>
+                Project Duration: 5 Weeks | Team Size: 4 Members
+            </div>
+        </header>
+
+        <!-- EXECUTIVE SUMMARY -->
+        <div class="executive-summary">
+            <div class="summary-title">Executive Summary</div>
+            <div class="summary-item"><strong>Vision:</strong> Build a two-sided marketplace connecting Jordanian students with career guidance and companies with filtered job applicants.</div>
+            <div class="summary-item"><strong>Scope:</strong> User Portal (3 student paths) + Company Portal (job posting & filtering)</div>
+            <div class="summary-item"><strong>Reality:</strong> No team coding experience. Data gathering is the critical path. Development is code-first (Claude writes, team deploys).</div>
+            <div class="summary-item"><strong>Success Factor:</strong> Real Jordanian data (universities, majors, salaries, companies). Judges will fact-check this.</div>
+            <div class="summary-item"><strong>Risk:</strong> Data gathering takes 2-3 weeks. Must start immediately.</div>
+        </div>
+
+        <!-- TIMELINE OVERVIEW -->
+        <section>
+            <h2 class="section-title">Timeline Overview</h2>
+            
+            <div class="key-metrics">
+                <div class="metric-box">
+                    <div class="metric-label">TOTAL DURATION</div>
+                    <div class="metric-number">5 Weeks</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">DEADLINE</div>
+                    <div class="metric-number">Aug 15</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">TEAM SIZE</div>
+                    <div class="metric-number">4 People</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">COMPLETION TARGET</div>
+                    <div class="metric-number">Aug 1</div>
+                </div>
+            </div>
+
+            <table>
+                <tr>
+                    <th>Week</th>
+                    <th>Focus</th>
+                    <th>Status</th>
+                    <th>Blocker</th>
+                </tr>
+                <tr>
+                    <td><strong>Week 1</strong></td>
+                    <td>Data Gathering (Parallel)</td>
+                    <td>🔴 CRITICAL</td>
+                    <td>Start TODAY</td>
+                </tr>
+                <tr>
+                    <td><strong>Week 2</strong></td>
+                    <td>Data Completion + Dev Start</td>
+                    <td>🟡 HIGH</td>
+                    <td>Data must be 70% done</td>
+                </tr>
+                <tr>
+                    <td><strong>Week 3</strong></td>
+                    <td>Full MVP Build</td>
+                    <td>🟡 HIGH</td>
+                    <td>Data must be 100% done</td>
+                </tr>
+                <tr>
+                    <td><strong>Week 4</strong></td>
+                    <td>Polish + Testing</td>
+                    <td>🟢 MEDIUM</td>
+                    <td>Code complete by Day 25</td>
+                </tr>
+                <tr>
+                    <td><strong>Week 5</strong></td>
+                    <td>Buffer + Final Submission</td>
+                    <td>🟢 LOW</td>
+                    <td>Testing bugs only</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- WEEK-BY-WEEK BREAKDOWN -->
+        <section>
+            <h2 class="section-title">Week-by-Week Breakdown</h2>
+
+            <!-- WEEK 1 -->
+            <div class="week-card">
+                <div class="week-title">📅 WEEK 1: DATA SPRINT (Parallel Track)</div>
+                <div class="week-content">
+                    <strong>Primary Goal:</strong> Gather 70% of all data needed<br><br>
+                    
+                    <div class="subsection-title">Person A - Universities & Majors Lead</div>
+                    <ul class="checklist">
+                        <li>Create master list of 5-6 Jordanian universities (UJ, JUST, GJU, PSU, ZU, JIU)</li>
+                        <li>Extract ALL majors per university (target: 40-50 majors total)</li>
+                        <li>Use university websites: [UJ] uoj.edu.jo, [JUST] just.edu.jo, [GJU] gju.edu.jo</li>
+                        <li>Create Excel: University | Major | Faculty | Duration | Entry Req</li>
+                        <li>Deadline: End of Day 3</li>
+                    </ul>
+
+                    <div class="subsection-title">Person B - Salary Data Lead</div>
+                    <ul class="checklist">
+                        <li>Research salary ranges for 30-40 majors (entry/3-year/5-year)</li>
+                        <li>Sources: LinkedIn Salaries, Glassdoor, Bayt.com (ME job board)</li>
+                        <li>Document source for each salary (transparency for judges)</li>
+                        <li>For missing Jordanian data: Use UAE/Lebanon as proxy (disclose this)</li>
+                        <li>Create Excel: Major | Entry Level JD | 3-Yr JD | 5-Yr JD | Top Jobs | Source | Confidence</li>
+                        <li>Deadline: End of Day 7</li>
+                    </ul>
+
+                    <div class="subsection-title">Person C - Company Data Lead</div>
+                    <ul class="checklist">
+                        <li>Research 15-20 Jordanian companies (tech, finance, telecom, engineering)</li>
+                        <li>Extract current job postings: LinkedIn, Bayt.com, company websites</li>
+                        <li>Document: Company | Job Title | Required Major(s) | Min GPA | Salary Range | Skills</li>
+                        <li>Deadline: End of Day 10</li>
+                    </ul>
+
+                    <div class="subsection-title">Person D - Design Prep</div>
+                    <ul class="checklist">
+                        <li>Create wireframes for Student Portal (sign-up → profiling → results)</li>
+                        <li>Create wireframes for Company Portal (login → post job → filter students)</li>
+                        <li>Design system notes: Dark navy (#001a33) + Gold (#d4af37) from Phase 1</li>
+                        <li>Plan UI flows (no code, just boxes and arrows)</li>
+                        <li>Deadline: End of Week 1</li>
+                    </ul>
+
+                    <div class="deliverable">
+                        <div class="deliverable-title">📦 Week 1 Deliverables (Send to Claude):</div>
+                        <strong>universities.xlsx</strong> - All majors + faculties<br>
+                        <strong>salaries.xlsx</strong> - Salary ranges + sources<br>
+                        <strong>companies.xlsx</strong> - Job postings + requirements<br>
+                        <strong>ui_wireframes.pdf/pptx</strong> - Simple mockups of both portals
+                    </div>
+                </div>
+            </div>
+
+            <!-- WEEK 2 -->
+            <div class="week-card">
+                <div class="week-title">📅 WEEK 2: Data Finalization + Development Begins</div>
+                <div class="week-content">
+                    <strong>Primary Goal:</strong> Complete 100% of data. Start coding infrastructure.<br><br>
+                    
+                    <div class="subsection-title">Data Team (A, B, C)</div>
+                    <ul class="checklist">
+                        <li>Verify all data (no duplicates, no gaps, consistent formatting)</li>
+                        <li>Add "Data Quality" column (High/Medium/Low confidence)</li>
+                        <li>Convert all Excel files to JSON format (ready for database)</li>
+                        <li>Research graduate programs (if time allows)</li>
+                        <li>Final deadline: End of Day 14 (all data 100% done)</li>
+                    </ul>
+
+                    <div class="subsection-title">Development (Claude - You Oversee)</div>
+                    <ul class="checklist">
+                        <li>Set up Firebase project (free tier)</li>
+                        <li>Create Firestore database schema</li>
+                        <li>Initialize React frontend repo (GitHub)</li>
+                        <li>Build Student Portal MVP structure (login → profile form → results page)</li>
+                        <li>Stub out Company Portal UI (login → job posting form)</li>
+                    </ul>
+
+                    <div class="deliverable">
+                        <div class="deliverable-title">📦 Week 2 Deliverables:</div>
+                        <strong>Complete JSON files</strong> - All data ready for database<br>
+                        <strong>Firebase project</strong> - Live and accessible<br>
+                        <strong>GitHub repo</strong> - React code structure initialized<br>
+                        <strong>UI components</strong> - Basic student/company login pages
+                    </div>
+                </div>
+            </div>
+
+            <!-- WEEK 3 -->
+            <div class="week-card">
+                <div class="week-title">📅 WEEK 3: Full MVP Development</div>
+                <div class="week-content">
+                    <strong>Primary Goal:</strong> Both portals working end-to-end with real data.<br><br>
+                    
+                    <div class="subsection-title">Student Portal Build</div>
+                    <ul class="checklist">
+                        <li>Sign-up form (name, email, high school/undergrad/grad choice)</li>
+                        <li>Profiling form (interests, strengths, GPA, location preference)</li>
+                        <li>Claude API integration (receives student profile → returns major recommendations)</li>
+                        <li>Results page (top 3-5 majors, salary info, job titles, universities offering)</li>
+                        <li>Responsive design (mobile + desktop)</li>
+                    </ul>
+
+                    <div class="subsection-title">Company Portal Build</div>
+                    <ul class="checklist">
+                        <li>Company login/registration</li>
+                        <li>Job posting form (title, major requirement, min GPA, salary, skills)</li>
+                        <li>Job submission to Firestore database</li>
+                        <li>Filtering logic (match student profiles to job requirements)</li>
+                        <li>View matched students (dashboards, export option if possible)</li>
+                    </ul>
+
+                    <div class="subsection-title">Integration</div>
+                    <ul class="checklist">
+                        <li>Connect both portals (students and companies in same system)</li>
+                        <li>Real-time updates (Firestore sync)</li>
+                        <li>Test Claude API calls (major recommendations + job matches)</li>
+                    </ul>
+
+                    <div class="deliverable">
+                        <div class="deliverable-title">📦 Week 3 Deliverables:</div>
+                        <strong>Working Student Portal</strong> - Full user journey (sign-up to results)<br>
+                        <strong>Working Company Portal</strong> - Job posting + student filtering<br>
+                        <strong>Live Firebase database</strong> - With real Jordanian data<br>
+                        <strong>Claude API integration</strong> - Recommendations working
+                    </div>
+                </div>
+            </div>
+
+            <!-- WEEK 4 -->
+            <div class="week-card">
+                <div class="week-title">📅 WEEK 4: Polish + Testing + Deployment</div>
+                <div class="week-content">
+                    <strong>Primary Goal:</strong> Production-ready (not perfect, but polished).<br><br>
+                    
+                    <div class="subsection-title">Design Polish</div>
+                    <ul class="checklist">
+                        <li>Apply dark navy (#001a33) + gold (#d4af37) design system throughout</li>
+                        <li>Responsive design testing (mobile, tablet, desktop)</li>
+                        <li>UI animations/transitions (smooth, not jarring)</li>
+                        <li>Typography fixes (clear hierarchy, readable fonts)</li>
+                        <li>Optional: Arabic language support (if judges expect it)</li>
+                    </ul>
+
+                    <div class="subsection-title">QA Testing</div>
+                    <ul class="checklist">
+                        <li>Test all student flows end-to-end</li>
+                        <li>Test all company flows end-to-end</li>
+                        <li>Test Claude API responses (do recommendations make sense?)</li>
+                        <li>Test data accuracy (is salary data displaying correctly?)</li>
+                        <li>Bug fixes (crashes, errors, broken links)</li>
+                        <li>Performance testing (load times, database queries)</li>
+                    </ul>
+
+                    <div class="subsection-title">Deployment</div>
+                    <ul class="checklist">
+                        <li>Deploy frontend to Netlify or Vercel (5 min, automatic)</li>
+                        <li>Test live URL with team</li>
+                        <li>Gather feedback, fix critical bugs</li>
+                        <li>Prepare demo account (sample student + company accounts)</li>
+                    </ul>
+
+                    <div class="deliverable">
+                        <div class="deliverable-title">📦 Week 4 Deliverables:</div>
+                        <strong>Live app URL</strong> - Fully deployed and accessible<br>
+                        <strong>Demo accounts</strong> - Pre-made student + company for judges<br>
+                        <strong>QA report</strong> - Known bugs (if any) and workarounds<br>
+                        <strong>User guide</strong> - How to use student portal + company portal
+                    </div>
+                </div>
+            </div>
+
+            <!-- WEEK 5 -->
+            <div class="week-card">
+                <div class="week-title">📅 WEEK 5: Buffer + Final Submission (Aug 1-15)</div>
+                <div class="week-content">
+                    <strong>Primary Goal:</strong> Ready for August 15 deadline (with 2-week buffer).<br><br>
+                    
+                    <ul class="checklist">
+                        <li>Bug fixes (only critical issues)</li>
+                        <li>Data verification (double-check salary/company accuracy)</li>
+                        <li>Create demo video (2-3 min walkthrough of both portals)</li>
+                        <li>Update pitch deck (incorporate Phase 2 narrative + screenshots)</li>
+                        <li>Write technical documentation (architecture, data sources, API details)</li>
+                        <li>Prepare submission materials (README, setup guide, dependencies)</li>
+                        <li>Dry-run demo presentation (pitch for judges)</li>
+                    </ul>
+
+                    <div class="deliverable">
+                        <div class="deliverable-title">📦 Week 5 Deliverables:</div>
+                        <strong>Live app</strong> - Fully tested and stable<br>
+                        <strong>Demo video</strong> - 2-3 minute walkthrough<br>
+                        <strong>Updated pitch deck</strong> - Phase 2 story<br>
+                        <strong>Technical documentation</strong> - How it works<br>
+                        <strong>All submission materials</strong> - Ready to submit Aug 15
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TEAM STRUCTURE -->
+        <section>
+            <h2 class="section-title">Team Structure & Responsibilities</h2>
+            
+            <div class="team-section">
+                <div class="role">
+                    <div class="role-name">👤 Person A: Data Lead (Universities & Majors)</div>
+                    <div class="role-tasks">
+                        <strong>Week 1:</strong> Gather university + major data (3 days)<br>
+                        <strong>Week 2:</strong> Verify data, convert to JSON<br>
+                        <strong>Weeks 3-5:</strong> Support testing, fact-check results
+                    </div>
+                </div>
+
+                <div class="role">
+                    <div class="role-name">👤 Person B: Data Lead (Salaries & Job Data)</div>
+                    <div class="role-tasks">
+                        <strong>Week 1:</strong> Gather salary + company job data (7 days)<br>
+                        <strong>Week 2:</strong> Verify data, document sources<br>
+                        <strong>Weeks 3-5:</strong> Ensure data accuracy in app
+                    </div>
+                </div>
+
+                <div class="role">
+                    <div class="role-name">👤 Person C: Design & UX</div>
+                    <div class="role-tasks">
+                        <strong>Week 1:</strong> Create wireframes + design system<br>
+                        <strong>Weeks 2-3:</strong> Define UI components, mockups<br>
+                        <strong>Week 4:</strong> Polish design, responsive testing
+                    </div>
+                </div>
+
+                <div class="role">
+                    <div class="role-name">👤 Mohammed (You): Project Lead + Tech Oversight</div>
+                    <div class="role-tasks">
+                        <strong>Weeks 1-2:</strong> Coordinate data gathering, oversee Claude (me)<br>
+                        <strong>Weeks 3-4:</strong> Test code, deploy to Firebase/Netlify<br>
+                        <strong>Week 5:</strong> Final QA, prepare demo + submission
+                    </div>
+                </div>
+
+                <div class="role">
+                    <div class="role-name">⚙️ Claude (Me): Developer</div>
+                    <div class="role-tasks">
+                        <strong>Week 2:</strong> Set up Firebase, initialize React<br>
+                        <strong>Week 3:</strong> Build both portals (student + company)<br>
+                        <strong>Week 4:</strong> Polish, debugging, optimization<br>
+                        <strong>Week 5:</strong> Final fixes, support
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DATA GATHERING CHECKLIST -->
+        <section>
+            <h2 class="section-title">Data Gathering Checklist (CRITICAL PATH)</h2>
+            
+            <div class="important">
+                <div class="important-title">⚠️ THIS IS YOUR BOTTLENECK</div>
+                Data gathering determines whether development can start on time. If data is late, entire timeline slips. <strong>START TODAY.</strong>
+            </div>
+
+            <div class="subsection-title">Universities & Majors (Person A - Days 1-3)</div>
+            <table>
+                <tr>
+                    <th>University</th>
+                    <th>Website</th>
+                    <th>Majors Count</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td>University of Jordan (UJ)</td>
+                    <td>uoj.edu.jo</td>
+                    <td>12-15</td>
+                    <td>□</td>
+                </tr>
+                <tr>
+                    <td>JUST (Science & Tech)</td>
+                    <td>just.edu.jo</td>
+                    <td>10-12</td>
+                    <td>□</td>
+                </tr>
+                <tr>
+                    <td>German Jordan University (GJU)</td>
+                    <td>gju.edu.jo</td>
+                    <td>8-10</td>
+                    <td>□</td>
+                </tr>
+                <tr>
+                    <td>Princess Sumaya University (PSU)</td>
+                    <td>psut.edu.jo</td>
+                    <td>8-10</td>
+                    <td>□</td>
+                </tr>
+                <tr>
+                    <td>Zarqa University (ZU)</td>
+                    <td>zu.edu.jo</td>
+                    <td>6-8</td>
+                    <td>□</td>
+                </tr>
+                <tr>
+                    <td>Jordan Institution University (JIU)</td>
+                    <td>jiu.edu.jo</td>
+                    <td>5-7</td>
+                    <td>□</td>
+                </tr>
+            </table>
+
+            <div class="subsection-title">Salary Data (Person B - Days 4-7)</div>
+            <div class="checklist">
+                <li>LinkedIn Salaries (linkedin.com/salary) - Search by major + Jordan</li>
+                <li>Glassdoor (glassdoor.com) - Filter by Jordan/Middle East</li>
+                <li>Bayt.com - Middle East job board with salary data</li>
+                <li>Company LinkedIn pages - Check job postings for salary ranges</li>
+                <li>Document source for every salary entry (judges will verify)</li>
+            </div>
+
+            <div class="subsection-title">Company Job Data (Person A+B - Days 8-10)</div>
+            <table>
+                <tr>
+                    <th>Company Category</th>
+                    <th>Target Count</th>
+                    <th>Examples</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td>Tech/Software</td>
+                    <td>5-7</td>
+                    <td>Sofrecom, Rubicon, Interra Systems</td>
+                    <td>□</td>
+                </tr>
+                <tr>
+                    <td>Telecom</td>
+                    <td>3</td>
+                    <td>Orange, Zain, Umniah</td>
+                    <td>□</td>
+                </tr>
+                <tr>
+                    <td>Finance/Banking</td>
+                    <td>3</td>
+                    <td>Arab Bank, Capital Bank, Housing Bank</td>
+                    <td>□</td>
+                </tr>
+                <tr>
+                    <td>Engineering</td>
+                    <td>2-3</td>
+                    <td>Dar al-Handasa, Consultant Engineers</td>
+                    <td>□</td>
+                </tr>
+                <tr>
+                    <td>Other</td>
+                    <td>2-3</td>
+                    <td>Consulting, healthcare, manufacturing</td>
+                    <td>□</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- TECHNICAL ARCHITECTURE -->
+        <section>
+            <h2 class="section-title">Technical Architecture</h2>
+            
+            <div class="subsection-title">Stack Overview</div>
+            <table>
+                <tr>
+                    <th>Layer</th>
+                    <th>Technology</th>
+                    <th>Purpose</th>
+                    <th>Cost</th>
+                </tr>
+                <tr>
+                    <td><strong>Frontend</strong></td>
+                    <td>React.js</td>
+                    <td>Student + Company portals UI</td>
+                    <td>Free</td>
+                </tr>
+                <tr>
+                    <td><strong>Database</strong></td>
+                    <td>Firebase Firestore</td>
+                    <td>Store users, jobs, student profiles</td>
+                    <td>Free (tier)</td>
+                </tr>
+                <tr>
+                    <td><strong>Authentication</strong></td>
+                    <td>Firebase Auth</td>
+                    <td>Student/Company login</td>
+                    <td>Free</td>
+                </tr>
+                <tr>
+                    <td><strong>AI Advisor</strong></td>
+                    <td>Claude API (Sonnet 4.6)</td>
+                    <td>Major recommendations + matching</td>
+                    <td>Pay-as-you-go</td>
+                </tr>
+                <tr>
+                    <td><strong>Hosting</strong></td>
+                    <td>Netlify or Vercel</td>
+                    <td>Deploy frontend</td>
+                    <td>Free</td>
+                </tr>
+            </table>
+
+            <div class="subsection-title">How it Works (User Flow)</div>
+            <div style="background: #f0f4f8; padding: 20px; margin: 15px 0; border-radius: 5px; font-size: 13px; line-height: 1.8;">
+                <strong>Student Portal:</strong><br>
+                1. Student signs up → Firebase Auth creates account<br>
+                2. Student fills profiling form (interests, GPA, location)<br>
+                3. Form submitted → Claude API receives student data + major database<br>
+                4. Claude recommends top majors → Results displayed (salary, jobs, universities)<br>
+                5. Student can view more details, compare majors<br><br>
+                
+                <strong>Company Portal:</strong><br>
+                1. Company logs in → Firebase Auth<br>
+                2. Company posts job (title, major req, salary, skills)<br>
+                3. Job saved to Firestore database<br>
+                4. Company views dashboard → See matched students (filtering logic)<br>
+                5. Can contact/export student leads<br><br>
+                
+                <strong>Matching Logic:</strong><br>
+                When student profile is created, system automatically:<br>
+                - Matches their major interests to company job requirements<br>
+                - Filters by GPA, location preferences<br>
+                - Displays available jobs to student
+            </div>
+
+            <div class="subsection-title">Firebase Setup (You'll Do This)</div>
+            <div class="checklist">
+                <li>Go to firebase.google.com</li>
+                <li>Sign in with Google account</li>
+                <li>Create project called "Darbi"</li>
+                <li>Enable Firestore database (free tier)</li>
+                <li>Enable Authentication (email/password + Google)</li>
+                <li>Create a JSON credentials file</li>
+                <li>Share credentials file with Claude (me) via message</li>
+            </div>
+
+            <div class="important">
+                <div class="important-title">ℹ️ What is Firebase?</div>
+                Firebase = Google's cloud database + authentication service. No server code needed. Your data lives in the cloud, judges can access it from anywhere. Free tier is enough for this hackathon.
+            </div>
+        </section>
+
+        <!-- KEY DELIVERABLES -->
+        <section>
+            <h2 class="section-title">Key Deliverables by Date</h2>
+            
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Deliverable</th>
+                    <th>Owner</th>
+                    <th>Format</th>
+                </tr>
+                <tr>
+                    <td><strong>Day 3 (June 21)</strong></td>
+                    <td>Universities + Majors data</td>
+                    <td>Person A</td>
+                    <td>Excel (.xlsx)</td>
+                </tr>
+                <tr>
+                    <td><strong>Day 7 (June 25)</strong></td>
+                    <td>Salary data + sources</td>
+                    <td>Person B</td>
+                    <td>Excel (.xlsx)</td>
+                </tr>
+                <tr>
+                    <td><strong>Day 10 (June 28)</strong></td>
+                    <td>Company job data</td>
+                    <td>Person C</td>
+                    <td>Excel (.xlsx)</td>
+                </tr>
+                <tr>
+                    <td><strong>Day 14 (July 2)</strong></td>
+                    <td>All data 100% complete</td>
+                    <td>All</td>
+                    <td>JSON files + Excel</td>
+                </tr>
+                <tr>
+                    <td><strong>Day 21 (July 9)</strong></td>
+                    <td>Student Portal working</td>
+                    <td>Claude</td>
+                    <td>Live URL</td>
+                </tr>
+                <tr>
+                    <td><strong>Day 28 (July 16)</strong></td>
+                    <td>Both portals + Claude API working</td>
+                    <td>Claude</td>
+                    <td>Live URL + Firebase DB</td>
+                </tr>
+                <tr>
+                    <td><strong>Day 35 (July 23)</strong></td>
+                    <td>Polished, tested, deployed</td>
+                    <td>Team</td>
+                    <td>Live app + demo video</td>
+                </tr>
+                <tr>
+                    <td><strong>Aug 1 (FINAL)</strong></td>
+                    <td>Ready for submission</td>
+                    <td>Team</td>
+                    <td>App + Deck + Documentation</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- RISKS & MITIGATION -->
+        <section>
+            <h2 class="section-title">Risks & Mitigation</h2>
+            
+            <table>
+                <tr>
+                    <th>Risk</th>
+                    <th>Impact</th>
+                    <th>Mitigation</th>
+                </tr>
+                <tr>
+                    <td><strong>Data gathering is late</strong></td>
+                    <td>🔴 HIGH - Entire timeline slips</td>
+                    <td>Start TODAY. Person A + B dedicated full-time Week 1. Use proxy data if needed (UA/Lebanon salary data with disclosure).</td>
+                </tr>
+                <tr>
+                    <td><strong>Claude API fails or is slow</strong></td>
+                    <td>🟡 MEDIUM - App doesn't work</td>
+                    <td>Use fallback: simple rule-based matching (if GPA > 3.5, recommend top majors). Still works, less impressive.</td>
+                </tr>
+                <tr>
+                    <td><strong>Firebase has bugs</strong></td>
+                    <td>🟡 MEDIUM - Deployment delayed</td>
+                    <td>Have backup: deploy to simple JSON files + Node.js server (takes 1 day to pivot).</td>
+                </tr>
+                <tr>
+                    <td><strong>Judges expect Arabic</strong></td>
+                    <td>🟡 MEDIUM - Loses points</td>
+                    <td>Skip Arabic in MVP (Week 3). Add in Week 4 if time (takes 1-2 days for i18n setup).</td>
+                </tr>
+                <tr>
+                    <td><strong>Team member drops out</strong></td>
+                    <td>🔴 HIGH - Work redistributed</td>
+                    <td>Reduce scope: 3 universities instead of 6, 10 companies instead of 20. Still impressive with less data.</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- SUCCESS CRITERIA -->
+        <section>
+            <h2 class="section-title">Success Criteria (What Judges Want)</h2>
+            
+            <div class="subsection-title">Must-Have (Non-Negotiable)</div>
+            <div class="checklist">
+                <li><strong>Real Jordanian Data:</strong> Universities, majors, salaries, companies are verifiable. Judges will fact-check.</li>
+                <li><strong>Working Student Portal:</strong> User can sign up → fill profile → get major recommendations.</li>
+                <li><strong>Working Company Portal:</strong> Company can post job → filter students matching requirements.</li>
+                <li><strong>Claude AI Integration:</strong> Recommendations are intelligent (not hardcoded, actual AI response).</li>
+                <li><strong>Live & Accessible:</strong> Judges can visit a URL and test it themselves.</li>
+            </div>
+
+            <div class="subsection-title">Nice-to-Have (Bonus Points)</div>
+            <div class="checklist">
+                <li>Arabic language support (bilingual interface)</li>
+                <li>Beautiful, polished UI (dark navy + gold design)</li>
+                <li>Advanced matching (GPA filters, location preference, salary expectations)</li>
+                <li>Demo video showing both portals in action</li>
+                <li>Transparent data sources (judges trust honesty)</li>
+            </div>
+
+            <div class="subsection-title">Disqualifiers (Avoid These)</div>
+            <div class="checklist">
+                <li>❌ Fake data (judges will fact-check salary/company info)</li>
+                <li>❌ App doesn't work (crashes, can't load, broken links)</li>
+                <li>❌ No AI integration (hardcoded recommendations = not impressive)</li>
+                <li>❌ Only student OR company portal (both needed for "two-sided")</li>
+                <li>❌ Missing Jordanian context (use global data, not local = lose credibility)</li>
+            </div>
+        </section>
+
+        <!-- ACTION ITEMS -->
+        <section>
+            <h2 class="section-title">Immediate Action Items (Do TODAY)</h2>
+            
+            <div class="important">
+                <div class="important-title">🚀 FIRST STEPS - MANDATORY</div>
+                Don't read more. Do these first. They take 1 hour.
+            </div>
+
+            <div class="checklist">
+                <li><strong>1. Assign team roles:</strong> Who is Person A (universities)? Person B (salary)? Person C (companies)? Person D (design)?</li>
+                <li><strong>2. Send me confirmation:</strong> Message with names + roles</li>
+                <li><strong>3. Create folder:</strong> Shared Google Drive or Dropbox folder for data files</li>
+                <li><strong>4. Start data gathering:</strong> Person A opens university websites, starts listing majors</li>
+                <li><strong>5. Set daily standup:</strong> 10-min team sync at same time every day (review progress, unblock issues)</li>
+                <li><strong>6. Create Google Form (optional):</strong> If you want to survey more students for research, set it up now</li>
+            </div>
+
+            <div class="subsection-title">By End of Week 1, Message Me With:</div>
+            <div class="checklist">
+                <li>✓ universities.xlsx (all majors listed)</li>
+                <li>✓ salaries.xlsx (salary ranges + sources)</li>
+                <li>✓ companies.xlsx (job postings)</li>
+                <li>✓ Design wireframes (student + company portals)</li>
+                <li>✓ Confirmation you're ready to start development</li>
+            </div>
+        </section>
+
+        <!-- CONTACT & SUPPORT -->
+        <section>
+            <h2 class="section-title">How to Use This Plan</h2>
+            
+            <div class="subsection-title">Weekly Cadence</div>
+            <div style="background: #f0f4f8; padding: 20px; border-radius: 5px; margin: 15px 0; font-size: 13px;">
+                <strong>Every Monday (Week Start):</strong> Team review past week's deliverables, confirm next week's goals<br>
+                <strong>Daily (10 min standup):</strong> What's done? What's blocked? Any help needed?<br>
+                <strong>Every Friday (Week End):</strong> Send me deliverables, confirm next week ready<br>
+                <strong>As Needed:</strong> Message me with technical questions, I respond within 24 hours
+            </div>
+
+            <div class="subsection-title">How to Track Progress</div>
+            <div style="background: #f0f4f8; padding: 20px; border-radius: 5px; margin: 15px 0; font-size: 13px;">
+                Print this document (or save PDF copy).<br>
+                Check off items as you complete them.<br>
+                Mark colors: 🟢 On track, 🟡 At risk, 🔴 Blocked.<br>
+                Update me weekly with status.
+            </div>
+
+            <div class="subsection-title">When You Get Stuck</div>
+            <div style="background: #fff3cd; padding: 20px; border-left: 4px solid #ff9800; border-radius: 5px; margin: 15px 0; font-size: 13px;">
+                <strong>Data question?</strong> Google it. Bayt.com, LinkedIn, company websites are your friends.<br>
+                <strong>Tech question?</strong> Message me immediately. I'll write code or help debug.<br>
+                <strong>Timeline question?</strong> Message me. We can reprioritize or reduce scope.<br>
+                <strong>Team issue?</strong> Let me know. We can redistribute work.
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <strong>DARBI Phase 2 Sprint Plan</strong> | Team Sparks | Generated for Team | Valid until August 15, 2026<br>
+            Questions? Message Mohammed or Claude immediately. Don't wait. Time is your resource.
+        </div>
+    </div>
+</body>
+</html>
