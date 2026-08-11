@@ -1,16 +1,22 @@
 import { useEffect, useState } from 'react';
 import { api } from '../services/api.js';
 import ChatAdvisor from '../components/student/ChatAdvisor.jsx';
+import Pathways from '../components/student/Pathways.jsx';
 import { useAuth } from '../services/auth.jsx';
 import {
   Alert, Button, Card, Field, Shell, Tabs, inputClass, SalaryPending,
 } from '../components/common/ui.jsx';
 
-const TABS = ['advisor', 'recommendations', 'profile', 'majors', 'jobs'];
+/** Mirrors slugify() in scripts/convert_xlsx.py, which generated majors.slug. */
+const slugify = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+const TABS = ['advisor', 'pathways', 'recommendations', 'profile', 'majors', 'jobs'];
 
 export default function StudentDashboard() {
   const { profile, setProfile, logout } = useAuth();
   const [tab, setTab] = useState('advisor');
+  // Set when another tab sends the student to a specific pathway.
+  const [pathwaySlug, setPathwaySlug] = useState(null);
 
   return (
     <Shell
@@ -22,7 +28,14 @@ export default function StudentDashboard() {
       {tab === 'advisor' && (
         <ChatAdvisor student={profile} onFallback={() => setTab('recommendations')} />
       )}
-      {tab === 'recommendations' && <Recommendations profile={profile} onGoToProfile={() => setTab('profile')} />}
+      {tab === 'pathways' && <Pathways initialSlug={pathwaySlug} />}
+      {tab === 'recommendations' && (
+        <Recommendations
+          profile={profile}
+          onGoToProfile={() => setTab('profile')}
+          onSeePathway={(slug) => { setPathwaySlug(slug); setTab('pathways'); }}
+        />
+      )}
       {tab === 'profile' && <ProfileForm profile={profile} onSaved={setProfile} />}
       {tab === 'majors' && <MajorExplorer />}
       {tab === 'jobs' && <JobBoard />}
@@ -30,7 +43,7 @@ export default function StudentDashboard() {
   );
 }
 
-function Recommendations({ profile, onGoToProfile }) {
+function Recommendations({ profile, onGoToProfile, onSeePathway }) {
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -106,7 +119,18 @@ function Recommendations({ profile, onGoToProfile }) {
               </ul>
             </div>
           )}
-          <p className="mt-3"><SalaryPending /></p>
+          <div className="mt-3 flex items-center justify-between gap-4">
+            <SalaryPending />
+            {onSeePathway && (
+              <button
+                onClick={() => onSeePathway(slugify(r.major))}
+                className="text-sm font-bold underline shrink-0"
+                style={{ color: '#001a33' }}
+              >
+                See the pathway →
+              </button>
+            )}
+          </div>
         </Card>
       ))}
 

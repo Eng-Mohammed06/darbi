@@ -125,9 +125,54 @@ plus `JWT_SECRET`, `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`, `DEMO_PASSWORD`.
 `DEMO_PASSWORD` (default `darbi2026`). Recreated by `npm run db:seed`. Judges
 use these; keep them working.
 
+## The pitch deck is the spec
+
+`docs/Darbi - v2 - Final View.pptx` is the newest artifact and outranks the
+sprint plan where they disagree. It pitches a **conversational advisor**, not a
+form — slide 4 says "conversational, not a quiz… a static form would miss"
+those constraints and doubts. Slide 9's final deliverable is a *"live demo of
+both student journeys."*
+
+Two consequences:
+
+- **Chat is the product**, and it is the student dashboard's default tab.
+- **The Company and Career Boost portals appear nowhere in the deck.** They are
+  built and working, and cost nothing to leave in — but don't demo them, and
+  don't invest more in them.
+
+Slide 8's build commitments, and where they stand:
+
+| Commitment | Status |
+|---|---|
+| Chat interface with AI advisor logic | done — needs API credit |
+| Adaptive flow: school vs undergrad | done — `students.level` branches prompt + openers |
+| Admin-curated database | done — 8 majors, 6 institutions, 108 courses, 50 jobs |
+| Visual pathway output card | done — `/api/pathways/:slug` + Pathways tab |
+
+The deck scopes "3-4 majors, 2-3 universities". We carry all 8 majors and all 6
+institutions found in the files — deliberately more than promised.
+
+## Three failure tiers, by design
+
+Judges see something working at every level of degradation:
+
+1. **Full** — chat advisor answers, grounded in the catalog.
+2. **No API credit** — chat shows a specific billing message and links across to
+   Recommendations, which fall back to deterministic rule-based ranking.
+3. **Pathway card** — computed entirely in SQL, no model call at all. It renders
+   identically whether or not the key works. This is the safest thing to demo.
+
+Keep it that way. Don't make the pathway card depend on a model call.
+
 ## Status
 
-Done: repo, schema, data pipeline, seed, health + reference endpoints.
-Next: auth routes, the three dashboards, the Claude recommendation endpoint
-(cache into `recommendations` so a repeat visit costs nothing and the demo
-survives an API outage mid-presentation).
+Done: repo, schema, data pipeline, seed, auth, three dashboards, recommendation
+endpoint with rule-based fallback, university extraction, streaming chat
+advisor, pathway card.
+
+Not done: deploy to Railway; Tawjihi data (blocks the school journey as the deck
+describes it); salary bands; university links for six of eight majors.
+
+`scripts/smoke.sh` covers the API end to end (29 checks) and cleans up after
+itself — it used to leave a fake job on the board and inflate the pathway
+demand counts.

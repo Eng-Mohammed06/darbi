@@ -58,7 +58,12 @@ check "POST saved-major unknown"   "$(code -X POST "$BASE/api/students/me/saved-
 check "GET saved-majors"           "$(code "$BASE/api/students/me/saved-majors" -H "authorization: Bearer $STUDENT_TOKEN")" 200
 
 echo "== company portal =="
-check "POST job"                   "$(code -X POST "$BASE/api/companies/me/jobs" -H "authorization: Bearer $COMPANY_TOKEN" -H 'content-type: application/json' -d '{"title":"Smoke Test Engineer","requiredMajors":["Computer Science"],"minGpa":3.0,"requiredSkills":["SQL"]}')" 201
+# Capture the id so the run can delete it again — otherwise every smoke run
+# leaves a fake listing on the board and inflates the pathway demand counts.
+SMOKE_JOB=$(json -X POST "$BASE/api/companies/me/jobs" -H "authorization: Bearer $COMPANY_TOKEN" -H 'content-type: application/json' \
+  -d '{"title":"Smoke Test Engineer","requiredMajors":["Computer Science"],"minGpa":3.0,"requiredSkills":["SQL"]}' \
+  | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{console.log(JSON.parse(d).id)}catch{console.log('')}})")
+check "POST job"                   "$([ -n "$SMOKE_JOB" ] && echo 201 || echo fail)" 201
 check "POST job no title"          "$(code -X POST "$BASE/api/companies/me/jobs" -H "authorization: Bearer $COMPANY_TOKEN" -H 'content-type: application/json' -d '{"minGpa":3.0}')" 400
 check "GET student pool"           "$(code "$BASE/api/companies/students?minGpa=3.0" -H "authorization: Bearer $COMPANY_TOKEN")" 200
 
@@ -66,6 +71,12 @@ echo "== recommendations =="
 check "POST /api/recommend"        "$(code -X POST "$BASE/api/recommend" -H "authorization: Bearer $STUDENT_TOKEN")" 200
 check "POST /api/recommend (auth)" "$(code -X POST "$BASE/api/recommend")" 401
 check "company -> recommend"       "$(code -X POST "$BASE/api/recommend" -H "authorization: Bearer $COMPANY_TOKEN")" 403
+
+echo "== cleanup =="
+if [ -n "${SMOKE_JOB:-}" ]; then
+  check "DELETE smoke job" "$(code -X DELETE "$BASE/api/companies/me/jobs/$SMOKE_JOB" -H "authorization: Bearer $COMPANY_TOKEN")" 204
+fi
+check "saved-major removed"        "$(code -X DELETE "$BASE/api/students/me/saved-majors/1" -H "authorization: Bearer $STUDENT_TOKEN")" 204
 
 echo
 echo "$PASS passed, $FAIL failed"
