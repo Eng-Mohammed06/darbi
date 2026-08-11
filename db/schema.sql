@@ -41,12 +41,18 @@ CREATE TABLE IF NOT EXISTS career_profiles (
 );
 
 -- ------------------------------------------------------- reference catalog --
+-- Extracted from the spreadsheets rather than hand-entered: `source_files`
+-- records which files mention the institution, `website_source` which file the
+-- domain came from. Every field is traceable when a judge asks.
 CREATE TABLE IF NOT EXISTS universities (
-  id       SERIAL PRIMARY KEY,
-  code     TEXT UNIQUE,                        -- JUST, UJ, GJU, PSUT, ...
-  name     TEXT NOT NULL,
-  city     TEXT,
-  website  TEXT
+  id             SERIAL PRIMARY KEY,
+  code           TEXT UNIQUE,                  -- JUST, UJ, GJU, PSUT, HTU, LTUC
+  name           TEXT NOT NULL,
+  city           TEXT,                         -- null: no source file states it
+  website        TEXT,
+  website_source TEXT,
+  source_files   TEXT[] NOT NULL DEFAULT '{}',
+  programs_note  TEXT                          -- verbatim degree text, where stated
 );
 
 -- Salary columns are intentionally nullable: the salary dataset was a Week-1
@@ -68,9 +74,16 @@ CREATE TABLE IF NOT EXISTS majors (
                      CHECK (data_quality IN ('high', 'medium', 'low', 'pending'))
 );
 
+-- `relation` is deliberately narrow. The spreadsheets prove an institution
+-- *teaches courses* in a subject; they do not prove it grants a degree in it.
+-- Don't upgrade a row to 'offers_degree' without a source that says so.
 CREATE TABLE IF NOT EXISTS university_majors (
   university_id INTEGER NOT NULL REFERENCES universities(id) ON DELETE CASCADE,
   major_id      INTEGER NOT NULL REFERENCES majors(id) ON DELETE CASCADE,
+  relation      TEXT NOT NULL DEFAULT 'provides_courses'
+                CHECK (relation IN ('provides_courses', 'offers_degree')),
+  course_count  INTEGER NOT NULL DEFAULT 0,
+  evidence      TEXT,                          -- the provider string it came from
   PRIMARY KEY (university_id, major_id)
 );
 

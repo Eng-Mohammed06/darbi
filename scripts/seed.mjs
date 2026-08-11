@@ -74,15 +74,49 @@ async function seedMajors(client, majors) {
 }
 
 async function seedUniversities(client, universities) {
+  const byCode = new Map();
   for (const u of universities) {
-    await client.query(
-      `INSERT INTO universities (code, name, city, website)
-       VALUES ($1,$2,$3,$4)
+    const { rows } = await client.query(
+      `INSERT INTO universities (code, name, city, website, website_source,
+                                 source_files, programs_note)
+       VALUES ($1,$2,$3,$4,$5,$6,$7)
        ON CONFLICT (code) DO UPDATE SET
-         name = EXCLUDED.name, city = EXCLUDED.city, website = EXCLUDED.website`,
-      [u.code, u.name, u.city, u.website],
+         name = EXCLUDED.name,
+         city = COALESCE(EXCLUDED.city, universities.city),
+         website = EXCLUDED.website,
+         website_source = EXCLUDED.website_source,
+         source_files = EXCLUDED.source_files,
+         programs_note = COALESCE(EXCLUDED.programs_note, universities.programs_note)
+       RETURNING id, code`,
+      [u.code, u.name, u.city ?? null, u.website, u.website_source,
+       u.source_files ?? [], u.programs_note ?? null],
+    );
+    byCode.set(rows[0].code, rows[0].id);
+  }
+  return byCode;
+}
+
+async function seedUniversityMajors(client, links, universityIds, majorIds) {
+  await client.query('DELETE FROM university_majors');
+  let skipped = 0;
+  for (const l of links) {
+    const universityId = universityIds.get(l.university_code);
+    const majorId = majorIds.get(l.major_name?.toLowerCase());
+    if (!universityId || !majorId) {
+      skipped += 1;
+      continue;
+    }
+    await client.query(
+      `INSERT INTO university_majors (university_id, major_id, relation, course_count, evidence)
+       VALUES ($1,$2,$3,$4,$5)
+       ON CONFLICT (university_id, major_id) DO UPDATE SET
+         relation = EXCLUDED.relation,
+         course_count = EXCLUDED.course_count,
+         evidence = EXCLUDED.evidence`,
+      [universityId, majorId, l.relation ?? 'provides_courses', l.course_count ?? 0, l.evidence],
     );
   }
+  if (skipped) console.warn(`  ! ${skipped} university-major link(s) had no matching row`);
 }
 
 async function seedCourses(client, courses, majorIds) {
@@ -193,10 +227,11 @@ async function seedDemoAccounts(client) {
 }
 
 async function main() {
-  const [majors, universities, courses, jobs, careerPaths, trainingCenters] =
+  const [majors, universities, universityMajors, courses, jobs, careerPaths, trainingCenters] =
     await Promise.all([
       load('majors.json'),
       load('universities.json'),
+      load('university_majors.json'),
       load('courses.json'),
       load('jobs.json'),
       load('career_paths.json'),
@@ -205,7 +240,8 @@ async function main() {
 
   await withTransaction(async (client) => {
     const majorIds = await seedMajors(client, majors);
-    await seedUniversities(client, universities);
+    const universityIds = await seedUniversities(client, universities);
+    await seedUniversityMajors(client, universityMajors, universityIds, majorIds);
     await seedCourses(client, courses, majorIds);
     await seedJobs(client, jobs);
     await seedCareer(client, careerPaths, trainingCenters);
@@ -215,6 +251,7 @@ async function main() {
   const counts = await pool.query(`
     SELECT 'majors' AS t, count(*) FROM majors
     UNION ALL SELECT 'universities', count(*) FROM universities
+    UNION ALL SELECT 'university_majors', count(*) FROM university_majors
     UNION ALL SELECT 'courses', count(*) FROM courses
     UNION ALL SELECT 'jobs', count(*) FROM jobs
     UNION ALL SELECT 'career_paths', count(*) FROM career_paths

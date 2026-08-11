@@ -190,14 +190,18 @@ function ProfileForm({ profile, onSaved }) {
 function MajorExplorer() {
   const [majors, setMajors] = useState([]);
   const [open, setOpen] = useState(null);
-  const [courses, setCourses] = useState([]);
+  const [detail, setDetail] = useState({ courses: [], universities: [] });
 
   useEffect(() => { api('/majors', { auth: false }).then(setMajors).catch(() => {}); }, []);
 
   async function toggle(slug) {
     if (open === slug) return setOpen(null);
     setOpen(slug);
-    setCourses(await api(`/majors/${slug}/courses`, { auth: false }));
+    const [courses, universities] = await Promise.all([
+      api(`/majors/${slug}/courses`, { auth: false }),
+      api(`/majors/${slug}/universities`, { auth: false }),
+    ]);
+    setDetail({ courses, universities });
   }
 
   return (
@@ -208,16 +212,38 @@ function MajorExplorer() {
             <span className="font-semibold text-darbi-navy">{m.name}</span>
             <span className="text-sm text-gray-500">{m.course_count} courses</span>
           </button>
+
           {open === m.slug && (
-            <ul className="mt-3 ml-4 text-sm text-gray-700 space-y-1.5">
-              {courses.map((c) => (
-                <li key={c.id}>
-                  <span className="font-medium">{c.name}</span>
-                  {c.provider && <span className="text-gray-500"> — {c.provider}</span>}
-                  {c.cost_raw && <span className="text-gray-500"> · {c.cost_raw} JOD</span>}
-                </li>
-              ))}
-            </ul>
+            <div className="mt-3 ml-4 text-sm">
+              <p className="font-semibold text-darbi-navy mb-1.5">Where it's taught</p>
+              {detail.universities.length > 0 ? (
+                <ul className="text-gray-700 space-y-1 mb-4">
+                  {detail.universities.map((u) => (
+                    <li key={u.code}>
+                      <span className="font-medium">{u.name}</span>
+                      <span className="text-gray-500"> ({u.code}) — {u.course_count} course(s)</span>
+                      {u.website && <span className="text-gray-400"> · {u.website}</span>}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-500 italic mb-4">
+                  No university on file teaches this major yet — its courses come from training
+                  academies. Being gathered.
+                </p>
+              )}
+
+              <p className="font-semibold text-darbi-navy mb-1.5">Courses</p>
+              <ul className="text-gray-700 space-y-1.5">
+                {detail.courses.map((c) => (
+                  <li key={c.id}>
+                    <span className="font-medium">{c.name}</span>
+                    {c.provider && <span className="text-gray-500"> — {c.provider}</span>}
+                    {c.cost_raw && <span className="text-gray-500"> · {c.cost_raw} JOD</span>}
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </div>
       ))}

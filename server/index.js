@@ -43,6 +43,44 @@ app.get('/api/majors', async (_req, res, next) => {
   }
 });
 
+app.get('/api/universities', async (_req, res, next) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT u.*,
+              coalesce(
+                json_agg(json_build_object('major', m.name, 'relation', um.relation,
+                                           'course_count', um.course_count)
+                         ORDER BY m.name) FILTER (WHERE m.id IS NOT NULL), '[]') AS majors
+         FROM universities u
+         LEFT JOIN university_majors um ON um.university_id = u.id
+         LEFT JOIN majors m ON m.id = um.major_id
+        GROUP BY u.id
+        ORDER BY u.code`,
+    );
+    res.json(rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
+/** Institutions teaching this major, with the evidence behind each link. */
+app.get('/api/majors/:slug/universities', async (req, res, next) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT u.code, u.name, u.website, um.relation, um.course_count, um.evidence
+         FROM university_majors um
+         JOIN universities u ON u.id = um.university_id
+         JOIN majors m ON m.id = um.major_id
+        WHERE m.slug = $1
+        ORDER BY um.course_count DESC, u.code`,
+      [req.params.slug],
+    );
+    res.json(rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.get('/api/majors/:slug/courses', async (req, res, next) => {
   try {
     const { rows } = await pool.query(

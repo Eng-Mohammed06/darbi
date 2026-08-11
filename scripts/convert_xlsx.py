@@ -352,6 +352,135 @@ def convert_career(src):
     return paths, centers
 
 
+# ------------------------------------------------------------- institutions --
+# Degree-granting institutions that actually appear in the team's spreadsheets.
+# `aliases` are the spellings found in the files (providers use both "JUST —
+# Amman" and "JUST - Campus"); `website` is only filled where a file states it.
+# Nothing here is invented — `sourced_from` names the file each fact came from.
+UNIVERSITIES = [
+    {
+        "code": "JUST",
+        "name": "Jordan University of Science and Technology",
+        "aliases": ["JUST"],
+        "website": "just.edu.jo",
+        "website_source": "DARBI_Phase2_Sprint_Plan.html",
+    },
+    {
+        "code": "UJ",
+        "name": "University of Jordan",
+        "aliases": ["UJ", "University of Jordan"],
+        "website": "ju.edu.jo",
+        "website_source": "career_courses_ENGLISH.xlsx",
+    },
+    {
+        "code": "GJU",
+        "name": "German Jordanian University",
+        "aliases": ["GJU", "German-Jordanian University", "German Jordanian University"],
+        "website": "gju.edu.jo",
+        "website_source": "career_courses_ENGLISH.xlsx",
+    },
+    {
+        "code": "PSUT",
+        "name": "Princess Sumaya University for Technology",
+        "aliases": ["PSUT", "PSU"],
+        "website": "psut.edu.jo",
+        "website_source": "career_courses_ENGLISH.xlsx",
+    },
+    {
+        "code": "HTU",
+        "name": "Al Hussein Technical University",
+        "aliases": ["HTU", "Hussein Technical University"],
+        "website": "htu.edu.jo",
+        "website_source": "career_courses_ENGLISH.xlsx",
+    },
+    {
+        "code": "LTUC",
+        "name": "Luminus Technical University College",
+        "aliases": ["LTUC", "Luminus", "ASAC"],
+        "website": "ltuc.com",
+        "website_source": "career_courses_ENGLISH.xlsx",
+    },
+]
+
+
+def mentions(alias, text):
+    """Whole-token match, so 'PSU' doesn't fire inside another word."""
+    return bool(re.search(rf"(?<![A-Za-z]){re.escape(alias)}(?![A-Za-z])", text or ""))
+
+
+def match_university(text):
+    for uni in UNIVERSITIES:
+        if any(mentions(a, text) for a in uni["aliases"]):
+            return uni
+    return None
+
+
+def convert_institutions(courses, career_paths, training_centers):
+    """Build the university list and its links to majors, from file evidence only."""
+    found = {}
+
+    def note(uni, source_file):
+        entry = found.setdefault(
+            uni["code"],
+            {
+                "code": uni["code"],
+                "name": uni["name"],
+                "city": None,  # not stated per-institution in any source file
+                "website": uni["website"],
+                "website_source": uni["website_source"],
+                "source_files": [],
+                "programs_note": None,
+            },
+        )
+        if source_file not in entry["source_files"]:
+            entry["source_files"].append(source_file)
+        return entry
+
+    # 1. Course providers -> which majors each institution actually teaches.
+    links = {}
+    for c in courses:
+        uni = match_university(c.get("provider"))
+        if not uni:
+            continue
+        note(uni, c["source_file"])
+        key = (uni["code"], c["major_name"])
+        link = links.setdefault(
+            key,
+            {
+                "university_code": uni["code"],
+                "major_name": c["major_name"],
+                "relation": "provides_courses",
+                "course_count": 0,
+                "evidence": c["provider"],
+            },
+        )
+        link["course_count"] += 1
+
+    # 2. Training-centre rows -> degree programmes, where a file states them.
+    for t in training_centers:
+        uni = match_university(t.get("name"))
+        if not uni:
+            continue
+        entry = note(uni, "career_courses_ENGLISH.xlsx")
+        if t.get("details") and not entry["programs_note"]:
+            entry["programs_note"] = t["details"]
+
+    # 3. Career-path rows cite universities in free text too.
+    for p in career_paths:
+        for uni in UNIVERSITIES:
+            if any(mentions(a, p.get("jordan_centers") or "") for a in uni["aliases"]):
+                note(uni, "career_courses_ENGLISH.xlsx")
+
+    universities = sorted(found.values(), key=lambda u: u["code"])
+    university_majors = sorted(links.values(), key=lambda l: (l["university_code"], l["major_name"]))
+
+    for u in universities:
+        offered = [l["major_name"] for l in university_majors if l["university_code"] == u["code"]]
+        print(f"  {u['code']:<5} {u['name'][:46]:<46} majors: {len(offered)}")
+
+    return universities, university_majors
+
+
 # ------------------------------------------------------------------- majors --
 def derive_majors(courses):
     """Majors are derived from the course data we actually have.
@@ -394,6 +523,8 @@ def main():
     jobs = convert_jobs(src)
     career_paths, training_centers = convert_career(src)
     majors = derive_majors(courses)
+    print("institutions:")
+    universities, university_majors = convert_institutions(courses, career_paths, training_centers)
 
     datasets = {
         "majors.json": majors,
@@ -401,9 +532,8 @@ def main():
         "jobs.json": jobs,
         "career_paths.json": career_paths,
         "training_centers.json": training_centers,
-        # Week-1 deliverable that never landed. Empty on purpose — the seed
-        # script tolerates it and the UI degrades rather than showing fake data.
-        "universities.json": [],
+        "universities.json": universities,
+        "university_majors.json": university_majors,
     }
 
     for fname, rows in datasets.items():

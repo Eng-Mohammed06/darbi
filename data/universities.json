@@ -1,1 +1,75 @@
-[]
+[
+  {
+    "code": "GJU",
+    "name": "German Jordanian University",
+    "city": null,
+    "website": "gju.edu.jo",
+    "website_source": "career_courses_ENGLISH.xlsx",
+    "source_files": [
+      "biomedical_chemical_engineering_courses.xlsx",
+      "engineering_courses.xlsx",
+      "career_courses_ENGLISH.xlsx"
+    ],
+    "programs_note": null
+  },
+  {
+    "code": "HTU",
+    "name": "Al Hussein Technical University",
+    "city": null,
+    "website": "htu.edu.jo",
+    "website_source": "career_courses_ENGLISH.xlsx",
+    "source_files": [
+      "career_courses_ENGLISH.xlsx"
+    ],
+    "programs_note": "Bachelor's and technical diploma programs accredited by Ministry of Higher Education in Software Engineering and other technical specializations aligned with labor market"
+  },
+  {
+    "code": "JUST",
+    "name": "Jordan University of Science and Technology",
+    "city": null,
+    "website": "just.edu.jo",
+    "website_source": "DARBI_Phase2_Sprint_Plan.html",
+    "source_files": [
+      "biomedical_chemical_engineering_courses.xlsx",
+      "engineering_courses.xlsx"
+    ],
+    "programs_note": null
+  },
+  {
+    "code": "LTUC",
+    "name": "Luminus Technical University College",
+    "city": null,
+    "website": "ltuc.com",
+    "website_source": "career_courses_ENGLISH.xlsx",
+    "source_files": [
+      "career_courses_ENGLISH.xlsx"
+    ],
+    "programs_note": "Bachelor's in Cloud Computing, British BTEC Diploma (Software Engineering, Cybersecurity, Artificial Intelligence), Intensive programs (Bootcamp) in partnership with Code Fellows (Seattle) with international certification"
+  },
+  {
+    "code": "PSUT",
+    "name": "Princess Sumaya University for Technology",
+    "city": null,
+    "website": "psut.edu.jo",
+    "website_source": "career_courses_ENGLISH.xlsx",
+    "source_files": [
+      "biomedical_chemical_engineering_courses.xlsx",
+      "engineering_courses.xlsx",
+      "career_courses_ENGLISH.xlsx"
+    ],
+    "programs_note": null
+  },
+  {
+    "code": "UJ",
+    "name": "University of Jordan",
+    "city": null,
+    "website": "ju.edu.jo",
+    "website_source": "career_courses_ENGLISH.xlsx",
+    "source_files": [
+      "biomedical_chemical_engineering_courses.xlsx",
+      "engineering_courses.xlsx",
+      "career_courses_ENGLISH.xlsx"
+    ],
+    "programs_note": "University continuing education centers offer short professional diplomas in Artificial Intelligence, Data Science and Cloud Computing with accredited university certificates"
+  }
+]

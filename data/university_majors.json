@@ -1,0 +1,58 @@
+[
+  {
+    "university_code": "GJU",
+    "major_name": "Biomedical Engineering",
+    "relation": "provides_courses",
+    "course_count": 4,
+    "evidence": "GJU — Amman"
+  },
+  {
+    "university_code": "GJU",
+    "major_name": "Chemical Engineering",
+    "relation": "provides_courses",
+    "course_count": 5,
+    "evidence": "GJU — Amman"
+  },
+  {
+    "university_code": "JUST",
+    "major_name": "Biomedical Engineering",
+    "relation": "provides_courses",
+    "course_count": 4,
+    "evidence": "JUST — Amman (hands-on lab)"
+  },
+  {
+    "university_code": "JUST",
+    "major_name": "Chemical Engineering",
+    "relation": "provides_courses",
+    "course_count": 4,
+    "evidence": "JUST — Amman"
+  },
+  {
+    "university_code": "PSUT",
+    "major_name": "Biomedical Engineering",
+    "relation": "provides_courses",
+    "course_count": 2,
+    "evidence": "PSU — Amman"
+  },
+  {
+    "university_code": "PSUT",
+    "major_name": "Chemical Engineering",
+    "relation": "provides_courses",
+    "course_count": 4,
+    "evidence": "PSU — Amman"
+  },
+  {
+    "university_code": "UJ",
+    "major_name": "Biomedical Engineering",
+    "relation": "provides_courses",
+    "course_count": 3,
+    "evidence": "UJ — Amman"
+  },
+  {
+    "university_code": "UJ",
+    "major_name": "Chemical Engineering",
+    "relation": "provides_courses",
+    "course_count": 4,
+    "evidence": "UJ — Amman"
+  }
+]
