@@ -81,16 +81,17 @@ const ROLE_PITCH = {
     'Jordanian salary and job data.',
 };
 
-const button = (label, href) => `
-<a href="${href}" style="display:inline-block;margin-top:20px;padding:12px 28px;
-  background:linear-gradient(90deg,#9333ea,#c026d3);color:#ffffff;text-decoration:none;
-  border-radius:999px;font-weight:bold;font-size:14px;">${label}</a>`;
-
 /**
  * Sent once, right after signup (alongside, not instead of, the verification
  * code email — this one is about orienting a new user, that one is actionable).
  * `name` is the display name collected at signup (defaults to username, see
  * server/routes/auth.js), `role` picks the pitch that matches their portal.
+ *
+ * Deliberately plain: a filled gradient CTA button here landed straight in
+ * Gmail's spam folder on a brand-new sending domain (darbi.app has no sender
+ * reputation yet), while the plain-text codeBlock() emails land in the inbox
+ * fine. A bare text link reads as transactional rather than promotional,
+ * which matters until the domain has enough real send volume to build trust.
  */
 export const welcomeEmail = (name, role) => ({
   subject: 'Welcome to Darbi',
@@ -99,6 +100,8 @@ export const welcomeEmail = (name, role) => ({
     `<p style="color:#334155;font-size:14px;">
        ${ROLE_PITCH[role] ?? 'Get started exploring verified Jordanian majors, courses, salaries, and jobs.'}
      </p>
-     ${button('Open Darbi', APP_URL)}`,
+     <p style="font-size:14px;margin-top:16px;">
+       <a href="${APP_URL}" style="color:#7c3aed;">Open Darbi →</a>
+     </p>`,
   ),
 });
