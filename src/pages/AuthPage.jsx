@@ -74,7 +74,6 @@ export default function AuthPage() {
           username: form.username,
           password: form.password,
           role,
-          name: form.name,
           // Interests drive the recommendation engine, so capture them at signup.
           interests: form.interests
             ? form.interests.split(',').map((s) => s.trim()).filter(Boolean)
@@ -192,14 +191,9 @@ export default function AuthPage() {
 
             <form onSubmit={submit} className="space-y-4">
               {mode === 'signup' && (
-                <>
-                  <DarkField label={role === 'company' ? 'Company name' : 'Full name'}>
-                    <input className={darkInput} value={form.name ?? ''} onChange={set('name')} required />
-                  </DarkField>
-                  <DarkField label="Username">
-                    <input className={darkInput} value={form.username ?? ''} onChange={set('username')} required />
-                  </DarkField>
-                </>
+                <DarkField label="Username">
+                  <input className={darkInput} value={form.username ?? ''} onChange={set('username')} required />
+                </DarkField>
               )}
 
               <DarkField label={mode === 'login' ? 'Email / Username' : 'Email'}>

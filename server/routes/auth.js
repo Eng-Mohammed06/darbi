@@ -20,18 +20,20 @@ async function loadProfile(userId, role) {
 
 /**
  * POST /api/auth/signup
- * { email, password, role, name, ...role-specific fields }
- * Creates the user and its profile row in one transaction.
+ * { email, username, password, role, ...role-specific fields }
+ * Creates the user and its profile row in one transaction. `name` (shown as
+ * "Welcome, X" and on job postings) is no longer collected separately at
+ * signup — it defaults to the username, which is otherwise required anyway.
  */
 router.post(
   '/signup',
   asyncRoute(async (req, res) => {
     const { email, username, password, role, name } = req.body ?? {};
 
-    if (!email || !username || !password || !role || !name) {
+    if (!email || !username || !password || !role) {
       return res.status(400).json({
         error: 'missing_fields',
-        need: ['email', 'username', 'password', 'role', 'name'],
+        need: ['email', 'username', 'password', 'role'],
       });
     }
     if (!ROLES.includes(role)) {
@@ -43,6 +45,7 @@ router.post(
 
     const normalizedEmail = String(email).trim().toLowerCase();
     const normalizedUsername = String(username).trim();
+    const displayName = name ? String(name).trim() : normalizedUsername;
     const passwordHash = await hashPassword(String(password));
 
     let user;
@@ -60,21 +63,21 @@ router.post(
           await client.query(
             `INSERT INTO students (user_id, name, level, interests, gpa, location, salary_pref)
              VALUES ($1,$2,$3,$4,$5,$6,$7)`,
-            [created.id, name, level ?? null, interests ?? [], gpa ?? null,
+            [created.id, displayName, level ?? null, interests ?? [], gpa ?? null,
              location ?? null, salaryPref ?? null],
           );
         } else if (role === 'company') {
           const { industry, website } = req.body;
           await client.query(
             `INSERT INTO companies (user_id, name, industry, website) VALUES ($1,$2,$3,$4)`,
-            [created.id, name, industry ?? null, website ?? null],
+            [created.id, displayName, industry ?? null, website ?? null],
           );
         } else {
           const { currentTitle, yearsExperience, major, skills } = req.body;
           await client.query(
             `INSERT INTO career_profiles (user_id, name, current_title, years_experience, major, skills)
              VALUES ($1,$2,$3,$4,$5,$6)`,
-            [created.id, name, currentTitle ?? null, yearsExperience ?? null,
+            [created.id, displayName, currentTitle ?? null, yearsExperience ?? null,
              major ?? null, skills ?? []],
           );
         }
