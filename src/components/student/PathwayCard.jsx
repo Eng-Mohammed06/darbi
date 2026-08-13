@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../services/api.js';
 
-const GOLD = '#d4af37';
-const PURPLE = '#a855f7';
+const GOLD = '#ff5722';
+const PURPLE = '#06b6d4';
 
 /**
  * Slide 4's "visual path, not a list": study -> career -> market demand.

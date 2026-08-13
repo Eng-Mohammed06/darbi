@@ -97,7 +97,7 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#05020a' }}>
+    <div className="min-h-screen flex" style={{ background: '#0f172a' }}>
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col justify-center px-16">
         <Wisps palette={[PURPLE, PURPLE_DARK]} opacity={0.65} />
         <div className="relative z-10">
@@ -107,7 +107,7 @@ export default function AuthPage() {
           >
             Darbi
           </h1>
-          <p className="text-lg mt-3" style={{ color: '#c084fc' }}>
+          <p className="text-lg mt-3" style={{ color: '#67e8f9' }}>
             Career advisory platform
           </p>
           {stats && (
@@ -126,7 +126,7 @@ export default function AuthPage() {
           <div
             className="rounded-3xl p-8"
             style={{
-              background: 'rgba(15,10,22,0.9)',
+              background: 'rgba(30,41,59,0.9)',
               border: `1px solid ${PURPLE}40`,
               boxShadow: `0 0 60px ${PURPLE_DARK}26`,
             }}
@@ -174,7 +174,7 @@ export default function AuthPage() {
             {error && (
               <div
                 className="mb-4 px-4 py-3 rounded-xl text-sm"
-                style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#fca5a5' }}
+                style={{ background: 'rgba(255,107,122,0.1)', border: '1px solid rgba(255,107,122,0.3)', color: '#ff6b7a' }}
               >
                 {error}
               </div>
@@ -206,7 +206,7 @@ export default function AuthPage() {
                       type="button"
                       onClick={() => navigate('/reset-password')}
                       className="text-xs font-semibold hover:underline"
-                      style={{ color: '#c084fc' }}
+                      style={{ color: '#67e8f9' }}
                     >
                       Forgot password?
                     </button>

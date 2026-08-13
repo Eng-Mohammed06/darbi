@@ -9,11 +9,11 @@ export default function AccountPage() {
 
   return (
     <div className="min-h-screen relative overflow-hidden" style={{ background: 'var(--darbi-bg)' }}>
-      <Wisps palette={['#a855f7', '#d4af37']} opacity={0.28} fixed />
+      <Wisps palette={['#06b6d4', '#ff5722']} opacity={0.28} fixed />
 
       <header
         className="text-white relative z-10"
-        style={{ background: 'rgba(10,6,16,0.85)', borderBottom: '1px solid var(--darbi-border)' }}
+        style={{ background: 'rgba(15,23,42,0.85)', borderBottom: '1px solid var(--darbi-border)' }}
       >
         <div className="darbi-container py-5 flex items-center gap-4">
           <Link to="/" className="text-gray-300 hover:text-white text-sm font-semibold shrink-0 transition">← Back</Link>

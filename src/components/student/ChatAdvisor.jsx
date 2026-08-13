@@ -163,7 +163,7 @@ export default function ChatAdvisor({ student, onFallback }) {
                 <button
                   key={o}
                   onClick={() => send(o)}
-                  className="text-sm text-left text-gray-200 px-4 py-2 rounded-full border border-white/10 hover:border-purple-400 hover:bg-white/5 transition max-w-md w-full"
+                  className="text-sm text-left text-gray-200 px-4 py-2 rounded-full border border-white/10 hover:border-cyan-400 hover:bg-white/5 transition max-w-md w-full"
                 >
                   {o}
                 </button>

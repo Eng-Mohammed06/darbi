@@ -3,25 +3,35 @@
 @tailwind utilities;
 
 /*
- * Design tokens for the dark purple/gold theme (approved mockup, Aug 2026 —
- * supersedes the original navy/gold wireframe deliverable app-wide, not just
- * on the login page). `darbi-navy` and `darbi-gold` are kept as token *names*
- * for continuity with every component that already references them, but
- * `darbi-navy` now holds a light color: on this theme it's the "heading on a
- * dark card" role, not a background.
+ * Design tokens for the "Vibrant Modern" dark theme (darbi-color-palettes-code.md,
+ * Option B — supersedes the earlier dark purple/gold theme app-wide, not just
+ * on the login page). `darbi-navy`, `darbi-gold` and `darbi-purple` are kept as
+ * token *names* for continuity with every component that already references
+ * them, but now hold the new palette's values (cyan primary, orange accent) —
+ * `darbi-navy` holds a light color throughout: it's the "heading on a dark
+ * card" role, not a background. Only the dark-mode half of the doc's palette
+ * is used, since this app has a single dark theme, no light/dark toggle.
  */
 :root {
-  --darbi-bg: #05020a; /* page background */
-  --darbi-surface: rgba(15, 10, 22, 0.88); /* card / box background — no backdrop-blur behind it, so opaque enough to stay legible on its own */
-  --darbi-surface-solid: #0c0714; /* opaque variant, e.g. dropdown menus over content */
-  --darbi-border: rgba(168, 85, 247, 0.25);
+  --darbi-bg: #0f172a; /* page background */
+  --darbi-surface: rgba(30, 41, 59, 0.88); /* card / box background — no backdrop-blur behind it, so opaque enough to stay legible on its own */
+  --darbi-surface-solid: #1e293b; /* opaque variant, e.g. dropdown menus over content */
+  --darbi-border: rgba(6, 182, 212, 0.25);
 
-  --darbi-navy: #f5f0fa; /* heading/emphasis text on dark surfaces (was #001a33) */
-  --darbi-gold: #d4af37;
-  --darbi-gold-dark: #b8952e; /* "Hover: slightly darker gold" */
-  --darbi-purple: #a855f7;
-  --darbi-purple-dark: #7c3aed;
-  --darbi-gradient: linear-gradient(90deg, #9333ea, #c026d3);
+  --darbi-navy: #f8fafc; /* heading/emphasis text on dark surfaces (was #001a33) */
+  --darbi-gold: #ff5722;
+  --darbi-gold-dark: #e64a19; /* "Hover: slightly darker gold" */
+  --darbi-purple: #06b6d4;
+  --darbi-purple-dark: #0891b2;
+  --darbi-gradient: linear-gradient(90deg, #06b6d4, #00f5d4);
+
+  /* New tokens filling the gaps the palette doc calls out (no AI signal color,
+     no error color in the previous theme). Not yet consumed everywhere an ad-hoc
+     color still does the same job — see Alert() in ui.jsx for the first user. */
+  --darbi-ai-feature: #a78bfa;
+  --darbi-success: #22c55e;
+  --darbi-error: #ff6b7a;
+  --darbi-text-muted: #94a3b8;
 
   --darbi-max-width: 800px; /* "Max width: 800px (centered)" */
   --darbi-box-padding: 20px; /* "Padding inside boxes: 20px" */
@@ -41,7 +51,7 @@ body {
   /* "Font Family: Sans-serif (Arial, Segoe UI, or similar)" */
   font-family: 'Segoe UI', Arial, -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--darbi-bg);
-  color: #e5e0ea;
+  color: #f8fafc;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -59,7 +69,7 @@ body {
     border: 1px solid var(--darbi-border);
     border-radius: var(--darbi-radius);
     padding: var(--darbi-box-padding);
-    box-shadow: 0 0 40px rgba(124, 58, 237, 0.12);
+    box-shadow: 0 0 40px rgba(8, 145, 178, 0.12);
   }
 
   .darbi-section {
@@ -76,7 +86,7 @@ body {
     font-weight: 700;
     background: var(--darbi-gradient);
     color: #fff;
-    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.35);
+    box-shadow: 0 8px 24px rgba(8, 145, 178, 0.35);
     transition: filter 0.15s ease;
   }
   .darbi-btn:hover:not(:disabled) {
@@ -96,7 +106,7 @@ body {
     box-shadow: none;
   }
   .darbi-btn-navy:hover:not(:disabled) {
-    background: rgba(168, 85, 247, 0.12);
+    background: rgba(6, 182, 212, 0.12);
     filter: none;
   }
 
@@ -133,7 +143,7 @@ body {
 .darbi-dark-input:-webkit-autofill:hover,
 .darbi-dark-input:-webkit-autofill:focus {
   -webkit-text-fill-color: #fff;
-  -webkit-box-shadow: 0 0 0 1000px rgba(20, 12, 28, 0.9) inset;
+  -webkit-box-shadow: 0 0 0 1000px rgba(15, 23, 42, 0.9) inset;
   transition: background-color 9999s ease-in-out 0s;
 }
 

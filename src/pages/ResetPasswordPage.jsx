@@ -72,7 +72,7 @@ export default function ResetPasswordPage() {
       {error && (
         <div
           className="mb-4 px-4 py-3 rounded-xl text-sm"
-          style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#fca5a5' }}
+          style={{ background: 'rgba(255,107,122,0.1)', border: '1px solid rgba(255,107,122,0.3)', color: '#ff6b7a' }}
         >
           {error}
         </div>

@@ -125,7 +125,7 @@ function Centered({ children }) {
       className="min-h-screen relative overflow-hidden flex items-center justify-center px-4 py-10"
       style={{ background: 'var(--darbi-bg)' }}
     >
-      <Wisps palette={['#a855f7', '#d4af37']} opacity={0.4} fixed />
+      <Wisps palette={['#06b6d4', '#ff5722']} opacity={0.4} fixed />
       <div className="darbi-box relative z-10 p-8 max-w-md w-full text-center">{children}</div>
     </div>
   );

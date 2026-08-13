@@ -28,17 +28,17 @@ function Overview({ profile }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <Card title="Current role">
-        <p className="text-2xl font-bold" style={{ color: '#d4af37' }}>
+        <p className="text-2xl font-bold" style={{ color: '#ff5722' }}>
           {profile?.current_title ?? 'Not set'}
         </p>
       </Card>
       <Card title="Experience">
-        <p className="text-2xl font-bold" style={{ color: '#d4af37' }}>
+        <p className="text-2xl font-bold" style={{ color: '#ff5722' }}>
           {profile?.years_experience != null ? `${profile.years_experience} years` : '—'}
         </p>
       </Card>
       <Card title="Field">
-        <p className="text-2xl font-bold" style={{ color: '#d4af37' }}>
+        <p className="text-2xl font-bold" style={{ color: '#ff5722' }}>
           {profile?.major ?? 'Not set'}
         </p>
       </Card>

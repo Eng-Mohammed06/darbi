@@ -201,7 +201,7 @@ function JobPosting({ job: j, onRemove }) {
         {j.salary_raw && `${j.salary_raw} JOD`}
       </p>
 
-      <button onClick={toggle} className="text-xs font-semibold mt-3 text-left" style={{ color: '#c084fc' }}>
+      <button onClick={toggle} className="text-xs font-semibold mt-3 text-left" style={{ color: '#67e8f9' }}>
         {j.applicant_count} applicant{j.applicant_count === 1 ? '' : 's'} {open ? '▲' : '▼'}
       </button>
 

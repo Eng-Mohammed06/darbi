@@ -50,7 +50,7 @@ export default function SavedPathways() {
               <div
                 key={m.slug}
                 className={`text-left p-4 rounded-2xl border-2 transition ${
-                  open ? 'border-purple-400 bg-purple-500/10' : 'border-white/10 hover:border-white/25'
+                  open ? 'border-cyan-400 bg-cyan-500/10' : 'border-white/10 hover:border-white/25'
                 }`}
               >
                 <div className="flex justify-between items-start gap-2">
@@ -82,7 +82,7 @@ export default function SavedPathways() {
                 <button
                   onClick={() => setSelected(open ? null : m.slug)}
                   className="text-xs font-semibold mt-3"
-                  style={{ color: '#c084fc' }}
+                  style={{ color: '#67e8f9' }}
                 >
                   {open ? 'Hide pathway ▲' : 'View pathway ▼'}
                 </button>

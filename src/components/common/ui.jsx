@@ -1,10 +1,11 @@
 /**
  * Shared presentational bits.
  *
- * Dark purple/gold theme (approved mockup, Aug 2026) — see src/styles/global.css
- * for the tokens. The classes `darbi-container`, `darbi-box`, `darbi-btn` and
- * `darbi-input` carry them; prefer those over ad-hoc Tailwind spacing/color.
- * `Wisps` is the decorative flowing-ribbon background used behind every page.
+ * Dark "Vibrant Modern" theme (darbi-color-palettes-code.md, Option B) — see
+ * src/styles/global.css for the tokens. The classes `darbi-container`,
+ * `darbi-box`, `darbi-btn` and `darbi-input` carry them; prefer those over
+ * ad-hoc Tailwind spacing/color. `Wisps` is the decorative flowing-ribbon
+ * background used behind every page.
  */
 
 import { useState } from 'react';
@@ -12,17 +13,18 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../services/auth.jsx';
 
 // Shared with the pre-login dark-card pages (AuthPage, ResetPasswordPage) —
-// same glassy purple/gold aesthetic, kept separate from the post-login
-// navy/gold `darbi-*` tokens in global.css since these two visual systems
-// (logged-out vs. logged-in) are deliberately different per the approved mockup.
-export const PURPLE = '#a855f7';
-export const PURPLE_DARK = '#7c3aed';
-export const GOLD = '#d4af37';
-export const GRADIENT = 'linear-gradient(90deg,#9333ea,#c026d3)';
+// same glassy cyan/orange aesthetic, kept separate from the post-login
+// `darbi-*` tokens in global.css since these two visual systems (logged-out
+// vs. logged-in) are deliberately different per the approved mockup. Names
+// (PURPLE/GOLD) are historical from the previous palette; values are current.
+export const PURPLE = '#06b6d4';
+export const PURPLE_DARK = '#0891b2';
+export const GOLD = '#ff5722';
+export const GRADIENT = 'linear-gradient(90deg,#06b6d4,#00f5d4)';
 
 export const darkInput =
   'darbi-dark-input w-full rounded-full bg-black/40 border border-white/10 text-white placeholder-gray-500 ' +
-  'px-5 py-3 text-sm focus:outline-none focus:border-purple-400 transition';
+  'px-5 py-3 text-sm focus:outline-none focus:border-cyan-400 transition';
 
 export function DarkField({ label, hint, action, children }) {
   return (
@@ -40,7 +42,7 @@ export function DarkField({ label, hint, action, children }) {
 /** Dark-card shell used by every pre-login page (AuthPage, ResetPasswordPage). */
 export function DarkCard({ title, subtitle, children }) {
   return (
-    <div className="min-h-screen flex" style={{ background: '#05020a' }}>
+    <div className="min-h-screen flex" style={{ background: '#0f172a' }}>
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col justify-center px-16">
         <Wisps palette={[PURPLE, PURPLE_DARK]} opacity={0.65} />
         <div className="relative z-10">
@@ -50,7 +52,7 @@ export function DarkCard({ title, subtitle, children }) {
           >
             Darbi
           </h1>
-          <p className="text-lg mt-3" style={{ color: '#c084fc' }}>
+          <p className="text-lg mt-3" style={{ color: '#67e8f9' }}>
             Career advisory platform
           </p>
         </div>
@@ -62,7 +64,7 @@ export function DarkCard({ title, subtitle, children }) {
           <div
             className="rounded-3xl p-8"
             style={{
-              background: 'rgba(15,10,22,0.9)',
+              background: 'rgba(30,41,59,0.9)',
               border: `1px solid ${PURPLE}40`,
               boxShadow: `0 0 60px ${PURPLE_DARK}26`,
             }}
@@ -84,11 +86,11 @@ export function Shell({ title, subtitle, tabs, activeTab, onTabChange, children 
 
   return (
     <div className="min-h-screen relative overflow-hidden" style={{ background: 'var(--darbi-bg)' }}>
-      <Wisps palette={['#a855f7', '#d4af37']} opacity={0.28} fixed />
+      <Wisps palette={['#06b6d4', '#ff5722']} opacity={0.28} fixed />
 
       <header
         className="text-white relative z-30"
-        style={{ background: 'rgba(10,6,16,0.85)', borderBottom: '1px solid var(--darbi-border)' }}
+        style={{ background: 'rgba(15,23,42,0.85)', borderBottom: '1px solid var(--darbi-border)' }}
       >
         <div className="darbi-container py-5 flex items-center gap-4">
           {tabs && (
@@ -207,11 +209,11 @@ function EmailVerifyBanner() {
   return (
     <div
       className="relative z-20"
-      style={{ background: 'rgba(212,175,55,0.12)', borderBottom: '1px solid rgba(212,175,55,0.3)' }}
+      style={{ background: 'rgba(255,87,34,0.12)', borderBottom: '1px solid rgba(255,87,34,0.3)' }}
     >
       <div className="darbi-container py-3 text-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <span style={{ color: '#e8cf7a' }}>
+          <span style={{ color: '#ffab91' }}>
             Verify your email ({user.email}) to keep your account secure.
           </span>
           <div className="flex items-center gap-3">
@@ -219,7 +221,7 @@ function EmailVerifyBanner() {
               type="button"
               onClick={() => setOpen((o) => !o)}
               className="font-semibold hover:underline shrink-0"
-              style={{ color: '#e8cf7a' }}
+              style={{ color: '#ffab91' }}
             >
               {open ? 'Hide' : 'Enter code'}
             </button>
@@ -228,7 +230,7 @@ function EmailVerifyBanner() {
               onClick={resend}
               disabled={busy}
               className="font-semibold hover:underline shrink-0 disabled:opacity-60"
-              style={{ color: '#e8cf7a' }}
+              style={{ color: '#ffab91' }}
             >
               Resend code
             </button>
@@ -253,7 +255,7 @@ function EmailVerifyBanner() {
           </form>
         )}
         {status && <p className="mt-2 text-green-400">{status}</p>}
-        {error && <p className="mt-2" style={{ color: '#fca5a5' }}>{error}</p>}
+        {error && <p className="mt-2" style={{ color: '#ff6b7a' }}>{error}</p>}
       </div>
     </div>
   );
@@ -298,8 +300,8 @@ export const Alert = ({ kind = 'error', children }) =>
       className="px-4 py-3 mb-4 border text-sm"
       style={
         kind === 'error'
-          ? { background: 'rgba(239,68,68,0.1)', borderColor: 'rgba(239,68,68,0.3)', color: '#fca5a5', borderRadius: 'var(--darbi-radius)' }
-          : { background: 'rgba(212,175,55,0.1)', borderColor: 'rgba(212,175,55,0.35)', color: '#e8cf7a', borderRadius: 'var(--darbi-radius)' }
+          ? { background: 'rgba(255,107,122,0.1)', borderColor: 'rgba(255,107,122,0.35)', color: '#ff6b7a', borderRadius: 'var(--darbi-radius)' }
+          : { background: 'rgba(255,87,34,0.1)', borderColor: 'rgba(255,87,34,0.35)', color: '#ffab91', borderRadius: 'var(--darbi-radius)' }
       }
     >
       {children}
@@ -327,7 +329,8 @@ export function Salary({ band, stage = 'Entry', confidence }) {
 }
 
 /**
- * Decorative purple/gold ambient glow behind a panel or page. Originally an
+ * Decorative ambient glow behind a panel or page, colored by whatever
+ * palette the caller passes. Originally an
  * SVG with a live feGaussianBlur filter — that made the whole app feel
  * laggy, because a blurred `fixed` layer forces the browser to recompute the
  * filter on every scroll frame. Plain radial-gradient blobs give the same
