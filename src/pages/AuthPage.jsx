@@ -239,27 +239,30 @@ export default function AuthPage() {
                     <input className={darkInput} placeholder="Cybersecurity, Data Science" value={form.interests ?? ''} onChange={set('interests')} />
                   </DarkField>
                   <div
-                    className="overflow-hidden transition-all duration-300 ease-in-out"
+                    className="grid"
                     style={{
-                      maxHeight: form.level ? '96px' : '0px',
+                      gridTemplateRows: form.level ? '1fr' : '0fr',
                       opacity: form.level ? 1 : 0,
                       marginTop: form.level ? '1rem' : '0px',
+                      transition: 'grid-template-rows 300ms ease-in-out, opacity 300ms ease-in-out, margin-top 300ms ease-in-out',
                     }}
                   >
-                    <DarkField
-                      label={form.level === 'highschool' ? 'Average' : 'GPA'}
-                      hint={form.level === 'highschool' ? 'Tawjihi average, out of 100' : 'Out of 4'}
-                    >
-                      <input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        max={form.level === 'highschool' ? 100 : 4}
-                        className={darkInput}
-                        value={form.gpa ?? ''}
-                        onChange={set('gpa')}
-                      />
-                    </DarkField>
+                    <div className="overflow-hidden min-h-0">
+                      <DarkField
+                        label={form.level === 'highschool' ? 'Average' : 'GPA'}
+                        hint={form.level === 'highschool' ? 'Tawjihi average, out of 100' : 'Out of 4'}
+                      >
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          max={form.level === 'highschool' ? 100 : 4}
+                          className={darkInput}
+                          value={form.gpa ?? ''}
+                          onChange={set('gpa')}
+                        />
+                      </DarkField>
+                    </div>
                   </div>
                   <DarkField label="Location">
                     <input className={darkInput} placeholder="Amman" value={form.location ?? ''} onChange={set('location')} />
