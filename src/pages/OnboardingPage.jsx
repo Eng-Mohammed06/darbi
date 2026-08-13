@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api.js';
-import { Alert, Button } from '../components/common/ui.jsx';
+import { Alert, Button, Wisps } from '../components/common/ui.jsx';
 
 /**
  * One-time, post-signup questionnaire. Answers are analyzed by Claude into a
@@ -27,7 +27,7 @@ export default function OnboardingPage() {
     return (
       <Centered>
         <Alert>{error}</Alert>
-        <Button onClick={() => navigate('/dashboard')}>Continue to dashboard</Button>
+        <Button onClick={() => navigate('/')}>Continue to dashboard</Button>
       </Centered>
     );
   }
@@ -71,7 +71,7 @@ export default function OnboardingPage() {
         method: 'POST',
         body: { answers: questions.map((qq) => ({ id: qq.id, answer: answers[qq.id] ?? '' })) },
       });
-      navigate('/dashboard');
+      navigate('/');
     } catch {
       setError('Could not save your answers. You can try again, or skip for now.');
       setAnalyzing(false);
@@ -109,7 +109,7 @@ export default function OnboardingPage() {
       </div>
 
       <button
-        onClick={() => navigate('/dashboard')}
+        onClick={() => navigate('/')}
         disabled={analyzing}
         className="text-xs text-gray-500 mt-6 underline block"
       >
@@ -122,10 +122,11 @@ export default function OnboardingPage() {
 function Centered({ children }) {
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-4 py-10"
-      style={{ background: 'linear-gradient(135deg, #001a33 0%, #0a2647 100%)' }}
+      className="min-h-screen relative overflow-hidden flex items-center justify-center px-4 py-10"
+      style={{ background: 'var(--darbi-bg)' }}
     >
-      <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">{children}</div>
+      <Wisps palette={['#a855f7', '#d4af37']} opacity={0.4} fixed />
+      <div className="darbi-box relative z-10 p-8 max-w-md w-full text-center">{children}</div>
     </div>
   );
 }

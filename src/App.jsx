@@ -6,6 +6,7 @@ import OnboardingPage from './pages/OnboardingPage.jsx';
 import StudentDashboard from './pages/StudentDashboard.jsx';
 import CompanyDashboard from './pages/CompanyDashboard.jsx';
 import CareerDashboard from './pages/CareerDashboard.jsx';
+import AccountPage from './pages/AccountPage.jsx';
 
 const DASHBOARDS = {
   student: StudentDashboard,
@@ -26,9 +27,17 @@ function Dashboard() {
 function Home() {
   const { user, loading } = useAuth();
   if (loading) return <p className="p-8 text-gray-500">Loading…</p>;
-  // Already signed in? Skip the portal picker.
-  if (user) return <Navigate to="/dashboard" replace />;
+  // Already signed in? Skip the portal picker and render the dashboard right
+  // here, so '/' is the Advisor page rather than bouncing to '/dashboard'.
+  if (user) return <Dashboard />;
   return <HomePage />;
+}
+
+function Account() {
+  const { user, loading } = useAuth();
+  if (loading) return <p className="p-8 text-gray-500">Loading…</p>;
+  if (!user) return <Navigate to="/" replace />;
+  return <AccountPage />;
 }
 
 /** The post-signup questionnaire — student-only, and only while signed in. */
@@ -36,7 +45,7 @@ function Onboarding() {
   const { user, loading } = useAuth();
   if (loading) return <p className="p-8 text-gray-500">Loading…</p>;
   if (!user) return <Navigate to="/" replace />;
-  if (user.role !== 'student') return <Navigate to="/dashboard" replace />;
+  if (user.role !== 'student') return <Navigate to="/" replace />;
   return <OnboardingPage />;
 }
 
@@ -48,6 +57,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/portal/:role" element={<AuthPage />} />
           <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/account" element={<Account />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -256,19 +256,20 @@ async function main() {
 async function seedDemoAccounts(client) {
   const hash = bcrypt.hashSync(DEMO_PASSWORD, 10);
 
-  async function upsertUser(email, role) {
+  async function upsertUser(email, username, role) {
     const { rows } = await client.query(
-      `INSERT INTO users (email, password_hash, role)
-       VALUES ($1,$2,$3)
-       ON CONFLICT (email) DO UPDATE SET password_hash = EXCLUDED.password_hash,
+      `INSERT INTO users (email, username, password_hash, role)
+       VALUES ($1,$2,$3,$4)
+       ON CONFLICT (email) DO UPDATE SET username = EXCLUDED.username,
+                                         password_hash = EXCLUDED.password_hash,
                                          role = EXCLUDED.role, updated_at = now()
        RETURNING id`,
-      [email.toLowerCase(), hash, role],
+      [email.toLowerCase(), username, hash, role],
     );
     return rows[0].id;
   }
 
-  const studentId = await upsertUser('student@darbi.jo', 'student');
+  const studentId = await upsertUser('student@darbi.jo', 'demo_student', 'student');
   await client.query(
     `INSERT INTO students (user_id, name, level, interests, gpa, tawjihi_average, location, salary_pref)
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
@@ -280,7 +281,7 @@ async function seedDemoAccounts(client) {
      ['Software', 'Data Science', 'Cybersecurity'], 3.4, 94.5, 'Amman', '800-1200 JOD'],
   );
 
-  const companyId = await upsertUser('company@darbi.jo', 'company');
+  const companyId = await upsertUser('company@darbi.jo', 'demo_company', 'company');
   await client.query(
     `INSERT INTO companies (user_id, name, industry, website)
      VALUES ($1,$2,$3,$4)
@@ -289,7 +290,7 @@ async function seedDemoAccounts(client) {
     [companyId, 'Demo Tech Co.', 'Software', 'https://example.jo'],
   );
 
-  const careerId = await upsertUser('career@darbi.jo', 'career');
+  const careerId = await upsertUser('career@darbi.jo', 'demo_career', 'career');
   await client.query(
     `INSERT INTO career_profiles (user_id, name, current_title, years_experience, major, skills)
      VALUES ($1,$2,$3,$4,$5,$6)

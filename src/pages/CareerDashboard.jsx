@@ -1,21 +1,22 @@
 import { useEffect, useState } from 'react';
 import { api } from '../services/api.js';
 import { useAuth } from '../services/auth.jsx';
-import { Card, Shell, Tabs } from '../components/common/ui.jsx';
+import { Card, Shell } from '../components/common/ui.jsx';
 
 const TABS = ['overview', 'learning paths', 'training centres'];
 
 export default function CareerDashboard() {
-  const { profile, logout } = useAuth();
+  const { profile } = useAuth();
   const [tab, setTab] = useState('overview');
 
   return (
     <Shell
       title={`Welcome, ${profile?.name ?? 'there'} 📈`}
       subtitle={profile?.current_title}
-      onLogout={logout}
+      tabs={TABS}
+      activeTab={tab}
+      onTabChange={setTab}
     >
-      <Tabs tabs={TABS} active={tab} onChange={setTab} />
       {tab === 'overview' && <Overview profile={profile} />}
       {tab === 'learning paths' && <LearningPaths />}
       {tab === 'training centres' && <TrainingCentres />}
@@ -59,12 +60,12 @@ function LearningPaths() {
     <>
       {tracks.map((track) => (
         <Card key={track} title={track}>
-          <div className="divide-y">
+          <div className="divide-y divide-[color:var(--darbi-border)]">
             {paths.filter((p) => p.track === track).map((p) => (
               <div key={p.id} className="py-3">
                 <p className="font-semibold text-darbi-navy">{p.title}</p>
                 {p.skills && (
-                  <p className="text-sm text-gray-600 mt-1 whitespace-pre-line">{p.skills}</p>
+                  <p className="text-sm text-gray-300 mt-1 whitespace-pre-line">{p.skills}</p>
                 )}
                 {p.jordan_centers && (
                   <p className="text-xs text-gray-500 mt-2">
@@ -87,11 +88,11 @@ function TrainingCentres() {
 
   return (
     <Card title={`${centres.length} accredited centre(s) in Jordan`}>
-      <div className="divide-y">
+      <div className="divide-y divide-[color:var(--darbi-border)]">
         {centres.map((c) => (
           <div key={c.id} className="py-3">
             <p className="font-semibold text-darbi-navy">{c.name}</p>
-            <p className="text-sm text-gray-600">{c.field}{c.study_type && ` · ${c.study_type}`}</p>
+            <p className="text-sm text-gray-300">{c.field}{c.study_type && ` · ${c.study_type}`}</p>
             {c.details && <p className="text-sm text-gray-500 mt-1">{c.details}</p>}
             {c.contact && <p className="text-xs text-gray-400 mt-1">{c.contact}</p>}
           </div>

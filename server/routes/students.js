@@ -179,4 +179,42 @@ router.delete(
   }),
 );
 
+/** GET /api/students/me/applications — job ids this student has applied to. */
+router.get(
+  '/me/applications',
+  asyncRoute(async (req, res) => {
+    const { rows } = await query(
+      `SELECT job_id FROM job_applications WHERE student_user_id = $1`,
+      [req.user.id],
+    );
+    res.json(rows.map((r) => r.job_id));
+  }),
+);
+
+/**
+ * POST /api/students/me/applications  { jobId }
+ * Refused for jobs with no company_id — those are seeded listings gathered
+ * from public sources with no DARBI account behind them, so there is no one
+ * for the application to reach.
+ */
+router.post(
+  '/me/applications',
+  asyncRoute(async (req, res) => {
+    const { jobId } = req.body ?? {};
+    if (!jobId) return res.status(400).json({ error: 'missing_job_id' });
+
+    const { rows: jobRows } = await query(`SELECT id, company_id FROM jobs WHERE id = $1`, [jobId]);
+    const job = jobRows[0];
+    if (!job) return res.status(404).json({ error: 'unknown_job' });
+    if (!job.company_id) return res.status(409).json({ error: 'no_company_account' });
+
+    await query(
+      `INSERT INTO job_applications (job_id, student_user_id) VALUES ($1,$2)
+       ON CONFLICT DO NOTHING`,
+      [jobId, req.user.id],
+    );
+    res.status(201).json({ ok: true });
+  }),
+);
+
 export default router;

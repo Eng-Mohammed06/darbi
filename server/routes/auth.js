@@ -26,10 +26,13 @@ async function loadProfile(userId, role) {
 router.post(
   '/signup',
   asyncRoute(async (req, res) => {
-    const { email, password, role, name } = req.body ?? {};
+    const { email, username, password, role, name } = req.body ?? {};
 
-    if (!email || !password || !role || !name) {
-      return res.status(400).json({ error: 'missing_fields', need: ['email', 'password', 'role', 'name'] });
+    if (!email || !username || !password || !role || !name) {
+      return res.status(400).json({
+        error: 'missing_fields',
+        need: ['email', 'username', 'password', 'role', 'name'],
+      });
     }
     if (!ROLES.includes(role)) {
       return res.status(400).json({ error: 'bad_role', allowed: ROLES });
@@ -39,15 +42,16 @@ router.post(
     }
 
     const normalizedEmail = String(email).trim().toLowerCase();
+    const normalizedUsername = String(username).trim();
     const passwordHash = await hashPassword(String(password));
 
     let user;
     try {
       user = await withTransaction(async (client) => {
         const { rows } = await client.query(
-          `INSERT INTO users (email, password_hash, role) VALUES ($1,$2,$3)
-           RETURNING id, email, role`,
-          [normalizedEmail, passwordHash, role],
+          `INSERT INTO users (email, username, password_hash, role) VALUES ($1,$2,$3,$4)
+           RETURNING id, email, username, role`,
+          [normalizedEmail, normalizedUsername, passwordHash, role],
         );
         const created = rows[0];
 
@@ -78,14 +82,15 @@ router.post(
       });
     } catch (err) {
       if (err.code === '23505') {
-        return res.status(409).json({ error: 'email_taken' });
+        const taken = err.constraint?.includes('username') ? 'username_taken' : 'email_taken';
+        return res.status(409).json({ error: taken });
       }
       throw err;
     }
 
     res.status(201).json({
       token: signToken(user),
-      user: { id: user.id, email: user.email, role: user.role },
+      user: { id: user.id, email: user.email, username: user.username, role: user.role },
       profile: await loadProfile(user.id, user.role),
     });
   }),
@@ -101,7 +106,7 @@ router.post(
     }
 
     const { rows } = await query(
-      `SELECT id, email, role, password_hash FROM users WHERE email = $1`,
+      `SELECT id, email, username, role, password_hash FROM users WHERE email = $1`,
       [String(email).trim().toLowerCase()],
     );
     const user = rows[0];
@@ -113,7 +118,7 @@ router.post(
 
     res.json({
       token: signToken(user),
-      user: { id: user.id, email: user.email, role: user.role },
+      user: { id: user.id, email: user.email, username: user.username, role: user.role },
       profile: await loadProfile(user.id, user.role),
     });
   }),
@@ -124,10 +129,70 @@ router.get(
   '/me',
   requireAuth,
   asyncRoute(async (req, res) => {
-    const { rows } = await query(`SELECT id, email, role FROM users WHERE id = $1`, [req.user.id]);
+    const { rows } = await query(
+      `SELECT id, email, username, role FROM users WHERE id = $1`,
+      [req.user.id],
+    );
     const user = rows[0];
     if (!user) return res.status(401).json({ error: 'user_gone' });
     res.json({ user, profile: await loadProfile(user.id, user.role) });
+  }),
+);
+
+/** PUT /api/auth/username  { username } */
+router.put(
+  '/username',
+  requireAuth,
+  asyncRoute(async (req, res) => {
+    const { username } = req.body ?? {};
+    const normalized = String(username ?? '').trim();
+    if (!normalized) {
+      return res.status(400).json({ error: 'missing_fields', need: ['username'] });
+    }
+
+    try {
+      const { rows } = await query(
+        `UPDATE users SET username = $1, updated_at = now() WHERE id = $2
+         RETURNING id, email, username, role`,
+        [normalized, req.user.id],
+      );
+      res.json({ user: rows[0] });
+    } catch (err) {
+      if (err.code === '23505') {
+        return res.status(409).json({ error: 'username_taken' });
+      }
+      throw err;
+    }
+  }),
+);
+
+/** PUT /api/auth/password  { currentPassword, newPassword } */
+router.put(
+  '/password',
+  requireAuth,
+  asyncRoute(async (req, res) => {
+    const { currentPassword, newPassword } = req.body ?? {};
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'missing_fields', need: ['currentPassword', 'newPassword'] });
+    }
+    if (String(newPassword).length < 6) {
+      return res.status(400).json({ error: 'weak_password', message: 'Use at least 6 characters.' });
+    }
+
+    const { rows } = await query(`SELECT password_hash FROM users WHERE id = $1`, [req.user.id]);
+    const user = rows[0];
+    const ok = user && (await verifyPassword(String(currentPassword), user.password_hash));
+    // 403, not 401 — api.js treats any 401 as an expired session and clears the
+    // token, which would wrongly sign the user out for mistyping their old
+    // password rather than just rejecting the password change.
+    if (!ok) return res.status(403).json({ error: 'invalid_credentials' });
+
+    const passwordHash = await hashPassword(String(newPassword));
+    await query(
+      `UPDATE users SET password_hash = $1, updated_at = now() WHERE id = $2`,
+      [passwordHash, req.user.id],
+    );
+    res.json({ ok: true });
   }),
 );
 

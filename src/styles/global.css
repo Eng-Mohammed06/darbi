@@ -3,22 +3,31 @@
 @tailwind utilities;
 
 /*
- * Design tokens are taken verbatim from the approved wireframe deliverable,
- * docs/deliverables/Wireframes & Design/DARBI_Wireframes_and_Design_System.pdf
- * (DESIGN SYSTEM & VISUAL GUIDELINES). Don't drift from these without an
- * updated wireframe — the deck and the PDF both specify them.
+ * Design tokens for the dark purple/gold theme (approved mockup, Aug 2026 —
+ * supersedes the original navy/gold wireframe deliverable app-wide, not just
+ * on the login page). `darbi-navy` and `darbi-gold` are kept as token *names*
+ * for continuity with every component that already references them, but
+ * `darbi-navy` now holds a light color: on this theme it's the "heading on a
+ * dark card" role, not a background.
  */
 :root {
-  --darbi-navy: #001a33;
+  --darbi-bg: #05020a; /* page background */
+  --darbi-surface: rgba(15, 10, 22, 0.88); /* card / box background — no backdrop-blur behind it, so opaque enough to stay legible on its own */
+  --darbi-surface-solid: #0c0714; /* opaque variant, e.g. dropdown menus over content */
+  --darbi-border: rgba(168, 85, 247, 0.25);
+
+  --darbi-navy: #f5f0fa; /* heading/emphasis text on dark surfaces (was #001a33) */
   --darbi-gold: #d4af37;
   --darbi-gold-dark: #b8952e; /* "Hover: slightly darker gold" */
-  --darbi-bg: #f5f6f8; /* "Background: White or Light Gray" */
+  --darbi-purple: #a855f7;
+  --darbi-purple-dark: #7c3aed;
+  --darbi-gradient: linear-gradient(90deg, #9333ea, #c026d3);
 
   --darbi-max-width: 800px; /* "Max width: 800px (centered)" */
   --darbi-box-padding: 20px; /* "Padding inside boxes: 20px" */
   --darbi-section-gap: 30px; /* "Margin between sections: 30px" */
   --darbi-button-height: 45px; /* "Button height: 45px" */
-  --darbi-radius: 5px; /* "Rounded corners: 5px" */
+  --darbi-radius: 16px; /* rounded corners, up from the old wireframe's 5px */
   --darbi-input-padding: 10px; /* "Padding: 10px" */
 }
 
@@ -32,7 +41,7 @@ body {
   /* "Font Family: Sans-serif (Arial, Segoe UI, or similar)" */
   font-family: 'Segoe UI', Arial, -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--darbi-bg);
-  color: #333;
+  color: #e5e0ea;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -46,10 +55,11 @@ body {
   }
 
   .darbi-box {
-    background: #fff;
+    background: var(--darbi-surface);
+    border: 1px solid var(--darbi-border);
     border-radius: var(--darbi-radius);
     padding: var(--darbi-box-padding);
-    box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
+    box-shadow: 0 0 40px rgba(124, 58, 237, 0.12);
   }
 
   .darbi-section {
@@ -62,44 +72,69 @@ body {
     justify-content: center;
     min-height: var(--darbi-button-height);
     padding-inline: 24px;
-    border-radius: var(--darbi-radius);
+    border-radius: 999px;
     font-weight: 700;
-    background: var(--darbi-gold);
-    color: var(--darbi-navy);
-    transition: background 0.15s ease;
+    background: var(--darbi-gradient);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.35);
+    transition: filter 0.15s ease;
   }
   .darbi-btn:hover:not(:disabled) {
-    background: var(--darbi-gold-dark);
+    filter: brightness(1.1);
   }
   .darbi-btn:disabled {
     opacity: 0.5;
     cursor: default;
   }
 
+  /* Secondary/outline variant — was a solid navy fill, now an outline so it
+     reads as secondary against the same dark page background. */
   .darbi-btn-navy {
-    background: var(--darbi-navy);
+    background: transparent;
     color: #fff;
+    border: 1px solid var(--darbi-border);
+    box-shadow: none;
   }
   .darbi-btn-navy:hover:not(:disabled) {
-    background: #002a52;
+    background: rgba(168, 85, 247, 0.12);
+    filter: none;
   }
 
   /* "Border: light gray · Padding: 10px · Focus border: Gold · Background: White" */
   .darbi-input {
     width: 100%;
-    padding: var(--darbi-input-padding);
-    border: 1px solid #ccc;
-    border-radius: var(--darbi-radius);
-    background: #fff;
+    padding: var(--darbi-input-padding) 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.4);
+    color: #fff;
     transition: border-color 0.15s ease;
+  }
+  .darbi-input::placeholder {
+    color: #6b7280;
   }
   .darbi-input:focus {
     outline: none;
-    border-color: var(--darbi-gold);
+    border-color: var(--darbi-purple);
   }
   .darbi-input:disabled {
-    background: #f1f1f1;
+    background: rgba(255, 255, 255, 0.03);
   }
+}
+
+/* Chrome fills autofilled fields with a light background no matter what CSS
+   the input itself carries, unless the -webkit-autofill pseudo-class is
+   overridden — applies to every dark input across the app now, not just
+   the login page. */
+.darbi-input:-webkit-autofill,
+.darbi-input:-webkit-autofill:hover,
+.darbi-input:-webkit-autofill:focus,
+.darbi-dark-input:-webkit-autofill,
+.darbi-dark-input:-webkit-autofill:hover,
+.darbi-dark-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fff;
+  -webkit-box-shadow: 0 0 0 1000px rgba(20, 12, 28, 0.9) inset;
+  transition: background-color 9999s ease-in-out 0s;
 }
 
 /* "Mobile responsive: Stack vertically on small screens" */

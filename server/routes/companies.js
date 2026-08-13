@@ -11,8 +11,32 @@ router.get(
   '/me/jobs',
   asyncRoute(async (req, res) => {
     const { rows } = await query(
-      `SELECT * FROM jobs WHERE company_id = $1 ORDER BY posted_at DESC`,
+      `SELECT j.*, (SELECT count(*)::int FROM job_applications a WHERE a.job_id = j.id) AS applicant_count
+         FROM jobs j
+        WHERE j.company_id = $1
+        ORDER BY j.posted_at DESC`,
       [req.user.id],
+    );
+    res.json(rows);
+  }),
+);
+
+/**
+ * GET /api/companies/me/jobs/:id/applicants
+ * Same fields FindStudents shows, plus when they applied — no email, same
+ * "contact through the platform" rule as browsing the student pool.
+ */
+router.get(
+  '/me/jobs/:id/applicants',
+  asyncRoute(async (req, res) => {
+    const { rows } = await query(
+      `SELECT s.user_id, s.name, s.level, s.gpa, s.location, s.interests, a.created_at AS applied_at
+         FROM job_applications a
+         JOIN students s ON s.user_id = a.student_user_id
+         JOIN jobs j ON j.id = a.job_id
+        WHERE a.job_id = $1 AND j.company_id = $2
+        ORDER BY a.created_at DESC`,
+      [req.params.id, req.user.id],
     );
     res.json(rows);
   }),

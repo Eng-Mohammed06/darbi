@@ -125,8 +125,16 @@ export default function ChatAdvisor({ student, onFallback }) {
   const openers = OPENERS[student?.level] ?? OPENERS.undergraduate;
 
   return (
-    <div className="bg-white rounded-lg shadow flex flex-col" style={{ height: '32rem' }}>
-      <div className="flex items-center justify-between px-5 py-3 border-b">
+    <div
+      className="flex flex-col overflow-hidden darbi-section"
+      style={{
+        height: '32rem',
+        background: 'var(--darbi-surface)',
+        border: '1px solid var(--darbi-border)',
+        borderRadius: 'var(--darbi-radius)',
+      }}
+    >
+      <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: '1px solid var(--darbi-border)' }}>
         <div>
           <h2 className="font-bold text-darbi-navy">Talk to Darbi</h2>
           <p className="text-xs text-gray-500">
@@ -134,7 +142,7 @@ export default function ChatAdvisor({ student, onFallback }) {
           </p>
         </div>
         {messages.length > 0 && (
-          <button onClick={reset} className="text-xs text-gray-500 hover:text-gray-700">
+          <button onClick={reset} className="text-xs text-gray-500 hover:text-gray-300">
             Start over
           </button>
         )}
@@ -144,7 +152,7 @@ export default function ChatAdvisor({ student, onFallback }) {
         {messages.length === 0 && !streaming && (
           <div className="text-center mt-6">
             <div className="text-4xl mb-3">🎓</div>
-            <p className="text-gray-700 font-medium mb-1">
+            <p className="text-gray-200 font-medium mb-1">
               Hi {student?.name?.split(' ')[0] ?? 'there'} — what’s on your mind?
             </p>
             <p className="text-sm text-gray-500 mb-5">
@@ -155,7 +163,7 @@ export default function ChatAdvisor({ student, onFallback }) {
                 <button
                   key={o}
                   onClick={() => send(o)}
-                  className="text-sm text-left px-4 py-2 rounded-lg border border-gray-200 hover:border-darbi-gold hover:bg-gray-50 transition max-w-md w-full"
+                  className="text-sm text-left text-gray-200 px-4 py-2 rounded-full border border-white/10 hover:border-purple-400 hover:bg-white/5 transition max-w-md w-full"
                 >
                   {o}
                 </button>
@@ -194,14 +202,15 @@ export default function ChatAdvisor({ student, onFallback }) {
           e.preventDefault();
           send();
         }}
-        className="border-t px-5 py-3 flex gap-3"
+        className="px-5 py-3 flex gap-3"
+        style={{ borderTop: '1px solid var(--darbi-border)' }}
       >
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="Type your message…"
           disabled={busy}
-          className="flex-1 px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-darbi-gold transition disabled:bg-gray-100"
+          className="darbi-input flex-1"
         />
         <Button type="submit" disabled={busy || !draft.trim()}>
           {busy ? '…' : 'Send'}
@@ -217,9 +226,9 @@ function Bubble({ role, text }) {
     <div className={`mb-3 flex ${mine ? 'justify-end' : 'justify-start'}`}>
       <div
         className={`max-w-[80%] px-4 py-2.5 rounded-2xl whitespace-pre-wrap ${
-          mine ? 'text-white rounded-br-sm' : 'bg-gray-100 text-gray-800 rounded-bl-sm'
+          mine ? 'text-white rounded-br-sm' : 'bg-white/10 text-gray-100 rounded-bl-sm'
         }`}
-        style={mine ? { backgroundColor: '#001a33' } : undefined}
+        style={mine ? { background: 'var(--darbi-gradient)' } : undefined}
       >
         {text}
       </div>

@@ -43,7 +43,7 @@ export default function RecommendationCard({
         )}
       </header>
 
-      {recommendation?.why && <p className="text-gray-700 mb-3 text-sm">{recommendation.why}</p>}
+      {recommendation?.why && <p className="text-gray-300 mb-3 text-sm">{recommendation.why}</p>}
 
       <dl className="text-sm space-y-1.5 mb-4">
         <Row label="Average Salary">
@@ -91,7 +91,7 @@ function Row({ label, children }) {
   return (
     <div className="flex gap-2">
       <dt className="font-bold text-darbi-navy shrink-0">{label}:</dt>
-      <dd className="text-gray-700">{children}</dd>
+      <dd className="text-gray-300">{children}</dd>
     </div>
   );
 }

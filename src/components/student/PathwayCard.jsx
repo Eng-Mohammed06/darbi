@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../services/api.js';
 
-const NAVY = '#001a33';
 const GOLD = '#d4af37';
+const PURPLE = '#a855f7';
 
 /**
  * Slide 4's "visual path, not a list": study -> career -> market demand.
@@ -22,16 +22,22 @@ export default function PathwayCard({ slug, onSave, saved, onClose }) {
       .catch((err) => setError(err.message));
   }, [slug]);
 
-  if (error) return <p className="text-red-700 text-sm">{error}</p>;
+  if (error) return <p className="text-red-400 text-sm">{error}</p>;
   if (!data) return <p className="text-gray-500 text-sm">Building your pathway…</p>;
 
   const { major, study, career, demand, salary } = data;
 
   return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
-      <div style={{ backgroundColor: NAVY }} className="px-6 py-4 flex justify-between items-start">
+    <div
+      className="overflow-hidden mb-6"
+      style={{ background: 'var(--darbi-surface)', border: '1px solid var(--darbi-border)', borderRadius: 'var(--darbi-radius)' }}
+    >
+      <div
+        className="px-6 py-4 flex justify-between items-start"
+        style={{ background: 'var(--darbi-surface-solid)', borderBottom: '1px solid var(--darbi-border)' }}
+      >
         <div>
-          <p className="text-xs uppercase tracking-wide" style={{ color: GOLD }}>
+          <p className="text-xs uppercase tracking-wide" style={{ color: PURPLE }}>
             Your pathway
           </p>
           <h2 className="text-2xl font-bold text-white">{major.name}</h2>
@@ -41,14 +47,14 @@ export default function PathwayCard({ slug, onSave, saved, onClose }) {
             <button
               onClick={() => onSave(major.slug)}
               disabled={saved}
-              className="text-sm font-bold px-4 py-2 rounded-lg disabled:opacity-60"
-              style={{ backgroundColor: GOLD, color: NAVY }}
+              className="text-sm font-bold px-4 py-2 rounded-full text-white disabled:opacity-60"
+              style={{ background: 'var(--darbi-gradient)' }}
             >
               {saved ? 'Saved' : 'Save for later'}
             </button>
           )}
           {onClose && (
-            <button onClick={onClose} className="text-gray-300 text-sm px-2" aria-label="Close">
+            <button onClick={onClose} className="text-gray-400 hover:text-white text-sm px-2 transition" aria-label="Close">
               ✕
             </button>
           )}
@@ -81,7 +87,7 @@ export default function PathwayCard({ slug, onSave, saved, onClose }) {
           <p className="text-xs text-gray-500 mb-1">Start with</p>
           <ul className="space-y-1.5">
             {study.courses.slice(0, 3).map((c) => (
-              <li key={c.name} className="text-sm text-gray-700">
+              <li key={c.name} className="text-sm text-gray-300">
                 {c.name}
                 {c.cost_raw && <span className="text-gray-500"> · {c.cost_raw} JOD</span>}
               </li>
@@ -108,7 +114,7 @@ export default function PathwayCard({ slug, onSave, saved, onClose }) {
                     {career.skills.slice(0, 6).map((s) => (
                       <span
                         key={s.skill}
-                        className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700"
+                        className="text-xs px-2 py-1 rounded-full bg-white/10 text-gray-200"
                       >
                         {s.skill}
                       </span>
@@ -127,7 +133,7 @@ export default function PathwayCard({ slug, onSave, saved, onClose }) {
 
         <Stage n="3" title="Market demand">
           {salary.available && (
-            <div className="mb-4 pb-3 border-b">
+            <div className="mb-4 pb-3" style={{ borderBottom: '1px solid var(--darbi-border)' }}>
               <p className="text-xs text-gray-500 mb-1">Salary progression</p>
               {[['Entry', salary.entry], ['3 years', salary.three_year], ['5 years', salary.five_year]]
                 .filter(([, b]) => b?.min != null)
@@ -145,7 +151,7 @@ export default function PathwayCard({ slug, onSave, saved, onClose }) {
             <p className="text-4xl font-bold" style={{ color: GOLD }}>
               {demand.listings}
             </p>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-300">
               verified listing{demand.listings === 1 ? '' : 's'} from {demand.companies}{' '}
               compan{demand.companies === 1 ? 'y' : 'ies'}
             </p>
@@ -160,7 +166,7 @@ export default function PathwayCard({ slug, onSave, saved, onClose }) {
           {demand.employers.length > 0 && (
             <>
               <p className="text-xs text-gray-500 mb-1">Hiring</p>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-gray-300">
                 {demand.employers.slice(0, 5).join(', ')}
                 {demand.employers.length > 5 && ` +${demand.employers.length - 5} more`}
               </p>
@@ -169,7 +175,10 @@ export default function PathwayCard({ slug, onSave, saved, onClose }) {
         </Stage>
       </div>
 
-      <div className="px-6 py-3 bg-gray-50 border-t text-xs text-gray-500">
+      <div
+        className="px-6 py-3 text-xs text-gray-500"
+        style={{ background: 'var(--darbi-surface-solid)', borderTop: '1px solid var(--darbi-border)' }}
+      >
         {salary.available ? (
           <>
             Salary source: {(salary.source ?? '').split('\n')[0]}
@@ -186,11 +195,12 @@ export default function PathwayCard({ slug, onSave, saved, onClose }) {
 
 function Stage({ n, title, arrow, children }) {
   return (
-    <div className="relative p-6 border-b md:border-b-0 md:border-r last:border-r-0">
+    <div className="relative p-6 border-b md:border-b-0 md:border-r last:border-r-0 border-[color:var(--darbi-border)]">
+
       <div className="flex items-center gap-2 mb-3">
         <span
           className="w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center"
-          style={{ backgroundColor: NAVY, color: GOLD }}
+          style={{ background: 'var(--darbi-surface-solid)', color: PURPLE, border: '1px solid var(--darbi-border)' }}
         >
           {n}
         </span>
@@ -201,7 +211,7 @@ function Stage({ n, title, arrow, children }) {
       {arrow && (
         <span
           className="hidden md:flex absolute top-7 -right-3 w-6 h-6 rounded-full items-center justify-center text-xs z-10"
-          style={{ backgroundColor: GOLD, color: NAVY }}
+          style={{ background: 'var(--darbi-gradient)', color: '#fff' }}
         >
           →
         </span>
@@ -212,10 +222,10 @@ function Stage({ n, title, arrow, children }) {
 
 function DemandBar({ share }) {
   return (
-    <div className="h-2 rounded-full bg-gray-200 mb-1.5 overflow-hidden">
+    <div className="h-2 rounded-full bg-white/10 mb-1.5 overflow-hidden">
       <div
         className="h-full rounded-full"
-        style={{ width: `${Math.max(share, 2)}%`, backgroundColor: GOLD }}
+        style={{ width: `${Math.max(share, 2)}%`, background: 'var(--darbi-gradient)' }}
       />
     </div>
   );

@@ -27,6 +27,7 @@ export function AuthProvider({ children }) {
       profile,
       loading,
       setProfile,
+      setUser,
 
       async login(email, password) {
         const res = await api('/auth/login', {

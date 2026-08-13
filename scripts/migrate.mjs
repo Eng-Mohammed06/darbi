@@ -21,6 +21,7 @@ const drop = process.argv.includes('--drop');
 const TABLES = [
   'onboarding_analysis',
   'chat_messages',
+  'job_applications',
   'online_platforms',
   'salary_benchmarks',
   'salary_references',

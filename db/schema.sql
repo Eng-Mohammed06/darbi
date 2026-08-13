@@ -11,11 +11,19 @@
 CREATE TABLE IF NOT EXISTS users (
   id            SERIAL PRIMARY KEY,
   email         TEXT NOT NULL UNIQUE,          -- always stored lowercased
+  username      TEXT UNIQUE,
   password_hash TEXT NOT NULL,
   role          TEXT NOT NULL CHECK (role IN ('student', 'company', 'career')),
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Added after the initial launch, so a database created before this line
+-- needs it bolted on; existing rows get a generated handle since none of
+-- them collected one at signup.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS username TEXT UNIQUE;
+UPDATE users SET username = split_part(email, '@', 1) || '-' || id::text
+  WHERE username IS NULL;
 
 CREATE TABLE IF NOT EXISTS students (
   user_id       INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
@@ -210,6 +218,22 @@ CREATE TABLE IF NOT EXISTS saved_majors (
   saved_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
   PRIMARY KEY (student_user_id, major_id)
 );
+
+-- A student's application to a posted job. Only meaningful for jobs a real
+-- company account owns (jobs.company_id NOT NULL) — the seeded "verified"
+-- listings gathered from public sources have no company account behind
+-- them, so the API refuses an apply there rather than recording one that
+-- could never reach anyone.
+CREATE TABLE IF NOT EXISTS job_applications (
+  id              SERIAL PRIMARY KEY,
+  job_id          INTEGER NOT NULL REFERENCES jobs(id) ON DELETE CASCADE,
+  student_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (job_id, student_user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_applications_job     ON job_applications(job_id);
+CREATE INDEX IF NOT EXISTS idx_applications_student ON job_applications(student_user_id);
 
 -- The advisor conversation. Persisted so a refresh (or a laptop swap between
 -- presenters) doesn't lose the thread mid-demo.

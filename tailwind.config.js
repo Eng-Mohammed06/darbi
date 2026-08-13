@@ -3,8 +3,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        'darbi-navy': '#001a33',
-        'darbi-gold': '#d4af37',
+        // Repointed to CSS custom properties (src/styles/global.css) so the
+        // dark-theme redesign updates every existing text-darbi-navy /
+        // bg-darbi-navy / border-darbi-navy usage from one place.
+        'darbi-navy': 'var(--darbi-navy)',
+        'darbi-gold': 'var(--darbi-gold)',
+        'darbi-purple': 'var(--darbi-purple)',
       },
     },
   },
