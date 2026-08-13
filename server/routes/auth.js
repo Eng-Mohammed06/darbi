@@ -7,9 +7,24 @@ import {
   requireAuth,
   asyncRoute,
 } from '../lib/auth.js';
+import { sendMail, generateCode, verificationEmail, resetPasswordEmail } from '../lib/mail.js';
 
 const router = Router();
 const ROLES = ['student', 'company', 'career'];
+const CODE_TTL_MINUTES = 15;
+
+/**
+ * Signup/forgot-password must not fail just because the email provider hiccuped
+ * — verification and reset are a soft nag, not a login gate, so a send failure
+ * only gets logged, never surfaced to the user as a broken signup/request.
+ */
+async function sendCodeEmail(to, { subject, html }) {
+  try {
+    await sendMail({ to, subject, html });
+  } catch (err) {
+    console.error(`[mail] failed to send "${subject}" to ${to}:`, err.message);
+  }
+}
 
 /** Loads the role-specific profile that hangs off a user row. */
 async function loadProfile(userId, role) {
@@ -97,9 +112,19 @@ router.post(
       throw err;
     }
 
+    const code = generateCode();
+    await query(
+      `UPDATE users SET verification_code = $1,
+         verification_code_expires_at = now() + interval '${CODE_TTL_MINUTES} minutes'
+       WHERE id = $2`,
+      [code, user.id],
+    );
+    const { subject, html } = verificationEmail(code);
+    sendCodeEmail(user.email, { subject, html });
+
     res.status(201).json({
       token: signToken(user),
-      user: { id: user.id, email: user.email, username: user.username, role: user.role },
+      user: { id: user.id, email: user.email, username: user.username, role: user.role, email_verified: false },
       profile: await loadProfile(user.id, user.role),
     });
   }),
@@ -115,7 +140,7 @@ router.post(
     }
 
     const { rows } = await query(
-      `SELECT id, email, username, role, password_hash FROM users
+      `SELECT id, email, username, role, password_hash, email_verified FROM users
         WHERE lower(email) = lower($1) OR lower(username) = lower($1)`,
       [String(identifier).trim()],
     );
@@ -128,7 +153,7 @@ router.post(
 
     res.json({
       token: signToken(user),
-      user: { id: user.id, email: user.email, username: user.username, role: user.role },
+      user: { id: user.id, email: user.email, username: user.username, role: user.role, email_verified: user.email_verified },
       profile: await loadProfile(user.id, user.role),
     });
   }),
@@ -140,12 +165,139 @@ router.get(
   requireAuth,
   asyncRoute(async (req, res) => {
     const { rows } = await query(
-      `SELECT id, email, username, role FROM users WHERE id = $1`,
+      `SELECT id, email, username, role, email_verified FROM users WHERE id = $1`,
       [req.user.id],
     );
     const user = rows[0];
     if (!user) return res.status(401).json({ error: 'user_gone' });
     res.json({ user, profile: await loadProfile(user.id, user.role) });
+  }),
+);
+
+/** POST /api/auth/verify-email  { code } */
+router.post(
+  '/verify-email',
+  requireAuth,
+  asyncRoute(async (req, res) => {
+    const { code } = req.body ?? {};
+    if (!code) return res.status(400).json({ error: 'missing_fields', need: ['code'] });
+
+    const { rows } = await query(
+      `SELECT verification_code, verification_code_expires_at FROM users WHERE id = $1`,
+      [req.user.id],
+    );
+    const row = rows[0];
+    if (!row?.verification_code || row.verification_code !== String(code).trim()) {
+      return res.status(400).json({ error: 'invalid_code' });
+    }
+    if (new Date(row.verification_code_expires_at) < new Date()) {
+      return res.status(400).json({ error: 'code_expired' });
+    }
+
+    const { rows: updated } = await query(
+      `UPDATE users SET email_verified = true, verification_code = NULL,
+         verification_code_expires_at = NULL, updated_at = now()
+       WHERE id = $1
+       RETURNING id, email, username, role, email_verified`,
+      [req.user.id],
+    );
+    res.json({ user: updated[0] });
+  }),
+);
+
+/** POST /api/auth/resend-verification — re-sends a fresh code to the signed-in user's own email. */
+router.post(
+  '/resend-verification',
+  requireAuth,
+  asyncRoute(async (req, res) => {
+    const { rows } = await query(
+      `SELECT email, email_verified FROM users WHERE id = $1`,
+      [req.user.id],
+    );
+    const user = rows[0];
+    if (!user) return res.status(401).json({ error: 'user_gone' });
+    if (user.email_verified) return res.json({ ok: true, already_verified: true });
+
+    const code = generateCode();
+    await query(
+      `UPDATE users SET verification_code = $1,
+         verification_code_expires_at = now() + interval '${CODE_TTL_MINUTES} minutes'
+       WHERE id = $2`,
+      [code, req.user.id],
+    );
+    const { subject, html } = verificationEmail(code);
+    sendCodeEmail(user.email, { subject, html });
+    res.json({ ok: true });
+  }),
+);
+
+/**
+ * POST /api/auth/forgot-password  { identifier }
+ * Always responds the same way whether or not the account exists, so this
+ * endpoint can't be used to enumerate registered emails.
+ */
+router.post(
+  '/forgot-password',
+  asyncRoute(async (req, res) => {
+    const { identifier } = req.body ?? {};
+    if (!identifier) return res.status(400).json({ error: 'missing_fields', need: ['identifier'] });
+
+    const { rows } = await query(
+      `SELECT id, email FROM users WHERE lower(email) = lower($1) OR lower(username) = lower($1)`,
+      [String(identifier).trim()],
+    );
+    const user = rows[0];
+
+    if (user) {
+      const code = generateCode();
+      await query(
+        `UPDATE users SET reset_code = $1,
+           reset_code_expires_at = now() + interval '${CODE_TTL_MINUTES} minutes'
+         WHERE id = $2`,
+        [code, user.id],
+      );
+      const { subject, html } = resetPasswordEmail(code);
+      sendCodeEmail(user.email, { subject, html });
+    }
+
+    res.json({ ok: true, message: 'If that account exists, a reset code was sent to its email.' });
+  }),
+);
+
+/** POST /api/auth/reset-password  { identifier, code, newPassword } */
+router.post(
+  '/reset-password',
+  asyncRoute(async (req, res) => {
+    const { identifier, code, newPassword } = req.body ?? {};
+    if (!identifier || !code || !newPassword) {
+      return res.status(400).json({ error: 'missing_fields', need: ['identifier', 'code', 'newPassword'] });
+    }
+    if (String(newPassword).length < 6) {
+      return res.status(400).json({ error: 'weak_password', message: 'Use at least 6 characters.' });
+    }
+
+    const { rows } = await query(
+      `SELECT id, reset_code, reset_code_expires_at FROM users
+        WHERE lower(email) = lower($1) OR lower(username) = lower($1)`,
+      [String(identifier).trim()],
+    );
+    const user = rows[0];
+    // Same error for "no such account" and "wrong code" — avoids enumeration.
+    if (!user?.reset_code || user.reset_code !== String(code).trim()) {
+      return res.status(400).json({ error: 'invalid_code' });
+    }
+    if (new Date(user.reset_code_expires_at) < new Date()) {
+      return res.status(400).json({ error: 'code_expired' });
+    }
+
+    const passwordHash = await hashPassword(String(newPassword));
+    await query(
+      `UPDATE users SET password_hash = $1, reset_code = NULL, reset_code_expires_at = NULL,
+         updated_at = now()
+       WHERE id = $2`,
+      [passwordHash, user.id],
+    );
+    res.json({ ok: true });
   }),
 );
 

@@ -25,6 +25,16 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS username TEXT UNIQUE;
 UPDATE users SET username = split_part(email, '@', 1) || '-' || id::text
   WHERE username IS NULL;
 
+-- Email verification (post-signup) and password reset both use a short-lived
+-- 6-digit code emailed to the address on file, rather than a link token.
+-- `email_verified` gates nothing (soft reminder only, not a login block) so
+-- existing sessions and the demo accounts are unaffected.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_code TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_code_expires_at TIMESTAMPTZ;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_code TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_code_expires_at TIMESTAMPTZ;
+
 CREATE TABLE IF NOT EXISTS students (
   user_id       INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
   name          TEXT NOT NULL,

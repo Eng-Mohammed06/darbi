@@ -2,12 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../services/auth.jsx';
 import { api } from '../services/api.js';
-import { Wisps } from '../components/common/ui.jsx';
-
-const PURPLE = '#a855f7';
-const PURPLE_DARK = '#7c3aed';
-const GOLD = '#d4af37';
-const GRADIENT = 'linear-gradient(90deg,#9333ea,#c026d3)';
+import { Wisps, DarkField, darkInput, PURPLE, PURPLE_DARK, GOLD, GRADIENT } from '../components/common/ui.jsx';
 
 const ROLES = [
   { role: 'student', label: 'Student', icon: '🎓' },
@@ -20,10 +15,6 @@ const COPY = {
   company: { title: 'Company Portal', blurb: 'Find engineering talent' },
   career: { title: 'Career Boost', blurb: 'Advance your engineering career' },
 };
-
-const darkInput =
-  'darbi-dark-input w-full rounded-full bg-black/40 border border-white/10 text-white placeholder-gray-500 ' +
-  'px-5 py-3 text-sm focus:outline-none focus:border-purple-400 transition';
 
 export default function AuthPage() {
   const { role } = useParams();
@@ -213,7 +204,7 @@ export default function AuthPage() {
                   mode === 'login' && (
                     <button
                       type="button"
-                      onClick={() => setError("Password reset isn't available yet — contact your admin.")}
+                      onClick={() => navigate('/reset-password')}
                       className="text-xs font-semibold hover:underline"
                       style={{ color: '#c084fc' }}
                     >
@@ -313,18 +304,5 @@ export default function AuthPage() {
         </div>
       </div>
     </div>
-  );
-}
-
-function DarkField({ label, hint, action, children }) {
-  return (
-    <label className="block">
-      <span className="flex items-center justify-between mb-1.5">
-        <span className="text-gray-300 font-semibold text-xs uppercase tracking-wide">{label}</span>
-        {action}
-      </span>
-      {children}
-      {hint && <span className="block text-xs text-gray-500 mt-1">{hint}</span>}
-    </label>
   );
 }

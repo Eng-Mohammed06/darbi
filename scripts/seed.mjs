@@ -257,12 +257,15 @@ async function seedDemoAccounts(client) {
   const hash = bcrypt.hashSync(DEMO_PASSWORD, 10);
 
   async function upsertUser(email, username, role) {
+    // Pre-verified: judges log into these directly and should never see the
+    // "verify your email" nag that a real signup would get.
     const { rows } = await client.query(
-      `INSERT INTO users (email, username, password_hash, role)
-       VALUES ($1,$2,$3,$4)
+      `INSERT INTO users (email, username, password_hash, role, email_verified)
+       VALUES ($1,$2,$3,$4,true)
        ON CONFLICT (email) DO UPDATE SET username = EXCLUDED.username,
                                          password_hash = EXCLUDED.password_hash,
-                                         role = EXCLUDED.role, updated_at = now()
+                                         role = EXCLUDED.role, email_verified = true,
+                                         updated_at = now()
        RETURNING id`,
       [email.toLowerCase(), username, hash, role],
     );

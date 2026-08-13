@@ -9,6 +9,75 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../services/auth.jsx';
+
+// Shared with the pre-login dark-card pages (AuthPage, ResetPasswordPage) —
+// same glassy purple/gold aesthetic, kept separate from the post-login
+// navy/gold `darbi-*` tokens in global.css since these two visual systems
+// (logged-out vs. logged-in) are deliberately different per the approved mockup.
+export const PURPLE = '#a855f7';
+export const PURPLE_DARK = '#7c3aed';
+export const GOLD = '#d4af37';
+export const GRADIENT = 'linear-gradient(90deg,#9333ea,#c026d3)';
+
+export const darkInput =
+  'darbi-dark-input w-full rounded-full bg-black/40 border border-white/10 text-white placeholder-gray-500 ' +
+  'px-5 py-3 text-sm focus:outline-none focus:border-purple-400 transition';
+
+export function DarkField({ label, hint, action, children }) {
+  return (
+    <label className="block">
+      <span className="flex items-center justify-between mb-1.5">
+        <span className="text-gray-300 font-semibold text-xs uppercase tracking-wide">{label}</span>
+        {action}
+      </span>
+      {children}
+      {hint && <span className="block text-xs text-gray-500 mt-1">{hint}</span>}
+    </label>
+  );
+}
+
+/** Dark-card shell used by every pre-login page (AuthPage, ResetPasswordPage). */
+export function DarkCard({ title, subtitle, children }) {
+  return (
+    <div className="min-h-screen flex" style={{ background: '#05020a' }}>
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col justify-center px-16">
+        <Wisps palette={[PURPLE, PURPLE_DARK]} opacity={0.65} />
+        <div className="relative z-10">
+          <h1
+            className="text-6xl font-extrabold text-white tracking-tight"
+            style={{ textShadow: `0 0 50px ${PURPLE}99` }}
+          >
+            Darbi
+          </h1>
+          <p className="text-lg mt-3" style={{ color: '#c084fc' }}>
+            Career advisory platform
+          </p>
+        </div>
+      </div>
+
+      <div className="flex-1 relative overflow-hidden flex items-center justify-center px-4 py-10">
+        <Wisps palette={[PURPLE, GOLD]} opacity={0.45} />
+        <div className="relative z-10 w-full max-w-md">
+          <div
+            className="rounded-3xl p-8"
+            style={{
+              background: 'rgba(15,10,22,0.9)',
+              border: `1px solid ${PURPLE}40`,
+              boxShadow: `0 0 60px ${PURPLE_DARK}26`,
+            }}
+          >
+            <div className="text-center mb-6">
+              <h2 className="text-xl font-bold text-white">{title}</h2>
+              {subtitle && <p className="text-gray-400 text-sm mt-1">{subtitle}</p>}
+            </div>
+            {children}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function Shell({ title, subtitle, tabs, activeTab, onTabChange, children }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -78,7 +147,114 @@ export function Shell({ title, subtitle, tabs, activeTab, onTabChange, children 
           </>
         )}
       </header>
+      <EmailVerifyBanner />
       <main className="darbi-container py-8 relative z-10">{children}</main>
+    </div>
+  );
+}
+
+/**
+ * Non-blocking nag shown on every dashboard page until the user verifies
+ * their email — verification never gates login (see server/routes/auth.js),
+ * so this banner is the only place the reminder surfaces.
+ */
+function EmailVerifyBanner() {
+  const { user, setUser, verifyEmail, resendVerification } = useAuth();
+  const [open, setOpen] = useState(false);
+  const [code, setCode] = useState('');
+  const [status, setStatus] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  if (!user || user.email_verified) return null;
+
+  async function submit(e) {
+    e.preventDefault();
+    setError('');
+    setBusy(true);
+    try {
+      const updated = await verifyEmail(code);
+      setUser(updated);
+      setStatus('Email verified.');
+      setCode('');
+    } catch (err) {
+      setError(
+        {
+          invalid_code: 'That code is not correct.',
+          code_expired: 'That code expired — send a new one.',
+        }[err.code] ?? err.message,
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function resend() {
+    setError('');
+    setStatus('');
+    setBusy(true);
+    try {
+      await resendVerification();
+      setStatus('New code sent — check your email.');
+      setOpen(true);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div
+      className="relative z-20"
+      style={{ background: 'rgba(212,175,55,0.12)', borderBottom: '1px solid rgba(212,175,55,0.3)' }}
+    >
+      <div className="darbi-container py-3 text-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <span style={{ color: '#e8cf7a' }}>
+            Verify your email ({user.email}) to keep your account secure.
+          </span>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setOpen((o) => !o)}
+              className="font-semibold hover:underline shrink-0"
+              style={{ color: '#e8cf7a' }}
+            >
+              {open ? 'Hide' : 'Enter code'}
+            </button>
+            <button
+              type="button"
+              onClick={resend}
+              disabled={busy}
+              className="font-semibold hover:underline shrink-0 disabled:opacity-60"
+              style={{ color: '#e8cf7a' }}
+            >
+              Resend code
+            </button>
+          </div>
+        </div>
+
+        {open && (
+          <form onSubmit={submit} className="flex flex-wrap items-center gap-2 mt-3">
+            <input
+              className="darbi-input py-2"
+              style={{ maxWidth: 160 }}
+              placeholder="6-digit code"
+              inputMode="numeric"
+              maxLength={6}
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              required
+            />
+            <button type="submit" disabled={busy} className="darbi-btn text-sm py-2 disabled:opacity-60">
+              {busy ? 'Checking…' : 'Verify'}
+            </button>
+          </form>
+        )}
+        {status && <p className="mt-2 text-green-400">{status}</p>}
+        {error && <p className="mt-2" style={{ color: '#fca5a5' }}>{error}</p>}
+      </div>
     </div>
   );
 }

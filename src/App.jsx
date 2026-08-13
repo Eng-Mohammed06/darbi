@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './services/auth.jsx';
 import AuthPage from './pages/AuthPage.jsx';
+import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
 import OnboardingPage from './pages/OnboardingPage.jsx';
 import StudentDashboard from './pages/StudentDashboard.jsx';
 import CompanyDashboard from './pages/CompanyDashboard.jsx';
@@ -57,6 +58,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/portal/:role" element={<AuthPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/account" element={<Account />} />
           <Route path="/dashboard" element={<Dashboard />} />

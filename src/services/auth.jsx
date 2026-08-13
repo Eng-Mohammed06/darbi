@@ -49,6 +49,29 @@ export function AuthProvider({ children }) {
         return res.user;
       },
 
+      /** Returns the updated user (with email_verified: true) on success. */
+      async verifyEmail(code) {
+        const res = await api('/auth/verify-email', { method: 'POST', body: { code } });
+        return res.user;
+      },
+
+      resendVerification() {
+        return api('/auth/resend-verification', { method: 'POST' });
+      },
+
+      /** Public — no session required, since a locked-out user isn't logged in. */
+      forgotPassword(identifier) {
+        return api('/auth/forgot-password', { method: 'POST', auth: false, body: { identifier } });
+      },
+
+      resetPassword(identifier, code, newPassword) {
+        return api('/auth/reset-password', {
+          method: 'POST',
+          auth: false,
+          body: { identifier, code, newPassword },
+        });
+      },
+
       logout() {
         clearToken();
         setUser(null);
