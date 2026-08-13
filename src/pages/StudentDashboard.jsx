@@ -278,15 +278,22 @@ function MajorExplorer() {
               )}
 
               <p className="font-semibold text-darbi-navy mb-1.5">Courses</p>
-              <ul className="text-gray-300 space-y-1.5">
-                {detail.courses.map((c) => (
-                  <li key={c.id}>
-                    <span className="font-medium">{c.name}</span>
-                    {c.provider && <span className="text-gray-500"> — {c.provider}</span>}
-                    {c.cost_raw && <span className="text-gray-500"> · {c.cost_raw} JOD</span>}
-                  </li>
-                ))}
-              </ul>
+              {detail.courses.length > 0 ? (
+                <ul className="text-gray-300 space-y-1.5">
+                  {detail.courses.map((c) => (
+                    <li key={c.id}>
+                      <span className="font-medium">{c.name}</span>
+                      {c.provider && <span className="text-gray-500"> — {c.provider}</span>}
+                      {c.cost_raw && <span className="text-gray-500"> · {c.cost_raw} JOD</span>}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-500 italic">
+                  No courses catalogued for this major yet — salary and university data above are
+                  still verified, this is just a gap in the course catalog.
+                </p>
+              )}
             </div>
           )}
         </div>
