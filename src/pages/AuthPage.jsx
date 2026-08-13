@@ -241,13 +241,23 @@ export default function AuthPage() {
                   <div
                     className="grid"
                     style={{
+                      // No transition here: the row/space itself snaps open in a single
+                      // cheap reflow. Only opacity+transform below are animated, since
+                      // those run on the compositor and stay smooth even if a layout
+                      // property (like this one) would otherwise stutter.
                       gridTemplateRows: form.level ? '1fr' : '0fr',
-                      opacity: form.level ? 1 : 0,
                       marginTop: form.level ? '1rem' : '0px',
-                      transition: 'grid-template-rows 300ms ease-in-out, opacity 300ms ease-in-out, margin-top 300ms ease-in-out',
                     }}
                   >
-                    <div className="overflow-hidden min-h-0">
+                    <div
+                      className="overflow-hidden min-h-0"
+                      style={{
+                        opacity: form.level ? 1 : 0,
+                        transform: form.level ? 'translateY(0)' : 'translateY(-6px)',
+                        transition: 'opacity 250ms ease-out, transform 250ms ease-out',
+                        willChange: 'opacity, transform',
+                      }}
+                    >
                       <DarkField
                         label={form.level === 'highschool' ? 'Average' : 'GPA'}
                         hint={form.level === 'highschool' ? 'Tawjihi average, out of 100' : 'Out of 4'}
