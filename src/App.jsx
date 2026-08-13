@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './services/auth.jsx';
-import HomePage from './pages/HomePage.jsx';
 import AuthPage from './pages/AuthPage.jsx';
 import OnboardingPage from './pages/OnboardingPage.jsx';
 import StudentDashboard from './pages/StudentDashboard.jsx';
@@ -27,10 +26,12 @@ function Dashboard() {
 function Home() {
   const { user, loading } = useAuth();
   if (loading) return <p className="p-8 text-gray-500">Loading…</p>;
-  // Already signed in? Skip the portal picker and render the dashboard right
-  // here, so '/' is the Advisor page rather than bouncing to '/dashboard'.
+  // Already signed in? Skip straight to the dashboard, so '/' is the Advisor
+  // page rather than bouncing to '/dashboard'. Signed out? The login page
+  // has its own Student/Graduate/Company switcher, so there's no separate
+  // portal-picker page to bounce to first.
   if (user) return <Dashboard />;
-  return <HomePage />;
+  return <Navigate to="/portal/student" replace />;
 }
 
 function Account() {

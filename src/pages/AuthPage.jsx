@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useAuth } from '../services/auth.jsx';
+import { api } from '../services/api.js';
 import { Wisps } from '../components/common/ui.jsx';
 
 const PURPLE = '#a855f7';
@@ -33,6 +34,19 @@ export default function AuthPage() {
   const [form, setForm] = useState({});
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    Promise.all([api('/majors', { auth: false }), api('/jobs', { auth: false })])
+      .then(([majors, jobs]) =>
+        setStats({
+          majors: majors.length,
+          courses: majors.reduce((n, m) => n + m.course_count, 0),
+          jobs: jobs.length,
+        }),
+      )
+      .catch(() => setStats(null));
+  }, []);
 
   // Switching role via the pill switcher shouldn't carry the previous role's
   // form values (e.g. "Industry" typed for Company leaking into Student).
@@ -106,6 +120,12 @@ export default function AuthPage() {
           <p className="text-lg mt-3" style={{ color: '#c084fc' }}>
             Career advisory platform
           </p>
+          {stats && (
+            <p className="text-gray-400 text-sm mt-6">
+              {stats.majors} majors · {stats.courses} verified courses · {stats.jobs} verified job
+              listings
+            </p>
+          )}
         </div>
       </div>
 
