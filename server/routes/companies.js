@@ -6,6 +6,24 @@ const router = Router();
 
 router.use(requireAuth, requireRole('company'));
 
+/** PUT /api/companies/me  { name } — signup no longer collects a company
+ * name separately (it defaults to the username), so this is how a company
+ * sets a proper display name afterward. */
+router.put(
+  '/me',
+  asyncRoute(async (req, res) => {
+    const { name } = req.body ?? {};
+    if (!name) return res.status(400).json({ error: 'missing_name' });
+
+    const { rows } = await query(
+      `UPDATE companies SET name = $2 WHERE user_id = $1 RETURNING *`,
+      [req.user.id, String(name).trim()],
+    );
+    if (!rows[0]) return res.status(404).json({ error: 'no_profile' });
+    res.json(rows[0]);
+  }),
+);
+
 /** GET /api/companies/me/jobs — this company's own postings. */
 router.get(
   '/me/jobs',

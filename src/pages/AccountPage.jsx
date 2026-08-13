@@ -28,6 +28,7 @@ export default function AccountPage() {
           <Detail label="Email" value={user?.email} />
         </Card>
 
+        <ChangeName />
         <ChangeUsername />
         <ChangePassword />
 
@@ -47,6 +48,53 @@ function Detail({ label, value }) {
       <span className="block text-darbi-navy font-bold mb-1 text-sm">{label}</span>
       <span className="text-gray-300">{value ?? '—'}</span>
     </div>
+  );
+}
+
+const NAME_ENDPOINT = { student: '/students/me', company: '/companies/me', career: '/career/me' };
+
+/**
+ * Signup no longer collects a separate display name (it defaults to the
+ * username — see server/routes/auth.js), so this is where a user sets a
+ * real one afterward. Each role's name lives on a different table, hence
+ * the per-role endpoint.
+ */
+function ChangeName() {
+  const { user, profile, setProfile } = useAuth();
+  const [name, setName] = useState(profile?.name ?? '');
+  const [status, setStatus] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  async function submit(e) {
+    e.preventDefault();
+    setError('');
+    setStatus('');
+    setBusy(true);
+    try {
+      const updated = await api(NAME_ENDPOINT[user.role], { method: 'PUT', body: { name } });
+      setProfile(updated);
+      setStatus('Name changed.');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card title="Change name">
+      <Alert>{error}</Alert>
+      {status && <p className="text-green-400 mb-4">{status}</p>}
+      <form onSubmit={submit}>
+        <Field label="Name">
+          <input className={inputClass} value={name} onChange={(e) => setName(e.target.value)} required />
+        </Field>
+        <Button type="submit" disabled={busy}>
+          {busy ? 'Saving…' : 'Change name'}
+        </Button>
+      </form>
+    </Card>
   );
 }
 

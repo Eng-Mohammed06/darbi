@@ -10,6 +10,7 @@ import companyRoutes from './routes/companies.js';
 import recommendRoutes from './routes/recommend.js';
 import chatRoutes from './routes/chat.js';
 import pathwayRoutes from './routes/pathways.js';
+import careerRoutes from './routes/career.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -145,6 +146,7 @@ app.use('/api/companies', companyRoutes);
 app.use('/api/recommend', recommendRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/pathways', pathwayRoutes);
+app.use('/api/career', careerRoutes);
 
 // Serve the built React app. Any non-/api path falls through to index.html so
 // client-side routing works on refresh and deep links.
