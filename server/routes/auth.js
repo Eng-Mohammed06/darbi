@@ -96,18 +96,19 @@ router.post(
   }),
 );
 
-/** POST /api/auth/login  { email, password } */
+/** POST /api/auth/login  { identifier, password } — identifier is an email or a username. */
 router.post(
   '/login',
   asyncRoute(async (req, res) => {
-    const { email, password } = req.body ?? {};
-    if (!email || !password) {
+    const { identifier, password } = req.body ?? {};
+    if (!identifier || !password) {
       return res.status(400).json({ error: 'missing_fields' });
     }
 
     const { rows } = await query(
-      `SELECT id, email, username, role, password_hash FROM users WHERE email = $1`,
-      [String(email).trim().toLowerCase()],
+      `SELECT id, email, username, role, password_hash FROM users
+        WHERE lower(email) = lower($1) OR lower(username) = lower($1)`,
+      [String(identifier).trim()],
     );
     const user = rows[0];
 

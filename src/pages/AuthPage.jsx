@@ -202,8 +202,14 @@ export default function AuthPage() {
                 </>
               )}
 
-              <DarkField label="Email">
-                <input type="email" className={darkInput} value={form.email ?? ''} onChange={set('email')} required />
+              <DarkField label={mode === 'login' ? 'Email / Username' : 'Email'}>
+                <input
+                  type={mode === 'login' ? 'text' : 'email'}
+                  className={darkInput}
+                  value={form.email ?? ''}
+                  onChange={set('email')}
+                  required
+                />
               </DarkField>
 
               <DarkField

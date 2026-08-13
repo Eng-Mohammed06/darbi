@@ -29,11 +29,11 @@ export function AuthProvider({ children }) {
       setProfile,
       setUser,
 
-      async login(email, password) {
+      async login(identifier, password) {
         const res = await api('/auth/login', {
           method: 'POST',
           auth: false,
-          body: { email, password },
+          body: { identifier, password },
         });
         setToken(res.token);
         setUser(res.user);
