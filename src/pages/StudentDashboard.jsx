@@ -259,7 +259,13 @@ function MajorExplorer() {
                   {detail.universities.map((u) => (
                     <li key={u.code}>
                       <span className="font-medium">{u.name}</span>
-                      <span className="text-gray-500"> ({u.code}) — {u.course_count} course(s)</span>
+                      <span className="text-gray-500">
+                        {' '}
+                        ({u.code}) —{' '}
+                        {u.competitive_average != null
+                          ? `needs ${u.competitive_average}% Tawjihi`
+                          : 'average not published'}
+                      </span>
                       {u.website && <span className="text-gray-500"> · {u.website}</span>}
                     </li>
                   ))}

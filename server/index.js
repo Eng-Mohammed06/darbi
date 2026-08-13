@@ -72,7 +72,8 @@ app.get('/api/universities', async (_req, res, next) => {
 app.get('/api/majors/:slug/universities', async (req, res, next) => {
   try {
     const { rows } = await pool.query(
-      `SELECT u.code, u.name, u.website, um.relation, um.course_count, um.evidence
+      `SELECT u.code, u.name, u.website, um.relation, um.evidence,
+              um.competitive_average, um.minimum_average
          FROM university_majors um
          JOIN universities u ON u.id = um.university_id
          JOIN majors m ON m.id = um.major_id
