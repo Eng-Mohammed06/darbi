@@ -60,10 +60,16 @@ router.post(
 
         if (role === 'student') {
           const { interests, gpa, level, location, salaryPref } = req.body;
+          // High schoolers report a Tawjihi average (0-100), not a college GPA
+          // (0-4) -- `gpa` has a CHECK constraint that would reject an average,
+          // so route the same submitted value to whichever column matches level.
+          const isHighSchool = level === 'highschool';
           await client.query(
-            `INSERT INTO students (user_id, name, level, interests, gpa, location, salary_pref)
-             VALUES ($1,$2,$3,$4,$5,$6,$7)`,
-            [created.id, displayName, level ?? null, interests ?? [], gpa ?? null,
+            `INSERT INTO students (user_id, name, level, interests, gpa, tawjihi_average, location, salary_pref)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+            [created.id, displayName, level ?? null, interests ?? [],
+             isHighSchool ? null : (gpa ?? null),
+             isHighSchool ? (gpa ?? null) : null,
              location ?? null, salaryPref ?? null],
           );
         } else if (role === 'company') {
