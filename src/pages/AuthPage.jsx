@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../services/auth.jsx';
 import { api } from '../services/api.js';
 import { Wisps } from '../components/common/ui.jsx';
@@ -133,12 +133,8 @@ export default function AuthPage() {
         <Wisps palette={[PURPLE, GOLD]} opacity={0.45} />
 
         <div className="relative z-10 w-full max-w-md">
-          <Link to="/" className="text-gray-400 hover:text-white text-sm font-semibold transition">
-            ← Back
-          </Link>
-
           <div
-            className="mt-5 rounded-3xl p-8"
+            className="rounded-3xl p-8"
             style={{
               background: 'rgba(15,10,22,0.9)',
               border: `1px solid ${PURPLE}40`,
