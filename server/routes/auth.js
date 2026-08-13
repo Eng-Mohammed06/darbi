@@ -7,7 +7,7 @@ import {
   requireAuth,
   asyncRoute,
 } from '../lib/auth.js';
-import { sendMail, generateCode, verificationEmail, resetPasswordEmail } from '../lib/mail.js';
+import { sendMail, generateCode, verificationEmail, resetPasswordEmail, welcomeEmail } from '../lib/mail.js';
 
 const router = Router();
 const ROLES = ['student', 'company', 'career'];
@@ -15,10 +15,11 @@ const CODE_TTL_MINUTES = 15;
 
 /**
  * Signup/forgot-password must not fail just because the email provider hiccuped
- * — verification and reset are a soft nag, not a login gate, so a send failure
- * only gets logged, never surfaced to the user as a broken signup/request.
+ * — verification, reset, and the welcome email are all a soft nag/nicety, never
+ * a login gate, so a send failure only gets logged, never surfaced to the user
+ * as a broken signup/request.
  */
-async function sendCodeEmail(to, { subject, html }) {
+async function sendBestEffort(to, { subject, html }) {
   try {
     await sendMail({ to, subject, html });
   } catch (err) {
@@ -120,7 +121,9 @@ router.post(
       [code, user.id],
     );
     const { subject, html } = verificationEmail(code);
-    sendCodeEmail(user.email, { subject, html });
+    sendBestEffort(user.email, { subject, html });
+    const welcome = welcomeEmail(displayName, role);
+    sendBestEffort(user.email, welcome);
 
     res.status(201).json({
       token: signToken(user),
@@ -226,7 +229,7 @@ router.post(
       [code, req.user.id],
     );
     const { subject, html } = verificationEmail(code);
-    sendCodeEmail(user.email, { subject, html });
+    sendBestEffort(user.email, { subject, html });
     res.json({ ok: true });
   }),
 );
@@ -257,7 +260,7 @@ router.post(
         [code, user.id],
       );
       const { subject, html } = resetPasswordEmail(code);
-      sendCodeEmail(user.email, { subject, html });
+      sendBestEffort(user.email, { subject, html });
     }
 
     res.json({ ok: true, message: 'If that account exists, a reset code was sent to its email.' });
