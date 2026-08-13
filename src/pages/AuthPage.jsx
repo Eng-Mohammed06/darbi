@@ -276,13 +276,6 @@ export default function AuthPage() {
                 {busy ? 'Working…' : mode === 'login' ? 'Sign in' : 'Create account'}
               </button>
             </form>
-
-            {mode === 'login' && (
-              <p className="text-xs text-gray-500 mt-5 text-center">
-                Demo account: <code className="text-gray-400">{role}@darbi.jo</code> /{' '}
-                <code className="text-gray-400">darbi2026</code>
-              </p>
-            )}
           </div>
         </div>
       </div>
