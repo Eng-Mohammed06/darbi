@@ -83,7 +83,16 @@ export default function OnboardingPage() {
       <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--darbi-gold)' }}>
         Question {step + 1} of {questions.length}
       </p>
-      <h1 className="text-xl font-bold text-darbi-navy mt-2 mb-5">{q.question}</h1>
+      <div className="flex gap-1.5 mt-3 mb-4" role="progressbar" aria-valuenow={step + 1} aria-valuemin={1} aria-valuemax={questions.length}>
+        {questions.map((_, i) => (
+          <span
+            key={i}
+            className="flex-1 h-1.5 rounded-full transition-colors"
+            style={{ background: i <= step ? 'var(--darbi-gradient)' : 'rgba(255,255,255,0.1)' }}
+          />
+        ))}
+      </div>
+      <h1 className="text-xl font-bold text-darbi-navy mb-5">{q.question}</h1>
 
       <Alert>{error}</Alert>
 

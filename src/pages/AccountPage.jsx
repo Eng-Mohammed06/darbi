@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { api } from '../services/api.js';
 import { useAuth } from '../services/auth.jsx';
 import { Alert, Button, Card, Field, inputClass, Wisps } from '../components/common/ui.jsx';
+import { useToast } from '../components/common/toast.jsx';
 
 export default function AccountPage() {
   const { user, profile, logout } = useAuth();
@@ -62,19 +63,18 @@ const NAME_ENDPOINT = { student: '/students/me', company: '/companies/me', caree
 function ChangeName() {
   const { user, profile, setProfile } = useAuth();
   const [name, setName] = useState(profile?.name ?? '');
-  const [status, setStatus] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const toast = useToast();
 
   async function submit(e) {
     e.preventDefault();
     setError('');
-    setStatus('');
     setBusy(true);
     try {
       const updated = await api(NAME_ENDPOINT[user.role], { method: 'PUT', body: { name } });
       setProfile(updated);
-      setStatus('Name changed.');
+      toast.show('Name changed.', { kind: 'success' });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -85,7 +85,6 @@ function ChangeName() {
   return (
     <Card title="Change name">
       <Alert>{error}</Alert>
-      {status && <p className="text-green-400 mb-4">{status}</p>}
       <form onSubmit={submit}>
         <Field label="Name">
           <input className={inputClass} value={name} onChange={(e) => setName(e.target.value)} required />
@@ -101,14 +100,13 @@ function ChangeName() {
 function ChangeUsername() {
   const { user, setUser } = useAuth();
   const [username, setUsername] = useState(user?.username ?? '');
-  const [status, setStatus] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const toast = useToast();
 
   async function submit(e) {
     e.preventDefault();
     setError('');
-    setStatus('');
     setBusy(true);
     try {
       const { user: updated } = await api('/auth/username', {
@@ -116,7 +114,7 @@ function ChangeUsername() {
         body: { username },
       });
       setUser(updated);
-      setStatus('Username changed.');
+      toast.show('Username changed.', { kind: 'success' });
     } catch (err) {
       setError(
         {
@@ -131,7 +129,6 @@ function ChangeUsername() {
   return (
     <Card title="Change username">
       <Alert>{error}</Alert>
-      {status && <p className="text-green-400 mb-4">{status}</p>}
       <form onSubmit={submit}>
         <Field label="Username">
           <input className={inputClass} value={username} onChange={(e) => setUsername(e.target.value)} required />
@@ -146,16 +143,15 @@ function ChangeUsername() {
 
 function ChangePassword() {
   const [form, setForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
-  const [status, setStatus] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const toast = useToast();
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
   async function submit(e) {
     e.preventDefault();
     setError('');
-    setStatus('');
 
     if (form.newPassword !== form.confirmPassword) {
       setError('New password and confirmation do not match.');
@@ -168,7 +164,7 @@ function ChangePassword() {
         method: 'PUT',
         body: { currentPassword: form.currentPassword, newPassword: form.newPassword },
       });
-      setStatus('Password changed.');
+      toast.show('Password changed.', { kind: 'success' });
       setForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (err) {
       setError(
@@ -185,7 +181,6 @@ function ChangePassword() {
   return (
     <Card title="Change password">
       <Alert>{error}</Alert>
-      {status && <p className="text-green-400 mb-4">{status}</p>}
       <form onSubmit={submit}>
         <Field label="Current password">
           <input type="password" className={inputClass} value={form.currentPassword} onChange={set('currentPassword')} required />

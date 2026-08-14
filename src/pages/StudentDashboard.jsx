@@ -6,13 +6,17 @@ import Pathways from '../components/student/Pathways.jsx';
 import SavedPathways from '../components/student/SavedPathways.jsx';
 import { useAuth } from '../services/auth.jsx';
 import {
-  Alert, Button, Card, Field, Shell, inputClass, Salary,
+  Alert, Button, Card, Field, Shell, inputClass, Salary, SkeletonLines,
 } from '../components/common/ui.jsx';
+import { useToast } from '../components/common/toast.jsx';
 
 /** Mirrors slugify() in scripts/convert_xlsx.py, which generated majors.slug. */
 const slugify = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 const TABS = ['advisor', 'pathways', 'saved pathways', 'recommendations', 'profile', 'majors', 'jobs'];
+// The 4 most-used sections get a permanent icon in the mobile bottom bar;
+// the rest (saved pathways, profile, majors) sit under "More".
+const PRIMARY_TABS = ['advisor', 'recommendations', 'pathways', 'jobs'];
 
 export default function StudentDashboard() {
   const { profile, setProfile } = useAuth();
@@ -25,6 +29,7 @@ export default function StudentDashboard() {
       title={`Welcome, ${profile?.name ?? 'student'} 🎓`}
       subtitle={profile?.level ? `${profile.level} · ${profile.location ?? 'Jordan'}` : undefined}
       tabs={TABS}
+      primaryTabs={PRIMARY_TABS}
       activeTab={tab}
       onTabChange={setTab}
     >
@@ -171,15 +176,14 @@ function ProfileForm({ profile, onSaved }) {
     salaryPref: profile?.salary_pref ?? '',
   });
   const isHighSchool = form.level === 'highschool';
-  const [status, setStatus] = useState('');
   const [error, setError] = useState('');
+  const toast = useToast();
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
   async function save(e) {
     e.preventDefault();
     setError('');
-    setStatus('');
     try {
       const saved = await api('/students/me', {
         method: 'PUT',
@@ -194,7 +198,7 @@ function ProfileForm({ profile, onSaved }) {
         },
       });
       onSaved(saved);
-      setStatus('Saved. Regenerate your recommendations to use the new profile.');
+      toast.show('Profile saved — regenerate your recommendations to use it.', { kind: 'success' });
     } catch (err) {
       setError(err.message);
     }
@@ -203,7 +207,6 @@ function ProfileForm({ profile, onSaved }) {
   return (
     <Card title="Your profile">
       <Alert>{error}</Alert>
-      {status && <p className="text-green-400 mb-4">{status}</p>}
       <form onSubmit={save}>
         <Field label="Full name">
           <input className={inputClass} value={form.name} onChange={set('name')} />
@@ -278,6 +281,7 @@ function MajorExplorer() {
 
   return (
     <Card title={loading ? 'Loading majors…' : `${majors.length} engineering majors`}>
+      {loading && <SkeletonLines lines={6} />}
       {majors.map((m) => (
         <div key={m.slug} className="border-b last:border-0 border-[color:var(--darbi-border)] py-3">
           <button onClick={() => toggle(m.slug)} className="w-full text-left flex justify-between items-center">
@@ -387,6 +391,7 @@ function JobBoard() {
       <Field label="Filter by major">
         <input className={inputClass} placeholder="Computer Science" value={major} onChange={(e) => setMajor(e.target.value)} />
       </Field>
+      {loading && <SkeletonLines lines={5} />}
       <div className="divide-y divide-[color:var(--darbi-border)]">
         {jobs.slice(0, visible).map((j) => (
           <div key={j.id} className="py-3">

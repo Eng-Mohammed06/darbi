@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../services/api.js';
 import { useAuth } from '../services/auth.jsx';
-import { Card, Shell } from '../components/common/ui.jsx';
+import { Card, EmptyState, Shell, SkeletonLines } from '../components/common/ui.jsx';
 
 const TABS = ['overview', 'learning paths', 'training centres'];
 
@@ -61,7 +61,7 @@ function LearningPaths() {
 
   return (
     <>
-      {loading && <Card>Loading learning paths…</Card>}
+      {loading && <Card><SkeletonLines lines={4} /></Card>}
       {tracks.map((track) => (
         <Card key={track} title={track}>
           <div className="divide-y divide-[color:var(--darbi-border)]">
@@ -81,7 +81,9 @@ function LearningPaths() {
           </div>
         </Card>
       ))}
-      {!loading && paths.length === 0 && <Card>No learning paths loaded.</Card>}
+      {!loading && paths.length === 0 && (
+        <Card><EmptyState icon="🎓" title="No learning paths loaded yet." /></Card>
+      )}
     </>
   );
 }
@@ -95,6 +97,10 @@ function TrainingCentres() {
 
   return (
     <Card title={loading ? 'Loading training centres…' : `${centres.length} accredited centre(s) in Jordan`}>
+      {loading && <SkeletonLines lines={5} />}
+      {!loading && centres.length === 0 && (
+        <EmptyState icon="🏫" title="No training centres loaded yet." />
+      )}
       <div className="divide-y divide-[color:var(--darbi-border)]">
         {centres.map((c) => (
           <div key={c.id} className="py-3">

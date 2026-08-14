@@ -8,8 +8,8 @@
  * background used behind every page.
  */
 
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../services/auth.jsx';
 
 // Shared with the pre-login dark-card pages (AuthPage, ResetPasswordPage) —
@@ -81,8 +81,63 @@ export function DarkCard({ title, subtitle, children }) {
   );
 }
 
-export function Shell({ title, subtitle, tabs, activeTab, onTabChange, children }) {
+const TAB_ICONS = {
+  advisor: '💬',
+  pathways: '🧭',
+  'saved pathways': '⭐',
+  recommendations: '🎯',
+  profile: '👤',
+  majors: '📚',
+  jobs: '💼',
+  'post a job': '📝',
+  'my jobs': '📋',
+  'find students': '🔍',
+  overview: '📊',
+  'learning paths': '🎓',
+  'training centres': '🏫',
+};
+
+const label = (t) => t[0].toUpperCase() + t.slice(1);
+
+/**
+ * `primaryTabs` picks which tabs (and in what order) get a permanent icon in
+ * the mobile bottom bar — everything else lands under "More". Defaults to
+ * the first 4 tabs if the caller doesn't specify (fine for the 3-tab
+ * Company/Career dashboards, which just show all of them).
+ */
+export function Shell({ title, subtitle, tabs, activeTab, onTabChange, primaryTabs, children }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [paletteQuery, setPaletteQuery] = useState('');
+  const navigate = useNavigate();
+
+  const bottomTabs = tabs ? (primaryTabs ?? tabs.slice(0, 4)) : [];
+  const hasOverflow = tabs && tabs.length > bottomTabs.length;
+
+  // ⌘K / Ctrl+K opens a searchable jump-to-tab palette — the app has no
+  // cross-page router for dashboard tabs (they're per-dashboard component
+  // state, not routes), so the palette's reach is "this dashboard's tabs
+  // plus Account/Sign out", which is what a user actually wants to jump to.
+  useEffect(() => {
+    function onKey(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setPaletteOpen((o) => !o);
+      }
+      if (e.key === 'Escape') setPaletteOpen(false);
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  const paletteItems = useMemo(() => {
+    const items = [
+      ...(tabs ?? []).map((t) => ({ label: label(t), icon: TAB_ICONS[t] ?? '•', run: () => onTabChange(t) })),
+      { label: 'Account', icon: '👤', run: () => navigate('/account') },
+    ];
+    const q = paletteQuery.trim().toLowerCase();
+    return q ? items.filter((i) => i.label.toLowerCase().includes(q)) : items;
+  }, [tabs, paletteQuery, onTabChange, navigate]);
 
   return (
     <div className="min-h-screen relative overflow-hidden" style={{ background: 'var(--darbi-bg)' }}>
@@ -96,11 +151,12 @@ export function Shell({ title, subtitle, tabs, activeTab, onTabChange, children 
           {tabs && (
             // A bare glyph hid every section but "Advisor" behind a click nobody
             // had a reason to try — the label makes it read as navigation.
+            // Hidden on mobile now that the bottom tab bar covers navigation there.
             <button
               onClick={() => setMenuOpen((o) => !o)}
               aria-label="Menu"
               aria-expanded={menuOpen}
-              className="flex flex-col items-center gap-0.5 shrink-0 px-1.5 py-0.5 rounded-lg hover:bg-white/5 transition"
+              className="hidden md:flex flex-col items-center gap-0.5 shrink-0 px-1.5 py-0.5 rounded-lg hover:bg-white/5 transition"
             >
               <span className="text-2xl leading-none">☰</span>
               <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Menu</span>
@@ -110,6 +166,14 @@ export function Shell({ title, subtitle, tabs, activeTab, onTabChange, children 
             <h1 className="text-2xl font-bold text-white">{title}</h1>
             {subtitle && <p className="text-sm text-gray-400 mt-1">{subtitle}</p>}
           </div>
+          {tabs && (
+            <button
+              onClick={() => setPaletteOpen(true)}
+              className="hidden md:flex items-center gap-1.5 text-xs font-semibold text-gray-400 hover:text-white border border-white/10 rounded-full px-3 py-1.5 transition shrink-0"
+            >
+              <span aria-hidden="true">⌘K</span> Jump to…
+            </button>
+          )}
           <Link
             to="/account"
             aria-label="Account"
@@ -123,37 +187,114 @@ export function Shell({ title, subtitle, tabs, activeTab, onTabChange, children 
         {tabs && menuOpen && (
           <>
             <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
+            {/* `fixed`, not `absolute` — this menu opens from two triggers: the
+                desktop hamburger near the top, and the mobile "More" bottom-bar
+                button, which is often tapped after scrolling deep into a long
+                list (e.g. Jobs). An absolutely-positioned menu scrolled with the
+                document and could open entirely off-screen above the viewport.
+                Anchored near the bottom on mobile (above the bottom bar) and
+                near the top on desktop (under the header), matching where each
+                trigger actually is. */}
             <div
-              className="darbi-container relative z-20"
+              className="fixed left-4 z-20 flex flex-col gap-1.5 p-3 min-w-[220px] max-h-[60vh] overflow-y-auto bottom-24 md:bottom-auto md:top-20"
+              style={{
+                background: 'var(--darbi-surface-solid)',
+                border: '1px solid var(--darbi-border)',
+                borderRadius: 'var(--darbi-radius)',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+              }}
             >
-              <div
-                className="absolute left-4 top-0 flex flex-col gap-1.5 p-3 min-w-[220px]"
-                style={{
-                  background: 'var(--darbi-surface-solid)',
-                  border: '1px solid var(--darbi-border)',
-                  borderRadius: 'var(--darbi-radius)',
-                  boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
-                }}
-              >
-                {tabs.map((t) => (
-                  <button
-                    key={t}
-                    onClick={() => { onTabChange(t); setMenuOpen(false); }}
-                    className={`w-full text-left px-4 py-2.5 rounded-full font-bold text-sm transition ${
-                      activeTab === t ? 'text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'
-                    }`}
-                    style={activeTab === t ? { background: 'var(--darbi-gradient)' } : undefined}
-                  >
-                    {t[0].toUpperCase() + t.slice(1)}
-                  </button>
-                ))}
-              </div>
+              {tabs.map((t) => (
+                <button
+                  key={t}
+                  onClick={() => { onTabChange(t); setMenuOpen(false); }}
+                  className={`w-full text-left px-4 py-2.5 rounded-full font-bold text-sm transition ${
+                    activeTab === t ? 'text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  }`}
+                  style={activeTab === t ? { background: 'var(--darbi-gradient)' } : undefined}
+                >
+                  {label(t)}
+                </button>
+              ))}
             </div>
           </>
         )}
       </header>
       <EmailVerifyBanner />
-      <main className="darbi-container py-8 relative z-10">{children}</main>
+      <main className={`darbi-container py-8 relative z-10 ${tabs ? 'pb-24 md:pb-8' : ''}`}>{children}</main>
+
+      {tabs && (
+        <nav
+          className="md:hidden fixed bottom-0 inset-x-0 z-30 flex items-stretch"
+          style={{ background: 'rgba(15,23,42,0.95)', borderTop: '1px solid var(--darbi-border)' }}
+        >
+          {bottomTabs.map((t) => (
+            <button
+              key={t}
+              onClick={() => onTabChange(t)}
+              className="flex-1 flex flex-col items-center gap-0.5 py-2.5"
+              style={{ color: activeTab === t ? 'var(--darbi-purple)' : '#94a3b8' }}
+            >
+              <span className="text-lg leading-none">{TAB_ICONS[t] ?? '•'}</span>
+              <span className="text-[10px] font-semibold">{label(t)}</span>
+            </button>
+          ))}
+          {hasOverflow && (
+            <button
+              onClick={() => setMenuOpen((o) => !o)}
+              aria-label="More sections"
+              aria-expanded={menuOpen}
+              className="flex-1 flex flex-col items-center gap-0.5 py-2.5"
+              style={{ color: !bottomTabs.includes(activeTab) ? 'var(--darbi-purple)' : '#94a3b8' }}
+            >
+              <span className="text-lg leading-none">⋯</span>
+              <span className="text-[10px] font-semibold">More</span>
+            </button>
+          )}
+        </nav>
+      )}
+
+      {paletteOpen && (
+        <div
+          className="fixed inset-0 z-[70] flex items-start justify-center pt-24 px-4"
+          style={{ background: 'rgba(0,0,0,0.6)' }}
+          onClick={() => setPaletteOpen(false)}
+        >
+          <div
+            className="w-full max-w-md overflow-hidden"
+            style={{
+              background: 'var(--darbi-surface-solid)',
+              border: '1px solid var(--darbi-border)',
+              borderRadius: 'var(--darbi-radius)',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <input
+              autoFocus
+              value={paletteQuery}
+              onChange={(e) => setPaletteQuery(e.target.value)}
+              placeholder="Jump to…"
+              className="w-full px-4 py-3 bg-transparent text-white placeholder-gray-500 focus:outline-none"
+              style={{ borderBottom: '1px solid var(--darbi-border)' }}
+            />
+            <div className="max-h-72 overflow-y-auto py-1">
+              {paletteItems.length === 0 && (
+                <p className="px-4 py-3 text-sm text-gray-500">No matches.</p>
+              )}
+              {paletteItems.map((item) => (
+                <button
+                  key={item.label}
+                  onClick={() => { item.run(); setPaletteOpen(false); setPaletteQuery(''); }}
+                  className="w-full text-left px-4 py-2.5 text-sm text-gray-200 hover:bg-white/5 transition flex items-center gap-2.5"
+                >
+                  <span aria-hidden="true">{item.icon}</span> {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -260,6 +401,36 @@ function EmailVerifyBanner() {
         {status && <p className="mt-2 text-green-400">{status}</p>}
         {error && <p className="mt-2" style={{ color: '#ff6b7a' }}>{error}</p>}
       </div>
+    </div>
+  );
+}
+
+/** A shimmering placeholder block, shaped roughly like the content it stands
+ * in for. Pass `lines` for a text-shaped skeleton, or width/height via style
+ * for anything else (avatar, chip, card). */
+export function Skeleton({ className = '', style }) {
+  return <div className={`darbi-skeleton ${className}`} style={style} aria-hidden="true" />;
+}
+
+export function SkeletonLines({ lines = 3 }) {
+  return (
+    <div className="space-y-2.5 py-1">
+      {Array.from({ length: lines }).map((_, i) => (
+        <Skeleton key={i} style={{ height: 14, width: `${88 - i * 14}%` }} />
+      ))}
+    </div>
+  );
+}
+
+/** Consistent "nothing here yet" state — was a different one-off message per
+ * list before (see git history), so empty vs. still-loading read differently
+ * from page to page. */
+export function EmptyState({ icon = '🗂️', title, action }) {
+  return (
+    <div className="text-center py-8">
+      <div className="text-3xl mb-2" aria-hidden="true">{icon}</div>
+      <p className="text-gray-400 text-sm">{title}</p>
+      {action && <div className="mt-3">{action}</div>}
     </div>
   );
 }

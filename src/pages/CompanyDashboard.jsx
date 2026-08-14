@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { api } from '../services/api.js';
 import { useAuth } from '../services/auth.jsx';
-import { Alert, Button, Card, Field, Shell, inputClass } from '../components/common/ui.jsx';
+import { Alert, Button, Card, EmptyState, Field, Shell, Skeleton, inputClass } from '../components/common/ui.jsx';
+import { useToast } from '../components/common/toast.jsx';
 
 const TABS = ['post a job', 'my jobs', 'find students'];
 
@@ -32,13 +33,13 @@ export default function CompanyDashboard() {
  */
 function PostJob() {
   const [form, setForm] = useState({});
-  const [status, setStatus] = useState('');
   const [error, setError] = useState('');
+  const toast = useToast();
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
   async function submit(e) {
     e.preventDefault();
-    setError(''); setStatus('');
+    setError('');
     try {
       const job = await api('/companies/me/jobs', {
         method: 'POST',
@@ -52,7 +53,7 @@ function PostJob() {
           description: form.description || null,
         },
       });
-      setStatus(`Posted “${job.title}”.`);
+      toast.show(`Posted "${job.title}".`, { kind: 'success' });
       setForm({});
     } catch (err) {
       setError(err.message);
@@ -63,7 +64,6 @@ function PostJob() {
     <div className="grid lg:grid-cols-2 gap-6 items-start">
       <Card title="Post a job">
         <Alert>{error}</Alert>
-        {status && <p className="text-green-400 mb-4">{status}</p>}
         <form onSubmit={submit}>
           <Field label="Job title">
             <input className={inputClass} value={form.title ?? ''} onChange={set('title')} required />
@@ -148,12 +148,30 @@ function JobPreview({ form }) {
 function MyJobs() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const toast = useToast();
   const load = () => api('/companies/me/jobs').then(setJobs).catch(() => {}).finally(() => setLoading(false));
   useEffect(() => { load(); }, []);
 
-  async function remove(id) {
-    await api(`/companies/me/jobs/${id}`, { method: 'DELETE' });
-    load();
+  // Optimistic remove + a 5s "Undo" toast, instead of a confirm dialog before
+  // every delete: the row disappears immediately, and the real DELETE only
+  // fires once that window passes -- Undo just cancels the pending call and
+  // puts the row back, so there's nothing to "reverse" server-side.
+  function remove(job) {
+    setJobs((js) => js.filter((x) => x.id !== job.id));
+    const timer = setTimeout(() => {
+      api(`/companies/me/jobs/${job.id}`, { method: 'DELETE' }).catch(() => {});
+    }, 5000);
+    toast.show(`Deleted "${job.title}".`, {
+      kind: 'info',
+      duration: 5000,
+      action: {
+        label: 'Undo',
+        onClick: () => {
+          clearTimeout(timer);
+          setJobs((js) => [job, ...js]);
+        },
+      },
+    });
   }
 
   return (
@@ -164,7 +182,17 @@ function MyJobs() {
         </h2>
       </div>
 
-      {!loading && jobs.length === 0 && <Card><p className="text-gray-400">Nothing posted yet.</p></Card>}
+      {loading && (
+        <div className="grid sm:grid-cols-2 gap-4">
+          {Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} style={{ height: 140 }} />)}
+        </div>
+      )}
+
+      {!loading && jobs.length === 0 && (
+        <Card>
+          <EmptyState icon="📋" title="Nothing posted yet — post your first job to see it here." />
+        </Card>
+      )}
 
       <div className="grid sm:grid-cols-2 gap-4">
         {jobs.map((j) => (
@@ -178,10 +206,6 @@ function MyJobs() {
 function JobPosting({ job: j, onRemove }) {
   const [open, setOpen] = useState(false);
   const [applicants, setApplicants] = useState(null);
-  // Deleting a posting also drops its applicant history with no undo, so
-  // a single misclick shouldn't be enough to do it -- this requires the
-  // second, explicit "Confirm" click.
-  const [confirming, setConfirming] = useState(false);
 
   async function toggle() {
     if (open) return setOpen(false);
@@ -195,29 +219,12 @@ function JobPosting({ job: j, onRemove }) {
     <div className="darbi-box flex flex-col">
       <div className="flex justify-between items-start gap-2 mb-2">
         <p className="font-semibold text-darbi-navy">{j.title}</p>
-        {confirming ? (
-          <span className="flex items-center gap-2 shrink-0">
-            <button
-              onClick={() => onRemove(j.id)}
-              className="text-xs text-red-400 hover:text-red-300 font-bold transition"
-            >
-              Confirm delete
-            </button>
-            <button
-              onClick={() => setConfirming(false)}
-              className="text-xs text-gray-400 hover:text-gray-200 transition"
-            >
-              Cancel
-            </button>
-          </span>
-        ) : (
-          <button
-            onClick={() => setConfirming(true)}
-            className="text-xs text-red-400 hover:text-red-300 font-semibold shrink-0 transition"
-          >
-            Delete
-          </button>
-        )}
+        <button
+          onClick={() => onRemove(j)}
+          className="text-xs text-red-400 hover:text-red-300 font-semibold shrink-0 transition"
+        >
+          Delete
+        </button>
       </div>
       <p className="text-sm text-gray-300 mb-1">
         {j.required_majors?.join(', ') || 'Any major'}
@@ -279,6 +286,16 @@ function FindStudents() {
           </Field>
         </div>
       </Card>
+
+      {loading && (
+        <div className="grid md:grid-cols-2 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} style={{ height: 90 }} />)}
+        </div>
+      )}
+
+      {!loading && students.length === 0 && (
+        <EmptyState icon="🔍" title="No students match those filters yet — try widening the search." />
+      )}
 
       <div className="grid md:grid-cols-2 gap-4">
         {students.map((s) => (

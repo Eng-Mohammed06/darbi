@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../services/api.js';
-import { Alert, Card } from '../common/ui.jsx';
+import { Alert, Card, Skeleton } from '../common/ui.jsx';
 import PathwayCard from './PathwayCard.jsx';
 
 /**
@@ -54,8 +54,10 @@ export default function Pathways({ initialSlug }) {
           Pick a major to see where it leads — what to study, the roles it opens, and how much
           demand there actually is on DARBI’s job board.
         </p>
-        {loadingMajors && <p className="text-sm text-gray-500">Loading majors…</p>}
         <div className="flex flex-wrap gap-2">
+          {loadingMajors && Array.from({ length: 8 }).map((_, i) => (
+            <Skeleton key={i} style={{ height: 38, width: 90 + (i % 3) * 20, borderRadius: 999 }} />
+          ))}
           {majors.map((m) => (
             <button
               key={m.slug}

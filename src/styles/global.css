@@ -157,3 +157,51 @@ body {
     align-items: stretch;
   }
 }
+
+/* Visible keyboard-focus ring app-wide. Custom buttons/links throughout the
+   app don't set their own focus style (only .darbi-input does, via
+   border-color), so a keyboard user tabbing through got no visible
+   indicator on most controls. Scoped to :focus-visible so it doesn't show
+   on mouse clicks. */
+:focus-visible {
+  outline: 2px solid var(--darbi-purple);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Toast entrance. */
+@keyframes darbi-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.darbi-toast {
+  animation: darbi-toast-in 0.2s ease-out;
+}
+
+/* Loading placeholder for list rows — a shimmering block roughly the shape
+   of the content it stands in for, so a slow connection reads as "loading"
+   rather than "empty" for the beat before real data arrives. */
+@keyframes darbi-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.darbi-skeleton {
+  background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.12) 37%, rgba(255,255,255,0.06) 63%);
+  background-size: 200% 100%;
+  animation: darbi-shimmer 1.4s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { api, getToken } from '../../services/api.js';
-import { Alert, Button } from '../common/ui.jsx';
+import { Alert, Button, Skeleton } from '../common/ui.jsx';
+
+// After a couple of real exchanges, nudge toward Recommendations — chat is
+// the front door, but it shouldn't be the only door a student ever finds.
+const BRIDGE_AFTER_MESSAGES = 4;
 
 /** Openers differ per journey — slide 4's "one flow, two journeys". */
 const OPENERS = {
@@ -146,16 +150,31 @@ export default function ChatAdvisor({ student, onFallback }) {
             Grounded in DARBI’s verified Jordanian course and job data
           </p>
         </div>
-        {messages.length > 0 && (
-          <button onClick={reset} className="text-xs text-gray-500 hover:text-gray-300">
-            Start over
-          </button>
-        )}
+        <div className="flex items-center gap-3 shrink-0">
+          {onFallback && messages.length >= BRIDGE_AFTER_MESSAGES && (
+            <button
+              onClick={onFallback}
+              className="text-xs font-bold px-2.5 py-1 rounded-full transition hover:brightness-110"
+              style={{ background: 'rgba(6,182,212,0.15)', border: '1px solid rgba(6,182,212,0.35)', color: '#67e8f9' }}
+            >
+              See recommendations →
+            </button>
+          )}
+          {messages.length > 0 && (
+            <button onClick={reset} className="text-xs text-gray-500 hover:text-gray-300">
+              Start over
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 py-4">
         {loadingHistory && (
-          <p className="text-center text-sm text-gray-500 mt-6">Loading your conversation…</p>
+          <div>
+            <div className="flex justify-start mb-3"><Skeleton style={{ height: 40, width: '55%', borderRadius: 16 }} /></div>
+            <div className="flex justify-end mb-3"><Skeleton style={{ height: 40, width: '40%', borderRadius: 16 }} /></div>
+            <div className="flex justify-start mb-3"><Skeleton style={{ height: 40, width: '65%', borderRadius: 16 }} /></div>
+          </div>
         )}
 
         {!loadingHistory && messages.length === 0 && !streaming && (
