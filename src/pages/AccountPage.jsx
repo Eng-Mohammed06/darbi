@@ -7,6 +7,7 @@ import { useToast } from '../components/common/toast.jsx';
 import { PASSWORD_HINT, passwordIssues } from '../lib/password.js';
 import { readAvatarFile } from '../lib/avatar.js';
 import AvatarCropModal from '../components/common/AvatarCropModal.jsx';
+import PasswordStrengthMeter from '../components/common/PasswordStrengthMeter.jsx';
 
 const TABS = ['profile', 'security'];
 const TAB_LABEL = { profile: 'Profile', security: 'Security' };
@@ -245,6 +246,10 @@ function SecurityTab() {
       setError('New password and confirmation do not match.');
       return;
     }
+    if (form.newPassword === form.currentPassword) {
+      setError('New password must be different from your current password.');
+      return;
+    }
     const issues = passwordIssues(form.newPassword);
     if (issues.length) {
       setError(`Password needs ${issues.join(', ')}.`);
@@ -302,6 +307,7 @@ function SecurityTab() {
           </Field>
           <Field label="New password" hint={PASSWORD_HINT}>
             <input type="password" className={inputClass} value={form.newPassword} onChange={set('newPassword')} required />
+            <PasswordStrengthMeter password={form.newPassword} />
           </Field>
           <Field label="Confirm new password">
             <input type="password" className={inputClass} value={form.confirmPassword} onChange={set('confirmPassword')} required />

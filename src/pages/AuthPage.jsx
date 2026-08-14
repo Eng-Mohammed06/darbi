@@ -4,6 +4,7 @@ import { useAuth } from '../services/auth.jsx';
 import { api } from '../services/api.js';
 import { Wisps, DarkField, darkInput, PURPLE, PURPLE_DARK, GOLD, GRADIENT } from '../components/common/ui.jsx';
 import { PASSWORD_HINT, passwordIssues } from '../lib/password.js';
+import PasswordStrengthMeter from '../components/common/PasswordStrengthMeter.jsx';
 
 const ROLES = [
   { role: 'student', label: 'Student', icon: '🎓' },
@@ -107,10 +108,14 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#0f172a' }}>
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col justify-center px-16">
-        <Wisps palette={[PURPLE, PURPLE_DARK]} opacity={0.65} />
-        <div className="relative z-10">
+    <div className="min-h-screen flex relative overflow-hidden" style={{ background: '#0f172a' }}>
+      {/* One background spanning the full width, not one per half — two
+          separate Wisps each confined to a half-width panel left a hard
+          seam down the middle where neither's blobs reached. */}
+      <Wisps palette={[PURPLE, GOLD]} opacity={0.5} fixed />
+
+      <div className="hidden lg:flex lg:w-1/2 relative z-10 flex-col justify-center px-16">
+        <div>
           <h1
             className="text-6xl font-extrabold text-white tracking-tight"
             style={{ textShadow: `0 0 50px ${PURPLE}99` }}
@@ -129,9 +134,7 @@ export default function AuthPage() {
         </div>
       </div>
 
-      <div className="flex-1 relative overflow-hidden flex items-center justify-center px-4 py-10">
-        <Wisps palette={[PURPLE, GOLD]} opacity={0.45} />
-
+      <div className="flex-1 relative z-10 flex items-center justify-center px-4 py-10">
         <div className="relative z-10 w-full max-w-md">
           <div
             className="rounded-3xl p-8"
@@ -224,6 +227,7 @@ export default function AuthPage() {
                 }
               >
                 <input type="password" className={darkInput} value={form.password ?? ''} onChange={set('password')} required />
+                {mode === 'signup' && <PasswordStrengthMeter password={form.password} />}
               </DarkField>
 
               {mode === 'signup' && role === 'student' && (

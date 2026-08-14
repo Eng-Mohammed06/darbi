@@ -383,6 +383,13 @@ router.put(
     // password rather than just rejecting the password change.
     if (!ok) return res.status(403).json({ error: 'invalid_credentials' });
 
+    if (String(newPassword) === String(currentPassword)) {
+      return res.status(400).json({
+        error: 'same_password',
+        message: 'New password must be different from your current password.',
+      });
+    }
+
     const passwordHash = await hashPassword(String(newPassword));
     await query(
       `UPDATE users SET password_hash = $1, updated_at = now() WHERE id = $2`,

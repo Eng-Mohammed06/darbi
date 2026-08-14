@@ -42,10 +42,14 @@ export function DarkField({ label, hint, action, children }) {
 /** Dark-card shell used by every pre-login page (AuthPage, ResetPasswordPage). */
 export function DarkCard({ title, subtitle, children }) {
   return (
-    <div className="min-h-screen flex" style={{ background: '#0f172a' }}>
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col justify-center px-16">
-        <Wisps palette={[PURPLE, PURPLE_DARK]} opacity={0.65} />
-        <div className="relative z-10">
+    <div className="min-h-screen flex relative overflow-hidden" style={{ background: '#0f172a' }}>
+      {/* One background spanning the full width, not one per half — two
+          separate Wisps each confined to a half-width panel left a hard
+          seam down the middle where neither's blobs reached. */}
+      <Wisps palette={[PURPLE, GOLD]} opacity={0.5} fixed />
+
+      <div className="hidden lg:flex lg:w-1/2 relative z-10 flex-col justify-center px-16">
+        <div>
           <h1
             className="text-6xl font-extrabold text-white tracking-tight"
             style={{ textShadow: `0 0 50px ${PURPLE}99` }}
@@ -58,8 +62,7 @@ export function DarkCard({ title, subtitle, children }) {
         </div>
       </div>
 
-      <div className="flex-1 relative overflow-hidden flex items-center justify-center px-4 py-10">
-        <Wisps palette={[PURPLE, GOLD]} opacity={0.45} />
+      <div className="flex-1 relative z-10 flex items-center justify-center px-4 py-10">
         <div className="relative z-10 w-full max-w-md">
           <div
             className="rounded-3xl p-8"
