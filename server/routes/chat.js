@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { query } from '../lib/db.js';
 import { requireAuth, requireRole, asyncRoute } from '../lib/auth.js';
-import { chatConfigured, streamReply, loadHistory } from '../lib/chat.js';
+import { chatConfigured, streamReply, loadHistory, extractCourseProgress } from '../lib/chat.js';
 
 const router = Router();
 router.use(requireAuth, requireRole('student'));
@@ -88,6 +88,13 @@ router.post(
     );
     const analysis = analysisRows[0]?.analysis ?? null;
 
+    const { rows: courseProgress } = await query(
+      `SELECT c.id AS course_id, c.name, cp.status
+         FROM course_progress cp JOIN courses c ON c.id = cp.course_id
+        WHERE cp.student_user_id = $1`,
+      [req.user.id],
+    );
+
     // Persist the question before generating, so it survives a failed reply.
     await query(
       `INSERT INTO chat_messages (student_user_id, role, content) VALUES ($1,'user',$2)`,
@@ -96,6 +103,30 @@ router.post(
 
     const history = await loadHistory(req.user.id);
 
+    // Best-effort, in parallel with the visible reply below: does this
+    // message say anything about a specific course's status? If so, check
+    // it in the Majors tab automatically. Never awaited before the stream
+    // starts, and any failure here is only logged — it must never slow down
+    // or break the actual chat reply.
+    query(`SELECT id, name FROM courses ORDER BY id`)
+      .then(({ rows: courseManifest }) =>
+        extractCourseProgress({ message, courseManifest, currentProgress: courseProgress }),
+      )
+      .then((matches) =>
+        Promise.all(
+          matches.map((m) =>
+            query(
+              `INSERT INTO course_progress (student_user_id, course_id, status)
+               VALUES ($1,$2,$3)
+               ON CONFLICT (student_user_id, course_id)
+               DO UPDATE SET status = EXCLUDED.status, updated_at = now()`,
+              [req.user.id, m.course_id, m.status],
+            ),
+          ),
+        ),
+      )
+      .catch((err) => console.warn('[chat] course-progress extraction failed:', err.message));
+
     res.setHeader('Content-Type', 'application/x-ndjson; charset=utf-8');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('X-Accel-Buffering', 'no'); // don't let a proxy buffer the stream
@@ -103,7 +134,7 @@ router.post(
 
     let full = '';
     try {
-      for await (const chunk of streamReply({ student, analysis, history })) {
+      for await (const chunk of streamReply({ student, analysis, history, courseProgress })) {
         full += chunk;
         res.write(`${JSON.stringify({ delta: chunk })}\n`);
       }

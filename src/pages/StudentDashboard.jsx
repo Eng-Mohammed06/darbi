@@ -260,10 +260,20 @@ function MajorExplorer() {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(null);
   const [detail, setDetail] = useState({ courses: [], universities: [] });
+  // { [courseId]: 'completed' | 'in_progress' | 'planned' } — the checkbox
+  // below only ever sets/clears 'completed'; the other two are inferred by
+  // the chat advisor from what the student says (server/lib/chat.js) and
+  // shown as read-only badges here.
+  const [progress, setProgress] = useState({});
 
   useEffect(() => {
     api('/majors', { auth: false }).then(setMajors).catch(() => {}).finally(() => setLoading(false));
+    loadProgress();
   }, []);
+
+  function loadProgress() {
+    api('/students/me/course-progress').then(setProgress).catch(() => {});
+  }
 
   async function toggle(slug) {
     if (open === slug) return setOpen(null);
@@ -273,6 +283,22 @@ function MajorExplorer() {
       api(`/majors/${slug}/universities`, { auth: false }),
     ]);
     setDetail({ courses, universities });
+    // Chat may have checked something off since this was last open.
+    loadProgress();
+  }
+
+  async function toggleCompleted(courseId, checked) {
+    setProgress((p) => {
+      const next = { ...p };
+      if (checked) next[courseId] = 'completed';
+      else delete next[courseId];
+      return next;
+    });
+    if (checked) {
+      await api(`/students/me/course-progress/${courseId}`, { method: 'PUT', body: { status: 'completed' } });
+    } else {
+      await api(`/students/me/course-progress/${courseId}`, { method: 'DELETE' });
+    }
   }
 
   return (
@@ -313,12 +339,31 @@ function MajorExplorer() {
 
               <p className="font-semibold text-darbi-navy mb-1.5">Courses</p>
               {detail.courses.length > 0 ? (
-                <ul className="text-gray-300 space-y-1.5">
+                <ul className="text-gray-300 space-y-2 list-none pl-0">
                   {detail.courses.map((c) => (
-                    <li key={c.id}>
-                      <span className="font-medium">{c.name}</span>
-                      {c.provider && <span className="text-gray-500"> — {c.provider}</span>}
-                      {c.cost_raw && <span className="text-gray-500"> · {c.cost_raw} JOD</span>}
+                    <li key={c.id} className="flex items-start gap-2">
+                      <input
+                        type="checkbox"
+                        className="mt-1 shrink-0"
+                        checked={progress[c.id] === 'completed'}
+                        onChange={(e) => toggleCompleted(c.id, e.target.checked)}
+                        aria-label={`Mark "${c.name}" as finished`}
+                      />
+                      <label className="flex-1">
+                        <span className="font-medium">{c.name}</span>
+                        {c.provider && <span className="text-gray-500"> — {c.provider}</span>}
+                        {c.cost_raw && <span className="text-gray-500"> · {c.cost_raw} JOD</span>}
+                        {progress[c.id] === 'in_progress' && (
+                          <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-white/10" style={{ color: 'var(--darbi-purple)' }}>
+                            Taking now
+                          </span>
+                        )}
+                        {progress[c.id] === 'planned' && (
+                          <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-white/10 text-gray-400">
+                            Considering
+                          </span>
+                        )}
+                      </label>
                     </li>
                   ))}
                 </ul>

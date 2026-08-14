@@ -59,6 +59,26 @@ export function requireAuth(req, res, next) {
   }
 }
 
+/**
+ * Like requireAuth, but a missing or invalid token isn't an error — it just
+ * proceeds without req.user. For routes that are public but personalize when
+ * the caller happens to be signed in (e.g. GET /api/pathways/:slug).
+ */
+export function optionalAuth(req, res, next) {
+  const header = req.get('authorization') ?? '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  if (!token) return next();
+
+  try {
+    const claims = jwt.verify(token, SECRET);
+    req.user = { id: claims.sub, role: claims.role, email: claims.email };
+  } catch {
+    // Expired/malformed token on an optional route — proceed anonymously
+    // rather than rejecting a request nobody required auth for.
+  }
+  next();
+}
+
 /** Gate a route to one or more roles. Use after requireAuth. */
 export const requireRole =
   (...roles) =>

@@ -233,4 +233,62 @@ router.post(
   }),
 );
 
+const COURSE_STATUSES = ['completed', 'in_progress', 'planned'];
+
+/**
+ * GET /api/students/me/course-progress — { courseId: status } for every
+ * course this student has a tracked status for, across all majors. The
+ * Majors tab checklist merges this into the course list it already fetched
+ * publicly; the chat advisor's auto-check (server/lib/chat.js) writes to the
+ * same table, so either source shows up here.
+ */
+router.get(
+  '/me/course-progress',
+  asyncRoute(async (req, res) => {
+    const { rows } = await query(
+      `SELECT course_id, status FROM course_progress WHERE student_user_id = $1`,
+      [req.user.id],
+    );
+    res.json(Object.fromEntries(rows.map((r) => [r.course_id, r.status])));
+  }),
+);
+
+/** PUT /api/students/me/course-progress/:courseId  { status } */
+router.put(
+  '/me/course-progress/:courseId',
+  asyncRoute(async (req, res) => {
+    const courseId = Number(req.params.courseId);
+    const { status } = req.body ?? {};
+    if (!COURSE_STATUSES.includes(status)) {
+      return res.status(400).json({ error: 'bad_status', allowed: COURSE_STATUSES });
+    }
+
+    try {
+      await query(
+        `INSERT INTO course_progress (student_user_id, course_id, status)
+         VALUES ($1,$2,$3)
+         ON CONFLICT (student_user_id, course_id)
+         DO UPDATE SET status = EXCLUDED.status, updated_at = now()`,
+        [req.user.id, courseId, status],
+      );
+    } catch (err) {
+      if (err.code === '23503') return res.status(404).json({ error: 'unknown_course' });
+      throw err;
+    }
+    res.json({ ok: true });
+  }),
+);
+
+/** DELETE /api/students/me/course-progress/:courseId — back to "not tracked". */
+router.delete(
+  '/me/course-progress/:courseId',
+  asyncRoute(async (req, res) => {
+    await query(
+      `DELETE FROM course_progress WHERE student_user_id = $1 AND course_id = $2`,
+      [req.user.id, Number(req.params.courseId)],
+    );
+    res.status(204).end();
+  }),
+);
+
 export default router;

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { query } from '../lib/db.js';
-import { asyncRoute } from '../lib/auth.js';
+import { asyncRoute, optionalAuth } from '../lib/auth.js';
+import { personalizePathway } from '../lib/pathwayPersonalization.js';
 
 const router = Router();
 
@@ -13,9 +14,12 @@ const router = Router();
  * verified rows a judge can trace back to a source.
  *
  * Public: a school student should be able to see a pathway before signing up.
+ * `optionalAuth` means a signed-in student additionally gets `personalized`
+ * (server/lib/pathwayPersonalization.js) — still no model call, see there.
  */
 router.get(
   '/:slug',
+  optionalAuth,
   asyncRoute(async (req, res) => {
     const { slug } = req.params;
 
@@ -49,10 +53,9 @@ router.get(
         [major.id],
       ),
       query(
-        `SELECT name, track, provider, cost_raw, cost_min_jod, duration, what_you_learn
+        `SELECT id, name, track, provider, cost_raw, cost_min_jod, duration, what_you_learn
            FROM courses WHERE major_id = $1
-          ORDER BY cost_min_jod NULLS LAST, name
-          LIMIT 6`,
+          ORDER BY cost_min_jod NULLS LAST, name`,
         [major.id],
       ),
       query(
@@ -87,6 +90,27 @@ router.get(
 
     const totals = await query(`SELECT count(*)::int AS total FROM jobs`);
 
+    // Signed-in student, with a profile on file? Reorder this major's own
+    // courses around what they told the onboarding questionnaire — still no
+    // model call (see personalizePathway's doc comment). Anyone else, or a
+    // student with nothing to personalize from, gets the original ordering.
+    let personalized = null;
+    if (req.user?.role === 'student') {
+      const { rows: studentRows } = await query(`SELECT * FROM students WHERE user_id = $1`, [req.user.id]);
+      const student = studentRows[0];
+      if (student) {
+        const { rows: analysisRows } = await query(
+          `SELECT analysis FROM onboarding_analysis WHERE student_user_id = $1`,
+          [req.user.id],
+        );
+        personalized = personalizePathway({
+          student,
+          analysis: analysisRows[0]?.analysis ?? null,
+          courses: courses.rows,
+        });
+      }
+    }
+
     res.json({
       major: {
         id: major.id,
@@ -97,8 +121,11 @@ router.get(
       },
       study: {
         taught_at: taughtAt.rows,
-        courses: courses.rows,
+        courses: personalized ? personalized.courses : courses.rows.slice(0, 6),
       },
+      personalized: personalized
+        ? { for_user: true, why_this_fits: personalized.whyThisFits, matched_on: personalized.matchedOn }
+        : null,
       career: {
         roles: roles.rows,
         skills: skills.rows,

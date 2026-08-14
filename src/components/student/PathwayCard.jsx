@@ -17,7 +17,11 @@ export default function PathwayCard({ slug, onSave, onUnsave, saved, onClose }) 
   useEffect(() => {
     setData(null);
     setError('');
-    api(`/pathways/${slug}`, { auth: false })
+    // No { auth: false } here on purpose: a signed-in student's token lets
+    // the server personalize this major's course order (server/lib/
+    // pathwayPersonalization.js) — a logged-out visitor still gets the
+    // generic card fine, since the route tolerates a missing token.
+    api(`/pathways/${slug}`)
       .then(setData)
       .catch((err) => setError(err.message));
   }, [slug]);
@@ -25,7 +29,7 @@ export default function PathwayCard({ slug, onSave, onUnsave, saved, onClose }) 
   if (error) return <p className="text-red-400 text-sm">{error}</p>;
   if (!data) return <p className="text-gray-500 text-sm">Building your pathway…</p>;
 
-  const { major, study, career, demand, salary } = data;
+  const { major, study, career, demand, salary, personalized } = data;
 
   return (
     <div
@@ -81,6 +85,18 @@ export default function PathwayCard({ slug, onSave, onUnsave, saved, onClose }) 
           ) : (
             <p className="text-sm text-gray-500 italic mb-3">
               No university on file for this major yet.
+            </p>
+          )}
+          {personalized && (
+            <p
+              className="text-xs mb-3 px-3 py-2 rounded-lg"
+              style={{ background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.25)', color: '#67e8f9' }}
+            >
+              <span className="font-bold uppercase tracking-wide" style={{ fontSize: '0.65rem' }}>
+                Personalized for you
+              </span>
+              <br />
+              {personalized.why_this_fits}
             </p>
           )}
           <p className="text-xs text-gray-500 mb-1">Start with</p>

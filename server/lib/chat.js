@@ -44,6 +44,17 @@ Judges fact-check this platform against its sources. Every figure you quote can
 be traced back to a cited source, so quote them accurately and never round a
 range into a single confident number.
 
+TRACKING COURSE PROGRESS
+Once a major or course comes up, ask what the student has already completed,
+what they're currently taking, and what they're considering enrolling in next
+— one question at a time, same as everything else. You don't need to do
+anything to record their answer; it's checked off automatically. If COURSE
+PROGRESS SO FAR is present below, that's already known — don't ask about
+those again, and don't contradict it. Once you know their major and what
+they've done, recommend which catalog course to start with next and say why
+in a sentence or two, grounded in their onboarding analysis and constraints
+below — not a generic "start with the intro course" answer.
+
 WRITING
 Plain English, warm and direct. No bullet lists unless the student asks for a
 comparison. Never open with "Great question".`;
@@ -172,10 +183,28 @@ function analysisBlock(analysis) {
 }
 
 /**
+ * What the student has told us (or the checkbox in the Majors tab recorded)
+ * about specific courses, folded in so the advisor doesn't re-ask for
+ * something it already knows and can ground its "start with X" advice in it.
+ */
+function courseProgressBlock(progress) {
+  if (!progress?.length) return '';
+  const byStatus = { completed: [], in_progress: [], planned: [] };
+  for (const p of progress) byStatus[p.status]?.push(p.name);
+
+  const parts = [];
+  if (byStatus.completed.length) parts.push(`Completed: ${byStatus.completed.join(', ')}`);
+  if (byStatus.in_progress.length) parts.push(`Currently taking: ${byStatus.in_progress.join(', ')}`);
+  if (byStatus.planned.length) parts.push(`Considering enrolling in: ${byStatus.planned.join(', ')}`);
+  if (!parts.length) return '';
+  return `COURSE PROGRESS SO FAR\n${parts.join('\n')}`;
+}
+
+/**
  * Stream a reply. Yields text chunks; the caller forwards them to the client
  * and persists the assembled result.
  */
-export async function* streamReply({ student, analysis, history }) {
+export async function* streamReply({ student, analysis, history, courseProgress }) {
   if (!client) throw new Error('chat_not_configured');
 
   const catalog = await loadCatalog();
@@ -188,6 +217,7 @@ export async function* streamReply({ student, analysis, history }) {
     { type: 'text', text: `CATALOG\n${catalog}`, cache_control: { type: 'ephemeral' } },
     { type: 'text', text: profileBlock(student) },
     analysis && { type: 'text', text: analysisBlock(analysis) },
+    courseProgress?.length && { type: 'text', text: courseProgressBlock(courseProgress) },
   ].filter((block) => block && block.text);
 
   const stream = client.messages.stream({
@@ -219,4 +249,60 @@ export async function loadHistory(studentUserId) {
     [studentUserId, HISTORY_LIMIT],
   );
   return rows.reverse();
+}
+
+const COURSE_STATUS_SCHEMA = {
+  type: 'object',
+  properties: {
+    matches: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          course_id: { type: 'integer' },
+          status: { type: 'string', enum: ['completed', 'in_progress', 'planned'] },
+        },
+        required: ['course_id', 'status'],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: ['matches'],
+  additionalProperties: false,
+};
+
+/**
+ * Best-effort, non-streaming side read of the student's latest message: did
+ * they just say they finished, are taking, or are considering a specific
+ * catalog course? If so, server/routes/chat.js checks it for them in the
+ * Majors tab instead of making them find and tick it by hand. Called in
+ * parallel with streamReply — never blocks or breaks the visible chat reply,
+ * since a missed extraction here is far cheaper than a broken one there.
+ */
+export async function extractCourseProgress({ message, courseManifest, currentProgress }) {
+  if (!client || !courseManifest.length) return [];
+
+  const known = currentProgress?.length
+    ? `\n\nALREADY TRACKED (id: status) — don't downgrade one of these unless the student clearly ` +
+      `says otherwise (e.g. retaking it):\n${currentProgress.map((p) => `${p.course_id}: ${p.status}`).join('\n')}`
+    : '';
+
+  const response = await client.messages.create({
+    model: MODEL,
+    max_tokens: 1000,
+    output_config: { format: { type: 'json_schema', schema: COURSE_STATUS_SCHEMA } },
+    system:
+      'Read the student message and match it against this course list by id. Only include a ' +
+      'course the student clearly referred to as something they finished/took, are currently ' +
+      'taking, or are considering enrolling in next. If nothing matches, return an empty array. ' +
+      'Never invent a course_id that is not in the list.\n\nCOURSES (id | name)\n' +
+      courseManifest.map((c) => `${c.id} | ${c.name}`).join('\n') + known,
+    messages: [{ role: 'user', content: message }],
+  });
+
+  const text = response.content.find((b) => b.type === 'text')?.text;
+  if (!text) return [];
+
+  const validIds = new Set(courseManifest.map((c) => c.id));
+  return JSON.parse(text).matches.filter((m) => validIds.has(m.course_id));
 }

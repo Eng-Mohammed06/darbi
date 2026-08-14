@@ -149,6 +149,18 @@ CREATE TABLE IF NOT EXISTS courses (
   source_sheet       TEXT NOT NULL
 );
 
+-- Per-student course status: 'completed' is the only one the checkbox in the
+-- Majors tab sets directly; 'in_progress'/'planned' are inferred by the chat
+-- advisor from what the student says (server/lib/chat.js) and shown as
+-- read-only badges next to the course.
+CREATE TABLE IF NOT EXISTS course_progress (
+  student_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  course_id       INTEGER NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  status          TEXT NOT NULL CHECK (status IN ('completed', 'in_progress', 'planned')),
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (student_user_id, course_id)
+);
+
 CREATE TABLE IF NOT EXISTS career_paths (
   id             SERIAL PRIMARY KEY,
   major_id       INTEGER REFERENCES majors(id) ON DELETE SET NULL,
