@@ -201,8 +201,20 @@ async function ensureAdminAccount() {
   if (!email || !password) return;
 
   try {
-    const { rows } = await pool.query(`SELECT id FROM users WHERE lower(email) = $1`, [email]);
-    if (rows[0]) return;
+    const { rows } = await pool.query(`SELECT id, role FROM users WHERE lower(email) = $1`, [email]);
+    if (rows[0]) {
+      // ONE-TIME: promote an already-existing account (e.g. a leftover test
+      // signup that happens to share this email) to admin instead of
+      // silently doing nothing. This branch is intentionally temporary —
+      // see the commit that added it — because leaving it in permanently
+      // would let any future email collision silently escalate an
+      // unrelated account to admin.
+      if (rows[0].role !== 'admin') {
+        await pool.query(`UPDATE users SET role = 'admin', updated_at = now() WHERE id = $1`, [rows[0].id]);
+        console.log(`[admin] promoted existing account ${email} to admin`);
+      }
+      return;
+    }
 
     const passwordHash = await hashPassword(password);
     await pool.query(
