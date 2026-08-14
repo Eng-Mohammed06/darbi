@@ -53,7 +53,7 @@ export function DarkCard({ title, subtitle, children }) {
             Darbi
           </h1>
           <p className="text-lg mt-3" style={{ color: '#67e8f9' }}>
-            Career advisory platform
+            Career Assistant Platform
           </p>
         </div>
       </div>

@@ -118,7 +118,7 @@ export default function AuthPage() {
             Darbi
           </h1>
           <p className="text-lg mt-3" style={{ color: '#67e8f9' }}>
-            Career advisory platform
+            Career Assistant Platform
           </p>
           {stats && (
             <p className="text-gray-400 text-sm mt-6">

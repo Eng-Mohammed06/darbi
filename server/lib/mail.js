@@ -46,7 +46,7 @@ const shell = (heading, body) => `
 <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;">
   <h1 style="color:#001a33;font-size:20px;margin:0 0 16px;">${heading}</h1>
   ${body}
-  <p style="color:#94a3b8;font-size:12px;margin-top:32px;">— Darbi, career advisory platform</p>
+  <p style="color:#94a3b8;font-size:12px;margin-top:32px;">— Darbi, Career Assistant Platform</p>
 </div>`;
 
 const codeBlock = (code) => `
