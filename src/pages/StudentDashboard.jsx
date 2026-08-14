@@ -6,7 +6,7 @@ import Pathways from '../components/student/Pathways.jsx';
 import SavedPathways from '../components/student/SavedPathways.jsx';
 import { useAuth } from '../services/auth.jsx';
 import {
-  Alert, Button, Card, Field, Shell, inputClass, Salary, SkeletonLines,
+  Alert, Button, Card, EmptyState, Field, Shell, inputClass, Salary, SkeletonLines,
 } from '../components/common/ui.jsx';
 import { useToast } from '../components/common/toast.jsx';
 
@@ -43,7 +43,7 @@ export default function StudentDashboard() {
       )}
       {tab === 'profile' && <ProfileForm profile={profile} onSaved={setProfile} />}
       {tab === 'majors' && <MajorExplorer />}
-      {tab === 'courses' && <CourseChecklist />}
+      {tab === 'courses' && <CourseChecklist onGoToPathways={() => setTab('pathways')} />}
       {tab === 'jobs' && <JobBoard />}
     </Shell>
   );
@@ -383,19 +383,21 @@ function MajorExplorer() {
 }
 
 /**
- * Every course, across every major, as one flat checklist — the Majors tab
- * already shows courses per major, but only after expanding each one; this
- * is the single place to see and check off everything at once, which is
- * what a student going through the chat advisor's course questions actually
- * wants open. Same "finished" checkbox + chat-inferred badges as there.
+ * Course checklist, scoped to the majors the student has actually saved as
+ * pathways — not the whole 139-course catalog, which was overwhelming and
+ * mostly irrelevant to any one student. Each saved pathway gets its own
+ * titled row; a student who saved more than one major sees them stacked,
+ * one section per major, each with its own "finished" checkbox list and
+ * chat-inferred badges.
  */
-function CourseChecklist() {
+function CourseChecklist({ onGoToPathways }) {
+  const [savedMajors, setSavedMajors] = useState(null);
   const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState({});
 
   useEffect(() => {
-    api('/courses', { auth: false }).then(setCourses).catch(() => {}).finally(() => setLoading(false));
+    api('/students/me/saved-majors').then(setSavedMajors).catch(() => setSavedMajors([]));
+    api('/courses', { auth: false }).then(setCourses).catch(() => {});
     api('/students/me/course-progress').then(setProgress).catch(() => {});
   }, []);
 
@@ -413,7 +415,7 @@ function CourseChecklist() {
     }
   }
 
-  if (loading) {
+  if (savedMajors === null) {
     return (
       <Card title="Loading courses…">
         <SkeletonLines lines={8} />
@@ -421,56 +423,67 @@ function CourseChecklist() {
     );
   }
 
-  const groups = new Map();
-  for (const c of courses) {
-    const key = c.major_name ?? 'Cross-cutting (any major)';
-    if (!groups.has(key)) groups.set(key, []);
-    groups.get(key).push(c);
+  if (savedMajors.length === 0) {
+    return (
+      <Card title="Courses" accent={false}>
+        <EmptyState
+          icon="⭐"
+          title="Save a pathway first — its courses show up here once you do."
+          action={onGoToPathways && <Button onClick={onGoToPathways}>Browse pathways</Button>}
+        />
+      </Card>
+    );
   }
 
   const done = Object.values(progress).filter((s) => s === 'completed').length;
 
   return (
-    <Card title={`${courses.length} courses`} accent={false}>
+    <>
       <p className="text-sm text-gray-400 mb-5">
         {done > 0 ? `${done} marked finished. ` : ''}
         Check off what you've completed — or just tell the advisor in chat and it checks them for
         you.
       </p>
-      {[...groups.entries()].map(([majorName, list]) => (
-        <div key={majorName} className="mb-6 last:mb-0">
-          <h3 className="font-bold text-darbi-navy mb-2">{majorName}</h3>
-          <ul className="text-gray-300 space-y-2 list-none pl-0">
-            {list.map((c) => (
-              <li key={c.id} className="flex items-start gap-2">
-                <input
-                  type="checkbox"
-                  className="mt-1 shrink-0"
-                  checked={progress[c.id] === 'completed'}
-                  onChange={(e) => toggleCompleted(c.id, e.target.checked)}
-                  aria-label={`Mark "${c.name}" as finished`}
-                />
-                <label className="flex-1">
-                  <span className="font-medium">{c.name}</span>
-                  {c.provider && <span className="text-gray-500"> — {c.provider}</span>}
-                  {c.cost_raw && <span className="text-gray-500"> · {c.cost_raw} JOD</span>}
-                  {progress[c.id] === 'in_progress' && (
-                    <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-white/10" style={{ color: 'var(--darbi-purple)' }}>
-                      Taking now
-                    </span>
-                  )}
-                  {progress[c.id] === 'planned' && (
-                    <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-white/10 text-gray-400">
-                      Considering
-                    </span>
-                  )}
-                </label>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </Card>
+      {savedMajors.map((major) => {
+        const list = courses.filter((c) => c.major_id === major.id);
+        return (
+          <Card key={major.id} title={major.name} accent>
+            {list.length > 0 ? (
+              <ul className="text-gray-300 space-y-2 list-none pl-0">
+                {list.map((c) => (
+                  <li key={c.id} className="flex items-start gap-2">
+                    <input
+                      type="checkbox"
+                      className="mt-1 shrink-0"
+                      checked={progress[c.id] === 'completed'}
+                      onChange={(e) => toggleCompleted(c.id, e.target.checked)}
+                      aria-label={`Mark "${c.name}" as finished`}
+                    />
+                    <label className="flex-1">
+                      <span className="font-medium">{c.name}</span>
+                      {c.provider && <span className="text-gray-500"> — {c.provider}</span>}
+                      {c.cost_raw && <span className="text-gray-500"> · {c.cost_raw} JOD</span>}
+                      {progress[c.id] === 'in_progress' && (
+                        <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-white/10" style={{ color: 'var(--darbi-purple)' }}>
+                          Taking now
+                        </span>
+                      )}
+                      {progress[c.id] === 'planned' && (
+                        <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-white/10 text-gray-400">
+                          Considering
+                        </span>
+                      )}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500 italic text-sm">No courses catalogued for this major yet.</p>
+            )}
+          </Card>
+        );
+      })}
+    </>
   );
 }
 
