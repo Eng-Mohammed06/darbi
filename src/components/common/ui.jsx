@@ -121,6 +121,8 @@ const TAB_ICONS = {
   majors: '📚',
   courses: '✅',
   jobs: '💼',
+  users: '👥',
+  companies: '🏢',
   'post a job': '📝',
   'my jobs': '📋',
   'find students': '🔍',
@@ -281,7 +283,9 @@ function EmailVerifyBanner() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
-  if (!user || user.email_verified) return null;
+  // The admin account never goes through signup, so its email is never
+  // "verified" in the normal sense — nothing to nag about here.
+  if (!user || user.email_verified || user.role === 'admin') return null;
 
   async function submit(e) {
     e.preventDefault();

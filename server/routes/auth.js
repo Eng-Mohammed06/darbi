@@ -30,6 +30,7 @@ async function sendBestEffort(to, { subject, html }) {
 
 /** Loads the role-specific profile that hangs off a user row. */
 async function loadProfile(userId, role) {
+  if (role === 'admin') return null; // no profile table — nothing to load
   if (role === 'student') {
     // Joined with major/university names — an undergraduate's declared
     // major (server/routes/students.js) needs its display name everywhere

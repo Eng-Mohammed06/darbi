@@ -16,6 +16,11 @@ const COPY = {
   student: { title: 'Student Portal', blurb: 'Find your engineering major' },
   company: { title: 'Company Portal', blurb: 'Find engineering talent' },
   career: { title: 'Career Boost', blurb: 'Advance your engineering career' },
+  // Not in ROLES, so no pill for it in the switcher below — reachable only
+  // by navigating to /portal/admin directly. No signup either: the single
+  // admin account only ever comes from ADMIN_EMAIL/ADMIN_PASSWORD at server
+  // boot (server/index.js), so this portal forces login-only mode further down.
+  admin: { title: 'Admin', blurb: 'Full platform control' },
 };
 
 export default function AuthPage() {
@@ -46,10 +51,14 @@ export default function AuthPage() {
   useEffect(() => {
     setForm({});
     setError('');
+    // No self-serve admin signup — see COPY.admin's comment — so landing
+    // here always means signing in, never toggled to "Create account".
+    if (role === 'admin') setMode('login');
   }, [role]);
 
   const copy = COPY[role];
   if (!copy) return <p className="p-8">Unknown portal.</p>;
+  const isAdmin = role === 'admin';
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
@@ -149,40 +158,44 @@ export default function AuthPage() {
               <p className="text-gray-400 text-sm mt-1">{copy.blurb}</p>
             </div>
 
-            <div
-              className="flex rounded-full p-1 mb-5"
-              style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.08)' }}
-            >
-              {ROLES.map((r) => (
-                <button
-                  key={r.role}
-                  type="button"
-                  onClick={() => navigate(`/portal/${r.role}`, { replace: true })}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-full text-sm font-semibold transition ${
-                    role === r.role ? 'text-white' : 'text-gray-400 hover:text-gray-200'
-                  }`}
-                  style={role === r.role ? { background: GRADIENT } : undefined}
-                >
-                  <span>{r.icon}</span> {r.label}
-                </button>
-              ))}
-            </div>
+            {!isAdmin && (
+              <div
+                className="flex rounded-full p-1 mb-5"
+                style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.08)' }}
+              >
+                {ROLES.map((r) => (
+                  <button
+                    key={r.role}
+                    type="button"
+                    onClick={() => navigate(`/portal/${r.role}`, { replace: true })}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-full text-sm font-semibold transition ${
+                      role === r.role ? 'text-white' : 'text-gray-400 hover:text-gray-200'
+                    }`}
+                    style={role === r.role ? { background: GRADIENT } : undefined}
+                  >
+                    <span>{r.icon}</span> {r.label}
+                  </button>
+                ))}
+              </div>
+            )}
 
-            <div className="flex gap-6 justify-center text-sm mb-6">
-              {['login', 'signup'].map((m) => (
-                <button
-                  key={m}
-                  type="button"
-                  onClick={() => { setMode(m); setError(''); }}
-                  className={`pb-1 font-semibold transition border-b-2 ${
-                    mode === m ? 'text-white' : 'text-gray-500 border-transparent hover:text-gray-300'
-                  }`}
-                  style={mode === m ? { borderColor: PURPLE } : undefined}
-                >
-                  {m === 'login' ? 'Sign in' : 'Create account'}
-                </button>
-              ))}
-            </div>
+            {!isAdmin && (
+              <div className="flex gap-6 justify-center text-sm mb-6">
+                {['login', 'signup'].map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => { setMode(m); setError(''); }}
+                    className={`pb-1 font-semibold transition border-b-2 ${
+                      mode === m ? 'text-white' : 'text-gray-500 border-transparent hover:text-gray-300'
+                    }`}
+                    style={mode === m ? { borderColor: PURPLE } : undefined}
+                  >
+                    {m === 'login' ? 'Sign in' : 'Create account'}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {error && (
               <div

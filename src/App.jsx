@@ -9,15 +9,17 @@ import OnboardingPage from './pages/OnboardingPage.jsx';
 import StudentDashboard from './pages/StudentDashboard.jsx';
 import CompanyDashboard from './pages/CompanyDashboard.jsx';
 import CareerDashboard from './pages/CareerDashboard.jsx';
+import AdminDashboard from './pages/AdminDashboard.jsx';
 import AccountPage from './pages/AccountPage.jsx';
 
 const DASHBOARDS = {
   student: StudentDashboard,
   company: CompanyDashboard,
   career: CareerDashboard,
+  admin: AdminDashboard,
 };
 
-/** One route for all three portals — `users.role` decides what renders. */
+/** One route for all four roles — `users.role` decides what renders. */
 function Dashboard() {
   const { user, loading } = useAuth();
   if (loading) return <p className="p-8 text-gray-500">Loading…</p>;

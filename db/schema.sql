@@ -18,6 +18,14 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- 'admin' is a single account auto-provisioned at server boot from
+-- ADMIN_EMAIL/ADMIN_PASSWORD (server/index.js) -- never created via the
+-- public POST /api/auth/signup (server/routes/auth.js's ROLES array still
+-- only lists student/company/career), and has no role-specific profile
+-- table of its own (server/routes/auth.js's loadProfile returns null for it).
+ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check;
+ALTER TABLE users ADD CONSTRAINT users_role_check CHECK (role IN ('student', 'company', 'career', 'admin'));
+
 -- Added after the initial launch, so a database created before this line
 -- needs it bolted on; existing rows get a generated handle since none of
 -- them collected one at signup.

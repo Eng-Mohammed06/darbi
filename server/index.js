@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { existsSync } from 'node:fs';
 import { pool } from './lib/db.js';
+import { hashPassword } from './lib/auth.js';
 import authRoutes from './routes/auth.js';
 import studentRoutes from './routes/students.js';
 import companyRoutes from './routes/companies.js';
@@ -11,6 +12,7 @@ import recommendRoutes from './routes/recommend.js';
 import chatRoutes from './routes/chat.js';
 import pathwayRoutes from './routes/pathways.js';
 import careerRoutes from './routes/career.js';
+import adminRoutes from './routes/admin.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -162,6 +164,7 @@ app.use('/api/recommend', recommendRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/pathways', pathwayRoutes);
 app.use('/api/career', careerRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Serve the built React app. Any non-/api path falls through to index.html so
 // client-side routing works on refresh and deep links.
@@ -183,6 +186,37 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: 'internal_error' });
 });
 
-app.listen(PORT, () => {
-  console.log(`darbi api listening on :${PORT}`);
+/**
+ * The one admin account (the sole intended use — see server/routes/admin.js)
+ * is provisioned here rather than through POST /api/auth/signup, which
+ * still only ever accepts student/company/career. Runs on every boot, so
+ * setting ADMIN_EMAIL/ADMIN_PASSWORD on Railway is the entire setup step —
+ * no separate one-off script to run against production. Never touches the
+ * password on an existing account, so changing it later (e.g. from the
+ * Account page) sticks.
+ */
+async function ensureAdminAccount() {
+  const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const password = process.env.ADMIN_PASSWORD;
+  if (!email || !password) return;
+
+  try {
+    const { rows } = await pool.query(`SELECT id FROM users WHERE lower(email) = $1`, [email]);
+    if (rows[0]) return;
+
+    const passwordHash = await hashPassword(password);
+    await pool.query(
+      `INSERT INTO users (email, username, password_hash, role) VALUES ($1,'admin',$2,'admin')`,
+      [email, passwordHash],
+    );
+    console.log(`[admin] provisioned admin account for ${email}`);
+  } catch (err) {
+    console.error('[admin] failed to provision admin account:', err.message);
+  }
+}
+
+ensureAdminAccount().finally(() => {
+  app.listen(PORT, () => {
+    console.log(`darbi api listening on :${PORT}`);
+  });
 });
