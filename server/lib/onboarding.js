@@ -17,23 +17,64 @@ export const ONBOARDING_QUESTIONS = [
     question:
       'What subjects, hobbies, or activities do you enjoy most — and what is it about them that pulls you in?',
     required: true,
+    // Full first-person starter answers, not bare category words — a picked
+    // option has to stand on its own as a real answer (Claude reads these
+    // for nuance, not just a label), and the student can still edit it.
+    options: [
+      'Math and solving logical problems — I like the certainty of working toward one right answer.',
+      'Building and fixing physical things — I enjoy seeing how something works and making it better.',
+      'Computers, coding, and technology — I like creating things that actually run and do something.',
+      'Science experiments and understanding how things work underneath.',
+      'Art, design, and visual creativity — I think in images and like making things look right.',
+      'Helping and working with people — I get energy from being useful to someone directly.',
+      'Sports and physical activity — I like competition and pushing my limits.',
+      'Writing, reading, and storytelling — I enjoy putting ideas into words.',
+    ],
   },
   {
     id: 'strengths',
     question: 'What are you naturally good at, or what do teachers, friends, or family often compliment you on?',
     required: true,
+    options: [
+      'Math and analytical thinking — people say I pick up formulas and logic fast.',
+      'Working with my hands and building things.',
+      'Communicating and explaining ideas clearly to others.',
+      'Organizing, planning, and keeping things on track.',
+      'Creative or artistic work.',
+      'Leading and motivating a group.',
+      'Patience and attention to detail — I notice things others miss.',
+      'Staying calm and solving problems under pressure.',
+    ],
   },
   {
     id: 'priorities',
     question:
       'When you picture your future career, what matters most to you — salary, stability, creativity, helping people, prestige, something else? Say a bit about why.',
     required: true,
+    options: [
+      'A high salary matters most to me — I want financial security early on.',
+      'Job stability matters most — I want a field with steady, reliable demand.',
+      'Creativity and innovation matter most — I want work that lets me build new things.',
+      'Helping people and making an impact matters most to me.',
+      'Prestige and recognition matter to me — I want a career people respect.',
+      'Work-life balance matters most — I don’t want a career that consumes everything.',
+      'Opportunities to work or study abroad matter most to me.',
+    ],
   },
   {
     id: 'constraints',
     question:
       "Anything I should factor in — a location you're tied to, a budget for study, family expectations, or subjects you'd rather avoid?",
     required: false,
+    options: [
+      'I need to study in Amman — I’m not able to relocate.',
+      'I’m open to studying outside Amman if needed.',
+      'I have a limited budget, so cost matters a lot in my decision.',
+      'My family has strong expectations about which major I choose.',
+      'I’d rather avoid majors with heavy math or physics.',
+      'I’d rather avoid majors with heavy biology or chemistry.',
+      'No major constraints — I’m open to anything that fits.',
+    ],
   },
 ];
 

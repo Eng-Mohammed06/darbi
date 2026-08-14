@@ -7,6 +7,11 @@ import { Alert, Button, Wisps } from '../components/common/ui.jsx';
  * One-time, post-signup questionnaire. Answers are analyzed by Claude into a
  * structured profile (server/lib/onboarding.js) that the chat advisor reads
  * on every turn afterward — see server/lib/chat.js's `analysisBlock`.
+ *
+ * Each question ships a few suggested full-sentence answers (server/lib/
+ * onboarding.js) as a dropdown shortcut — picking one fills the textarea,
+ * which stays editable, since the analysis reads for nuance/"why" and a
+ * bare category label would flatten that.
  */
 export default function OnboardingPage() {
   const navigate = useNavigate();
@@ -83,7 +88,13 @@ export default function OnboardingPage() {
       <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--darbi-gold)' }}>
         Question {step + 1} of {questions.length}
       </p>
-      <div className="flex gap-1.5 mt-3 mb-4" role="progressbar" aria-valuenow={step + 1} aria-valuemin={1} aria-valuemax={questions.length}>
+      <div
+        className="flex gap-1.5 mt-3 mb-5"
+        role="progressbar"
+        aria-valuenow={step + 1}
+        aria-valuemin={1}
+        aria-valuemax={questions.length}
+      >
         {questions.map((_, i) => (
           <span
             key={i}
@@ -92,21 +103,52 @@ export default function OnboardingPage() {
           />
         ))}
       </div>
-      <h1 className="text-xl font-bold text-darbi-navy mb-5">{q.question}</h1>
+
+      <h1 className="text-lg font-bold text-darbi-navy mb-5 leading-snug">{q.question}</h1>
 
       <Alert>{error}</Alert>
 
-      <textarea
-        className="darbi-input"
-        rows={4}
-        value={value}
-        onChange={(e) => setAnswer(e.target.value)}
-        placeholder={q.required ? 'Type your answer…' : 'Optional — leave blank if none'}
-        disabled={analyzing}
-        autoFocus
-      />
+      <div className="space-y-4">
+        {q.options?.length > 0 && (
+          <label className="block">
+            <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
+              Pick a suggested answer
+            </span>
+            <select
+              className="darbi-input"
+              value=""
+              onChange={(e) => {
+                if (e.target.value) setAnswer(e.target.value);
+              }}
+              disabled={analyzing}
+            >
+              <option value="">Choose one…</option>
+              {q.options.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt.length > 70 ? `${opt.slice(0, 70)}…` : opt}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
 
-      <div className="flex items-center justify-center gap-3 mt-5">
+        <label className="block">
+          <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
+            {q.options?.length > 0 ? 'Or write your own' : 'Your answer'}
+          </span>
+          <textarea
+            className="darbi-input"
+            rows={4}
+            value={value}
+            onChange={(e) => setAnswer(e.target.value)}
+            placeholder={q.required ? 'Type your answer…' : 'Optional — leave blank if none'}
+            disabled={analyzing}
+            autoFocus
+          />
+        </label>
+      </div>
+
+      <div className="flex items-center justify-center gap-3 mt-6">
         {step > 0 && (
           <Button variant="navy" onClick={back} disabled={analyzing}>
             Back
@@ -120,7 +162,7 @@ export default function OnboardingPage() {
       <button
         onClick={() => navigate('/')}
         disabled={analyzing}
-        className="text-xs text-gray-500 mt-6 underline block"
+        className="text-xs text-gray-500 mt-6 underline block mx-auto"
       >
         Skip for now
       </button>
@@ -135,7 +177,18 @@ function Centered({ children }) {
       style={{ background: 'var(--darbi-bg)' }}
     >
       <Wisps palette={['#06b6d4', '#ff5722']} opacity={0.4} fixed />
-      <div className="darbi-box relative z-10 p-8 max-w-md w-full text-center">{children}</div>
+      <div
+        className="relative z-10 max-w-lg w-full text-center"
+        style={{
+          background: 'var(--darbi-surface)',
+          border: '1px solid var(--darbi-border)',
+          borderRadius: 'var(--darbi-radius)',
+          boxShadow: '0 0 60px rgba(8,145,178,0.15)',
+          padding: '2rem',
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
 }

@@ -67,7 +67,9 @@ router.get(
   '/me/onboarding-questions',
   asyncRoute(async (_req, res) => {
     res.json({
-      questions: ONBOARDING_QUESTIONS.map(({ id, question, required }) => ({ id, question, required })),
+      questions: ONBOARDING_QUESTIONS.map(({ id, question, required, options }) => ({
+        id, question, required, options,
+      })),
     });
   }),
 );
