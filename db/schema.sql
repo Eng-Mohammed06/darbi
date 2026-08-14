@@ -35,6 +35,12 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_code_expires_at TIMESTAM
 ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_code TEXT;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_code_expires_at TIMESTAMPTZ;
 
+-- Profile picture, stored as a data: URI (base64 PNG/JPEG) directly in the
+-- row rather than an external object store -- there's no S3/Cloudinary
+-- configured for this deploy, and server/routes/auth.js caps the decoded
+-- size, so a TEXT column is the simplest thing that actually works here.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar TEXT;
+
 CREATE TABLE IF NOT EXISTS students (
   user_id       INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
   name          TEXT NOT NULL,

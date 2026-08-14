@@ -59,6 +59,19 @@ export function AuthProvider({ children }) {
         return api('/auth/resend-verification', { method: 'POST' });
       },
 
+      /** `image` is a data: URI (data:image/png;base64,... or image/jpeg). */
+      async uploadAvatar(image) {
+        const res = await api('/auth/avatar', { method: 'PUT', body: { image } });
+        setUser(res.user);
+        return res.user;
+      },
+
+      async removeAvatar() {
+        const res = await api('/auth/avatar', { method: 'DELETE' });
+        setUser(res.user);
+        return res.user;
+      },
+
       /** Public — no session required, since a locked-out user isn't logged in. */
       forgotPassword(identifier) {
         return api('/auth/forgot-password', { method: 'POST', auth: false, body: { identifier } });

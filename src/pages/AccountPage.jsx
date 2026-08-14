@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api.js';
 import { useAuth } from '../services/auth.jsx';
 import { Alert, Button, Card, Field, inputClass, Wisps } from '../components/common/ui.jsx';
 import { useToast } from '../components/common/toast.jsx';
 import { PASSWORD_HINT, passwordIssues } from '../lib/password.js';
+import { readAvatarFile } from '../lib/avatar.js';
 
 export default function AccountPage() {
   const { user, profile, logout } = useAuth();
@@ -24,6 +25,8 @@ export default function AccountPage() {
       </header>
 
       <main className="darbi-container py-8 relative z-10">
+        <AvatarUpload />
+
         <Card title="Your details" accent={false}>
           <Detail label="Name" value={profile?.name} />
           <Detail label="Username" value={user?.username} />
@@ -50,6 +53,85 @@ function Detail({ label, value }) {
       <span className="block text-darbi-navy font-bold mb-1 text-sm">{label}</span>
       <span className="text-gray-300">{value ?? '—'}</span>
     </div>
+  );
+}
+
+/**
+ * PNG/JPEG only, shown circular (object-fit: cover handles non-square
+ * source images without needing an actual crop step) — server/routes/auth.js
+ * re-checks type and a 2MB size cap, since the client check is skippable.
+ */
+function AvatarUpload() {
+  const { user, uploadAvatar, removeAvatar } = useAuth();
+  const inputRef = useRef(null);
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const toast = useToast();
+
+  async function onFileChange(e) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setError('');
+    setBusy(true);
+    try {
+      const dataUri = await readAvatarFile(file);
+      await uploadAvatar(dataUri);
+      toast.show('Profile picture updated.', { kind: 'success' });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onRemove() {
+    setError('');
+    setBusy(true);
+    try {
+      await removeAvatar();
+      toast.show('Profile picture removed.', { kind: 'success' });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card title="Profile picture" accent={false}>
+      <Alert>{error}</Alert>
+      <div className="flex items-center gap-5">
+        <div
+          className="w-20 h-20 rounded-full overflow-hidden shrink-0 flex items-center justify-center text-2xl font-bold text-white"
+          style={{ background: 'var(--darbi-gradient)' }}
+        >
+          {user?.avatar ? (
+            <img src={user.avatar} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <span aria-hidden="true">{(user?.username ?? '?')[0].toUpperCase()}</span>
+          )}
+        </div>
+        <div className="flex flex-col items-start gap-2">
+          <input
+            ref={inputRef}
+            type="file"
+            accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+            className="hidden"
+            onChange={onFileChange}
+          />
+          <Button type="button" variant="navy" onClick={() => inputRef.current?.click()} disabled={busy}>
+            {busy ? 'Uploading…' : user?.avatar ? 'Change photo' : 'Upload photo'}
+          </Button>
+          {user?.avatar && (
+            <button type="button" onClick={onRemove} disabled={busy} className="text-xs text-gray-500 underline">
+              Remove photo
+            </button>
+          )}
+          <span className="text-xs text-gray-500">PNG or JPG, up to 2MB.</span>
+        </div>
+      </div>
+    </Card>
   );
 }
 

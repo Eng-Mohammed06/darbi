@@ -128,6 +128,7 @@ const TAB_ICONS = {
 const label = (t) => t[0].toUpperCase() + t.slice(1);
 
 export function Shell({ title, subtitle, tabs, activeTab, onTabChange, children }) {
+  const { user } = useAuth();
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [paletteQuery, setPaletteQuery] = useState('');
   const navigate = useNavigate();
@@ -181,10 +182,14 @@ export function Shell({ title, subtitle, tabs, activeTab, onTabChange, children 
           <Link
             to="/account"
             aria-label="Account"
-            className="text-2xl leading-none shrink-0 w-9 h-9 flex items-center justify-center rounded-full"
+            className="text-2xl leading-none shrink-0 w-9 h-9 flex items-center justify-center rounded-full overflow-hidden"
             style={{ background: 'var(--darbi-gradient)' }}
           >
-            👤
+            {user?.avatar ? (
+              <img src={user.avatar} alt="" className="w-full h-full object-cover" />
+            ) : (
+              '👤'
+            )}
           </Link>
         </div>
       </header>

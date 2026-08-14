@@ -16,7 +16,9 @@ const here = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json({ limit: '1mb' }));
+// 1mb comfortably covers every route except the avatar upload, whose base64
+// image payload (server/routes/auth.js) needs more headroom.
+app.use(express.json({ limit: '3mb' }));
 
 // Railway pings this to decide whether a deploy is healthy.
 app.get('/api/health', async (_req, res) => {

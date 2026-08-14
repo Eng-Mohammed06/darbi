@@ -132,7 +132,7 @@ router.post(
 
     res.status(201).json({
       token: signToken(user),
-      user: { id: user.id, email: user.email, username: user.username, role: user.role, email_verified: false },
+      user: { id: user.id, email: user.email, username: user.username, role: user.role, email_verified: false, avatar: null },
       profile: await loadProfile(user.id, user.role),
     });
   }),
@@ -148,7 +148,7 @@ router.post(
     }
 
     const { rows } = await query(
-      `SELECT id, email, username, role, password_hash, email_verified FROM users
+      `SELECT id, email, username, role, password_hash, email_verified, avatar FROM users
         WHERE lower(email) = lower($1) OR lower(username) = lower($1)`,
       [String(identifier).trim()],
     );
@@ -161,7 +161,10 @@ router.post(
 
     res.json({
       token: signToken(user),
-      user: { id: user.id, email: user.email, username: user.username, role: user.role, email_verified: user.email_verified },
+      user: {
+        id: user.id, email: user.email, username: user.username, role: user.role,
+        email_verified: user.email_verified, avatar: user.avatar,
+      },
       profile: await loadProfile(user.id, user.role),
     });
   }),
@@ -173,7 +176,7 @@ router.get(
   requireAuth,
   asyncRoute(async (req, res) => {
     const { rows } = await query(
-      `SELECT id, email, username, role, email_verified FROM users WHERE id = $1`,
+      `SELECT id, email, username, role, email_verified, avatar FROM users WHERE id = $1`,
       [req.user.id],
     );
     const user = rows[0];
@@ -371,6 +374,54 @@ router.put(
       [passwordHash, req.user.id],
     );
     res.json({ ok: true });
+  }),
+);
+
+const AVATAR_MAX_BYTES = 2 * 1024 * 1024; // 2MB decoded — plenty for a profile photo
+const AVATAR_DATA_URL = /^data:image\/(png|jpe?g);base64,([A-Za-z0-9+/]+={0,2})$/;
+
+/**
+ * PUT /api/auth/avatar  { image: "data:image/png;base64,..." }
+ * Only PNG/JPEG, and only up to AVATAR_MAX_BYTES decoded — checked here, not
+ * just client-side, since the client check is trivially bypassable. Stored
+ * as the data: URI itself (users.avatar, db/schema.sql) so the frontend can
+ * drop it straight into an <img src> with no extra fetch.
+ */
+router.put(
+  '/avatar',
+  requireAuth,
+  asyncRoute(async (req, res) => {
+    const { image } = req.body ?? {};
+    const match = typeof image === 'string' && AVATAR_DATA_URL.exec(image);
+    if (!match) {
+      return res.status(400).json({ error: 'bad_image', message: 'Upload a .png or .jpg image.' });
+    }
+
+    const bytes = Buffer.from(match[2], 'base64').length;
+    if (bytes > AVATAR_MAX_BYTES) {
+      return res.status(400).json({ error: 'image_too_large', message: 'Image must be 2MB or smaller.' });
+    }
+
+    const { rows } = await query(
+      `UPDATE users SET avatar = $1, updated_at = now() WHERE id = $2
+       RETURNING id, email, username, role, email_verified, avatar`,
+      [image, req.user.id],
+    );
+    res.json({ user: rows[0] });
+  }),
+);
+
+/** DELETE /api/auth/avatar — removes the profile picture. */
+router.delete(
+  '/avatar',
+  requireAuth,
+  asyncRoute(async (req, res) => {
+    const { rows } = await query(
+      `UPDATE users SET avatar = NULL, updated_at = now() WHERE id = $1
+       RETURNING id, email, username, role, email_verified, avatar`,
+      [req.user.id],
+    );
+    res.json({ user: rows[0] });
   }),
 );
 
