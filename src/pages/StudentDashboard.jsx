@@ -13,19 +13,30 @@ import { useToast } from '../components/common/toast.jsx';
 /** Mirrors slugify() in scripts/convert_xlsx.py, which generated majors.slug. */
 const slugify = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
-const TABS = ['advisor', 'pathways', 'saved pathways', 'recommendations', 'profile', 'majors', 'courses', 'jobs'];
+const ALL_TABS = ['advisor', 'pathways', 'saved pathways', 'recommendations', 'profile', 'majors', 'courses', 'jobs'];
+// An undergraduate already picked their major and university at profile
+// setup (ProfileSetupPage.jsx) — the "explore what to study" tabs are for a
+// high schooler who hasn't chosen yet, so they'd just be dead weight here.
+const UNDERGRAD_TABS = ['advisor', 'profile', 'courses', 'jobs'];
 
 export default function StudentDashboard() {
   const { profile, setProfile } = useAuth();
   const [tab, setTab] = useState('advisor');
   // Set when another tab sends the student to a specific pathway.
   const [pathwaySlug, setPathwaySlug] = useState(null);
+  const tabs = profile?.level === 'undergraduate' ? UNDERGRAD_TABS : ALL_TABS;
+
+  const subtitle = profile?.major_name
+    ? `${profile.major_name}${profile.university_name ? ` · ${profile.university_name}` : ''}`
+    : profile?.level
+      ? `${profile.level} · ${profile.location ?? 'Jordan'}`
+      : undefined;
 
   return (
     <Shell
       title={`Welcome, ${profile?.name ?? 'student'} 🎓`}
-      subtitle={profile?.level ? `${profile.level} · ${profile.location ?? 'Jordan'}` : undefined}
-      tabs={TABS}
+      subtitle={subtitle}
+      tabs={tabs}
       activeTab={tab}
       onTabChange={setTab}
     >
@@ -168,13 +179,24 @@ function ProfileForm({ profile, onSaved }) {
     level: profile?.level ?? '',
     interests: (profile?.interests ?? []).join(', '),
     gpa: profile?.gpa ?? '',
+    gpaScale: profile?.gpa_scale ?? '4',
     tawjihiAverage: profile?.tawjihi_average ?? '',
     location: profile?.location ?? '',
     salaryPref: profile?.salary_pref ?? '',
+    universityId: profile?.university_id ?? '',
+    majorId: profile?.major_id ?? '',
   });
   const isHighSchool = form.level === 'highschool';
+  const isUndergrad = form.level === 'undergraduate';
+  const [universities, setUniversities] = useState([]);
+  const [majors, setMajors] = useState([]);
   const [error, setError] = useState('');
   const toast = useToast();
+
+  useEffect(() => {
+    api('/universities', { auth: false }).then(setUniversities).catch(() => {});
+    api('/majors', { auth: false }).then(setMajors).catch(() => {});
+  }, []);
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
@@ -189,9 +211,12 @@ function ProfileForm({ profile, onSaved }) {
           level: form.level || null,
           interests: form.interests.split(',').map((s) => s.trim()).filter(Boolean),
           gpa: form.gpa === '' ? null : Number(form.gpa),
+          gpaScale: form.gpaScale,
           tawjihiAverage: form.tawjihiAverage === '' ? null : Number(form.tawjihiAverage),
           location: form.location || null,
           salaryPref: form.salaryPref || null,
+          universityId: form.universityId === '' ? null : Number(form.universityId),
+          majorId: form.majorId === '' ? null : Number(form.majorId),
         },
       });
       onSaved(saved);
@@ -213,7 +238,6 @@ function ProfileForm({ profile, onSaved }) {
             <option value="">Select…</option>
             <option value="highschool">High school</option>
             <option value="undergraduate">Undergraduate</option>
-            <option value="graduate">Graduate</option>
           </select>
         </Field>
         <Field label="Interests" hint="Comma separated">
@@ -232,17 +256,56 @@ function ProfileForm({ profile, onSaved }) {
             />
           </Field>
         ) : (
-          <Field label="GPA" hint="Out of 4">
-            <input
-              type="number"
-              step="0.01"
-              min="0"
-              max="4"
-              className={inputClass}
-              value={form.gpa}
-              onChange={set('gpa')}
-            />
-          </Field>
+          <>
+            <Field label="GPA scale">
+              <div className="flex rounded-full p-1" style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid var(--darbi-border)' }}>
+                {['4', '100'].map((scale) => (
+                  <button
+                    key={scale}
+                    type="button"
+                    onClick={() => setForm({ ...form, gpaScale: scale })}
+                    className={`flex-1 text-xs font-semibold py-1.5 rounded-full transition ${
+                      form.gpaScale === scale ? 'text-white' : 'text-gray-400 hover:text-gray-200'
+                    }`}
+                    style={form.gpaScale === scale ? { background: 'var(--darbi-gradient)' } : undefined}
+                  >
+                    Out of {scale}
+                  </button>
+                ))}
+              </div>
+            </Field>
+            <Field label="GPA" hint={`Out of ${form.gpaScale}`}>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                max={form.gpaScale === '100' ? 100 : 4}
+                className={inputClass}
+                value={form.gpa}
+                onChange={set('gpa')}
+              />
+            </Field>
+          </>
+        )}
+        {isUndergrad && (
+          <>
+            <Field label="University">
+              <select className={inputClass} value={form.universityId} onChange={set('universityId')}>
+                <option value="">Select…</option>
+                {universities.map((u) => (
+                  <option key={u.id} value={u.id}>{u.name}</option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Major">
+              <select className={inputClass} value={form.majorId} onChange={set('majorId')}>
+                <option value="">Select…</option>
+                {majors.map((m) => (
+                  <option key={m.id} value={m.id}>{m.name}</option>
+                ))}
+              </select>
+            </Field>
+          </>
         )}
         <Field label="Location">
           <input className={inputClass} value={form.location} onChange={set('location')} />

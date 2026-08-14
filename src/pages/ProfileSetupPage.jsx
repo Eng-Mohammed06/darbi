@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api.js';
 import { useAuth } from '../services/auth.jsx';
@@ -55,6 +55,11 @@ const INTEREST_OPTIONS = [
  *
  * No "Graduate" level option: a signed-up student who has already graduated
  * belongs in the separate Career/Graduate portal (/portal/career), not here.
+ *
+ * An undergraduate additionally picks their university and major here (a
+ * high schooler hasn't chosen either yet) — StudentDashboard.jsx uses that
+ * to skip the "explore majors" tabs for them and go straight to their own
+ * courses and jobs instead.
  */
 export default function ProfileSetupPage() {
   const navigate = useNavigate();
@@ -62,10 +67,20 @@ export default function ProfileSetupPage() {
 
   const [level, setLevel] = useState('');
   const [average, setAverage] = useState('');
+  const [gpaScale, setGpaScale] = useState('4'); // '4' or '100' — some Jordanian universities grade out of 100
   const [interests, setInterests] = useState([]);
   const [location, setLocation] = useState('');
+  const [universities, setUniversities] = useState([]);
+  const [majors, setMajors] = useState([]);
+  const [universityId, setUniversityId] = useState('');
+  const [majorId, setMajorId] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    api('/universities', { auth: false }).then(setUniversities).catch(() => {});
+    api('/majors', { auth: false }).then(setMajors).catch(() => {});
+  }, []);
 
   function addInterest(value) {
     if (value && !interests.includes(value)) setInterests([...interests, value]);
@@ -73,6 +88,15 @@ export default function ProfileSetupPage() {
 
   function removeInterest(value) {
     setInterests(interests.filter((i) => i !== value));
+  }
+
+  function changeGpaScale(scale) {
+    setGpaScale(scale);
+    // A number typed under one scale is meaningless under the other (e.g.
+    // 85 isn't a valid GPA out of 4) — clear it rather than silently
+    // reinterpreting or submitting an out-of-range value.
+    const max = scale === '100' ? 100 : 4;
+    if (average !== '' && Number(average) > max) setAverage('');
   }
 
   async function submit(e) {
@@ -90,7 +114,10 @@ export default function ProfileSetupPage() {
           // Only the column matching `level` actually gets written server-side
           // (server/routes/students.js) — sending both is harmless.
           gpa: value,
+          gpaScale,
           tawjihiAverage: value,
+          universityId: universityId ? Number(universityId) : null,
+          majorId: majorId ? Number(majorId) : null,
         },
       });
       setProfile(profile);
@@ -101,6 +128,8 @@ export default function ProfileSetupPage() {
       setBusy(false);
     }
   }
+
+  const isUndergrad = level === 'undergraduate';
 
   return (
     <CenteredCard>
@@ -133,7 +162,7 @@ export default function ProfileSetupPage() {
           }}
         >
           <div
-            className="overflow-hidden min-h-0"
+            className="overflow-hidden min-h-0 space-y-4"
             style={{
               opacity: level ? 1 : 0,
               transform: level ? 'translateY(0)' : 'translateY(-6px)',
@@ -141,6 +170,35 @@ export default function ProfileSetupPage() {
               willChange: 'opacity, transform',
             }}
           >
+            {isUndergrad && (
+              <div>
+                <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
+                  GPA scale
+                </span>
+                <div
+                  className="flex rounded-full p-1"
+                  style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid var(--darbi-border)' }}
+                >
+                  {['4', '100'].map((scale) => (
+                    <button
+                      key={scale}
+                      type="button"
+                      onClick={() => changeGpaScale(scale)}
+                      className={`flex-1 text-xs font-semibold py-1.5 rounded-full transition ${
+                        gpaScale === scale ? 'text-white' : 'text-gray-400 hover:text-gray-200'
+                      }`}
+                      style={gpaScale === scale ? { background: 'var(--darbi-gradient)' } : undefined}
+                    >
+                      Out of {scale}
+                    </button>
+                  ))}
+                </div>
+                <span className="block text-xs text-gray-500 mt-1">
+                  Some universities grade out of 100 instead of the usual 4.0 — pick whichever yours uses.
+                </span>
+              </div>
+            )}
+
             <label className="block">
               <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
                 {level === 'highschool' ? 'Average' : 'GPA'}
@@ -149,15 +207,51 @@ export default function ProfileSetupPage() {
                 type="number"
                 step="0.01"
                 min="0"
-                max={level === 'highschool' ? 100 : 4}
+                max={level === 'highschool' ? 100 : gpaScale === '100' ? 100 : 4}
                 className="darbi-input"
                 value={average}
                 onChange={(e) => setAverage(e.target.value)}
               />
               <span className="block text-xs text-gray-500 mt-1">
-                {level === 'highschool' ? 'Tawjihi average, out of 100' : 'Out of 4'}
+                {level === 'highschool' ? 'Tawjihi average, out of 100' : `Out of ${gpaScale}`}
               </span>
             </label>
+
+            {isUndergrad && (
+              <>
+                <label className="block">
+                  <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
+                    University
+                  </span>
+                  <select
+                    className="darbi-input"
+                    value={universityId}
+                    onChange={(e) => setUniversityId(e.target.value)}
+                  >
+                    <option value="">Select…</option>
+                    {universities.map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {u.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="block">
+                  <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
+                    Major
+                  </span>
+                  <select className="darbi-input" value={majorId} onChange={(e) => setMajorId(e.target.value)}>
+                    <option value="">Select…</option>
+                    {majors.map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </>
+            )}
           </div>
         </div>
 

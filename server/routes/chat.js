@@ -78,7 +78,17 @@ router.post(
       });
     }
 
-    const { rows } = await query(`SELECT * FROM students WHERE user_id = $1`, [req.user.id]);
+    // Joined with major/university names so profileBlock (server/lib/chat.js)
+    // can tell the advisor what an undergraduate is actually studying and
+    // where, not just the raw ids.
+    const { rows } = await query(
+      `SELECT s.*, m.name AS major_name, u.name AS university_name
+         FROM students s
+         LEFT JOIN majors m ON m.id = s.major_id
+         LEFT JOIN universities u ON u.id = s.university_id
+        WHERE s.user_id = $1`,
+      [req.user.id],
+    );
     const student = rows[0];
     if (!student) return res.status(404).json({ error: 'no_profile' });
 

@@ -7,13 +7,32 @@ const router = Router();
 
 router.use(requireAuth, requireRole('student'));
 
+/**
+ * Student row plus the display names for university_id/major_id — an
+ * undergraduate picks these at profile setup (ProfileSetupPage.jsx) so the
+ * chat advisor (server/lib/chat.js) and the dashboard can show "Computer
+ * Science @ University of Jordan" without a second lookup.
+ */
+async function loadStudent(userId) {
+  const { rows } = await query(
+    `SELECT s.*, m.name AS major_name, m.slug AS major_slug,
+            u.name AS university_name, u.code AS university_code
+       FROM students s
+       LEFT JOIN majors m ON m.id = s.major_id
+       LEFT JOIN universities u ON u.id = s.university_id
+      WHERE s.user_id = $1`,
+    [userId],
+  );
+  return rows[0];
+}
+
 /** GET /api/students/me */
 router.get(
   '/me',
   asyncRoute(async (req, res) => {
-    const { rows } = await query(`SELECT * FROM students WHERE user_id = $1`, [req.user.id]);
-    if (!rows[0]) return res.status(404).json({ error: 'no_profile' });
-    res.json(rows[0]);
+    const student = await loadStudent(req.user.id);
+    if (!student) return res.status(404).json({ error: 'no_profile' });
+    res.json(student);
   }),
 );
 
@@ -21,44 +40,60 @@ router.get(
  * PUT /api/students/me — update the profiling form.
  * COALESCE means an omitted field keeps its current value.
  *
- * `gpa` (0-4) and `tawjihiAverage` (0-100) are mutually exclusive by level,
- * same as signup (server/routes/auth.js) -- a high schooler's average has to
- * land in `tawjihi_average`, not `gpa`, or it trips gpa's CHECK constraint.
+ * `gpa` and `tawjihiAverage` are mutually exclusive by level, same as
+ * signup (server/routes/auth.js) -- a high schooler's average has to land
+ * in `tawjihi_average`, not `gpa`, or it trips gpa's CHECK constraint.
  * Level can be changing in this same request, so the effective level is
  * read from the request first and only falls back to the stored row.
+ *
+ * `gpaScale` ('4' or '100') says which scale `gpa` was entered in -- some
+ * Jordanian universities grade out of 100 rather than the standard 4.0
+ * scale, so the number alone is ambiguous without it.
  */
 router.put(
   '/me',
   asyncRoute(async (req, res) => {
-    const { name, level, interests, gpa, tawjihiAverage, location, salaryPref } = req.body ?? {};
+    const {
+      name, level, interests, gpa, gpaScale, tawjihiAverage, location, salaryPref,
+      universityId, majorId,
+    } = req.body ?? {};
 
     const { rows: current } = await query(`SELECT level FROM students WHERE user_id = $1`, [req.user.id]);
     if (!current[0]) return res.status(404).json({ error: 'no_profile' });
     const isHighSchool = (level ?? current[0].level) === 'highschool';
+    const maxGpa = gpaScale === '100' ? 100 : 4;
 
-    if (!isHighSchool && gpa != null && (Number.isNaN(Number(gpa)) || gpa < 0 || gpa > 4)) {
-      return res.status(400).json({ error: 'bad_gpa', message: 'GPA must be between 0 and 4.' });
+    if (!isHighSchool && gpa != null && (Number.isNaN(Number(gpa)) || gpa < 0 || gpa > maxGpa)) {
+      return res.status(400).json({ error: 'bad_gpa', message: `GPA must be between 0 and ${maxGpa}.` });
     }
     if (isHighSchool && tawjihiAverage != null
       && (Number.isNaN(Number(tawjihiAverage)) || tawjihiAverage < 0 || tawjihiAverage > 100)) {
       return res.status(400).json({ error: 'bad_average', message: 'Average must be between 0 and 100.' });
     }
 
-    const { rows } = await query(
-      `UPDATE students SET
-         name            = COALESCE($2, name),
-         level           = COALESCE($3, level),
-         interests       = COALESCE($4, interests),
-         gpa             = CASE WHEN $9 THEN gpa ELSE COALESCE($5, gpa) END,
-         tawjihi_average = CASE WHEN $9 THEN COALESCE($8, tawjihi_average) ELSE tawjihi_average END,
-         location        = COALESCE($6, location),
-         salary_pref     = COALESCE($7, salary_pref)
-       WHERE user_id = $1
-       RETURNING *`,
-      [req.user.id, name ?? null, level ?? null, interests ?? null, gpa ?? null,
-       location ?? null, salaryPref ?? null, tawjihiAverage ?? null, isHighSchool],
-    );
-    res.json(rows[0]);
+    try {
+      await query(
+        `UPDATE students SET
+           name            = COALESCE($2, name),
+           level           = COALESCE($3, level),
+           interests       = COALESCE($4, interests),
+           gpa             = CASE WHEN $9 THEN gpa ELSE COALESCE($5, gpa) END,
+           gpa_scale       = CASE WHEN $9 THEN gpa_scale ELSE COALESCE($10, gpa_scale) END,
+           tawjihi_average = CASE WHEN $9 THEN COALESCE($8, tawjihi_average) ELSE tawjihi_average END,
+           location        = COALESCE($6, location),
+           salary_pref     = COALESCE($7, salary_pref),
+           university_id   = COALESCE($11, university_id),
+           major_id        = COALESCE($12, major_id)
+         WHERE user_id = $1`,
+        [req.user.id, name ?? null, level ?? null, interests ?? null, gpa ?? null,
+         location ?? null, salaryPref ?? null, tawjihiAverage ?? null, isHighSchool,
+         gpaScale ?? null, universityId ?? null, majorId ?? null],
+      );
+    } catch (err) {
+      if (err.code === '23503') return res.status(404).json({ error: 'unknown_university_or_major' });
+      throw err;
+    }
+    res.json(await loadStudent(req.user.id));
   }),
 );
 

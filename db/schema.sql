@@ -54,6 +54,16 @@ CREATE TABLE IF NOT EXISTS students (
   salary_pref   TEXT
 );
 
+-- Some Jordanian universities grade out of 100 rather than the standard 4.0
+-- scale, so `gpa` alone is ambiguous -- `gpa_scale` says which one a value
+-- was entered in. NUMERIC(3,2) could only ever hold up to 9.99, so it's
+-- widened to match tawjihi_average's range; the DROP+ADD is how you change a
+-- CHECK constraint's bound in place, and is safe to re-run.
+ALTER TABLE students ALTER COLUMN gpa TYPE NUMERIC(5, 2);
+ALTER TABLE students DROP CONSTRAINT IF EXISTS students_gpa_check;
+ALTER TABLE students ADD CONSTRAINT students_gpa_check CHECK (gpa >= 0 AND gpa <= 100);
+ALTER TABLE students ADD COLUMN IF NOT EXISTS gpa_scale TEXT CHECK (gpa_scale IN ('4', '100'));
+
 CREATE TABLE IF NOT EXISTS companies (
   user_id       INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
   name          TEXT NOT NULL,
@@ -109,6 +119,15 @@ CREATE TABLE IF NOT EXISTS majors (
   data_quality         TEXT NOT NULL DEFAULT 'pending'
                        CHECK (data_quality IN ('high', 'medium', 'low', 'pending'))
 );
+
+-- An undergraduate already knows their university and major by the time
+-- they sign up (ProfileSetupPage.jsx) -- unlike a high schooler, who is
+-- still choosing. Lets the dashboard skip the "explore majors" tabs for
+-- them and go straight to their own courses and jobs. Added here, not next
+-- to the rest of the `students` table above, because both referenced tables
+-- (universities, majors) have to exist first.
+ALTER TABLE students ADD COLUMN IF NOT EXISTS university_id INTEGER REFERENCES universities(id) ON DELETE SET NULL;
+ALTER TABLE students ADD COLUMN IF NOT EXISTS major_id INTEGER REFERENCES majors(id) ON DELETE SET NULL;
 
 -- One row per degree programme an institution offers. The averages are Tawjihi
 -- admission percentages: `minimum_average` is the floor to apply,

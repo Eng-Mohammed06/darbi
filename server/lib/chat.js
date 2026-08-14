@@ -155,8 +155,12 @@ async function loadCatalog() {
 function profileBlock(student) {
   const parts = [`Name: ${student.name}`];
   if (student.level) parts.push(`Level: ${student.level}`);
+  if (student.major_name) parts.push(`Major: ${student.major_name}`);
+  if (student.university_name) parts.push(`University: ${student.university_name}`);
   if (student.interests?.length) parts.push(`Interests: ${student.interests.join(', ')}`);
-  if (student.gpa) parts.push(`University GPA: ${student.gpa} / 4`);
+  // Some Jordanian universities grade out of 100 rather than the standard
+  // 4.0 scale — gpa_scale (set at profile setup) says which this student used.
+  if (student.gpa) parts.push(`University GPA: ${student.gpa} / ${student.gpa_scale === '100' ? '100' : '4'}`);
   if (student.tawjihi_average) parts.push(`Tawjihi average: ${student.tawjihi_average}%`);
   if (student.location) parts.push(`Location: ${student.location}`);
   return `STUDENT PROFILE\n${parts.join('\n')}`;
