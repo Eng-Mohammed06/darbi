@@ -18,6 +18,7 @@ export default function RecommendationCard({
   recommendation,
   saved,
   onSave,
+  onUnsave,
   onLearnMore,
 }) {
   if (!major) return null;
@@ -76,11 +77,10 @@ export default function RecommendationCard({
           Learn more
         </button>
         <button
-          onClick={() => onSave?.(major)}
-          disabled={saved}
-          className="darbi-btn text-sm"
+          onClick={() => (saved ? onUnsave?.(major) : onSave?.(major))}
+          className={`darbi-btn text-sm ${saved ? 'darbi-btn-navy' : ''}`}
         >
-          {saved ? 'Saved' : 'Save'}
+          {saved ? 'Saved — remove' : 'Save'}
         </button>
       </div>
     </article>

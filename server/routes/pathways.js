@@ -89,6 +89,7 @@ router.get(
 
     res.json({
       major: {
+        id: major.id,
         slug: major.slug,
         name: major.name,
         faculty: major.faculty,

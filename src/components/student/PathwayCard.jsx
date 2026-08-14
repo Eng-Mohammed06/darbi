@@ -10,7 +10,7 @@ const PURPLE = '#06b6d4';
  * Every figure is a count over seeded rows, computed server-side with no model
  * call — the card renders identically with or without API credit.
  */
-export default function PathwayCard({ slug, onSave, saved, onClose }) {
+export default function PathwayCard({ slug, onSave, onUnsave, saved, onClose }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
 
@@ -43,14 +43,13 @@ export default function PathwayCard({ slug, onSave, saved, onClose }) {
           <h2 className="text-2xl font-bold text-white">{major.name}</h2>
         </div>
         <div className="flex gap-2 shrink-0">
-          {onSave && (
+          {(onSave || onUnsave) && (
             <button
-              onClick={() => onSave(major.slug)}
-              disabled={saved}
-              className="text-sm font-bold px-4 py-2 rounded-full text-white disabled:opacity-60"
-              style={{ background: 'var(--darbi-gradient)' }}
+              onClick={() => (saved ? onUnsave?.(major) : onSave?.(major))}
+              className="text-sm font-bold px-4 py-2 rounded-full text-white"
+              style={saved ? { border: '1px solid var(--darbi-border)' } : { background: 'var(--darbi-gradient)' }}
             >
-              {saved ? 'Saved' : 'Save for later'}
+              {saved ? 'Saved — remove' : 'Save for later'}
             </button>
           )}
           {onClose && (

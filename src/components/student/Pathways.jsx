@@ -26,11 +26,18 @@ export default function Pathways({ initialSlug }) {
       .catch(() => {});
   }
 
-  async function save(slug) {
-    const major = majors.find((m) => m.slug === slug);
-    if (!major) return;
+  async function save(major) {
     try {
       await api('/students/me/saved-majors', { method: 'POST', body: { majorId: major.id } });
+      loadSaved();
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  async function unsave(major) {
+    try {
+      await api(`/students/me/saved-majors/${major.id}`, { method: 'DELETE' });
       loadSaved();
     } catch (err) {
       setError(err.message);
@@ -69,6 +76,7 @@ export default function Pathways({ initialSlug }) {
           slug={selected}
           saved={savedSlugs.includes(selected)}
           onSave={save}
+          onUnsave={unsave}
           onClose={() => setSelected(null)}
         />
       )}

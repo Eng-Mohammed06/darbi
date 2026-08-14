@@ -82,6 +82,11 @@ function Recommendations({ profile, onGoToProfile, onSeePathway }) {
     loadSaved();
   }
 
+  async function unsave(major) {
+    await api(`/students/me/saved-majors/${major.id}`, { method: 'DELETE' });
+    loadSaved();
+  }
+
   useEffect(() => {
     api('/majors', { auth: false }).then(setMajors).catch(() => {});
     loadSaved();
@@ -134,6 +139,7 @@ function Recommendations({ profile, onGoToProfile, onSeePathway }) {
           recommendation={r}
           saved={savedIds.includes(bySlug(r.major)?.id)}
           onSave={save}
+          onUnsave={unsave}
           onLearnMore={onSeePathway}
         />
       ))}
@@ -160,9 +166,11 @@ function ProfileForm({ profile, onSaved }) {
     level: profile?.level ?? '',
     interests: (profile?.interests ?? []).join(', '),
     gpa: profile?.gpa ?? '',
+    tawjihiAverage: profile?.tawjihi_average ?? '',
     location: profile?.location ?? '',
     salaryPref: profile?.salary_pref ?? '',
   });
+  const isHighSchool = form.level === 'highschool';
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
 
@@ -180,6 +188,7 @@ function ProfileForm({ profile, onSaved }) {
           level: form.level || null,
           interests: form.interests.split(',').map((s) => s.trim()).filter(Boolean),
           gpa: form.gpa === '' ? null : Number(form.gpa),
+          tawjihiAverage: form.tawjihiAverage === '' ? null : Number(form.tawjihiAverage),
           location: form.location || null,
           salaryPref: form.salaryPref || null,
         },
@@ -210,9 +219,31 @@ function ProfileForm({ profile, onSaved }) {
         <Field label="Interests" hint="Comma separated">
           <input className={inputClass} value={form.interests} onChange={set('interests')} />
         </Field>
-        <Field label="GPA" hint="Out of 4">
-          <input type="number" step="0.01" min="0" max="4" className={inputClass} value={form.gpa} onChange={set('gpa')} />
-        </Field>
+        {isHighSchool ? (
+          <Field label="Average" hint="Tawjihi average, out of 100">
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              max="100"
+              className={inputClass}
+              value={form.tawjihiAverage}
+              onChange={set('tawjihiAverage')}
+            />
+          </Field>
+        ) : (
+          <Field label="GPA" hint="Out of 4">
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              max="4"
+              className={inputClass}
+              value={form.gpa}
+              onChange={set('gpa')}
+            />
+          </Field>
+        )}
         <Field label="Location">
           <input className={inputClass} value={form.location} onChange={set('location')} />
         </Field>

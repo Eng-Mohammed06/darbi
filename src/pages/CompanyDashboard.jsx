@@ -175,6 +175,10 @@ function MyJobs() {
 function JobPosting({ job: j, onRemove }) {
   const [open, setOpen] = useState(false);
   const [applicants, setApplicants] = useState(null);
+  // Deleting a posting also drops its applicant history with no undo, so
+  // a single misclick shouldn't be enough to do it -- this requires the
+  // second, explicit "Confirm" click.
+  const [confirming, setConfirming] = useState(false);
 
   async function toggle() {
     if (open) return setOpen(false);
@@ -188,9 +192,29 @@ function JobPosting({ job: j, onRemove }) {
     <div className="darbi-box flex flex-col">
       <div className="flex justify-between items-start gap-2 mb-2">
         <p className="font-semibold text-darbi-navy">{j.title}</p>
-        <button onClick={() => onRemove(j.id)} className="text-xs text-red-400 hover:text-red-300 font-semibold shrink-0 transition">
-          Delete
-        </button>
+        {confirming ? (
+          <span className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => onRemove(j.id)}
+              className="text-xs text-red-400 hover:text-red-300 font-bold transition"
+            >
+              Confirm delete
+            </button>
+            <button
+              onClick={() => setConfirming(false)}
+              className="text-xs text-gray-400 hover:text-gray-200 transition"
+            >
+              Cancel
+            </button>
+          </span>
+        ) : (
+          <button
+            onClick={() => setConfirming(true)}
+            className="text-xs text-red-400 hover:text-red-300 font-semibold shrink-0 transition"
+          >
+            Delete
+          </button>
+        )}
       </div>
       <p className="text-sm text-gray-300 mb-1">
         {j.required_majors?.join(', ') || 'Any major'}

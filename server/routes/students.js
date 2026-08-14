@@ -20,30 +20,44 @@ router.get(
 /**
  * PUT /api/students/me — update the profiling form.
  * COALESCE means an omitted field keeps its current value.
+ *
+ * `gpa` (0-4) and `tawjihiAverage` (0-100) are mutually exclusive by level,
+ * same as signup (server/routes/auth.js) -- a high schooler's average has to
+ * land in `tawjihi_average`, not `gpa`, or it trips gpa's CHECK constraint.
+ * Level can be changing in this same request, so the effective level is
+ * read from the request first and only falls back to the stored row.
  */
 router.put(
   '/me',
   asyncRoute(async (req, res) => {
-    const { name, level, interests, gpa, location, salaryPref } = req.body ?? {};
+    const { name, level, interests, gpa, tawjihiAverage, location, salaryPref } = req.body ?? {};
 
-    if (gpa != null && (Number.isNaN(Number(gpa)) || gpa < 0 || gpa > 4)) {
+    const { rows: current } = await query(`SELECT level FROM students WHERE user_id = $1`, [req.user.id]);
+    if (!current[0]) return res.status(404).json({ error: 'no_profile' });
+    const isHighSchool = (level ?? current[0].level) === 'highschool';
+
+    if (!isHighSchool && gpa != null && (Number.isNaN(Number(gpa)) || gpa < 0 || gpa > 4)) {
       return res.status(400).json({ error: 'bad_gpa', message: 'GPA must be between 0 and 4.' });
+    }
+    if (isHighSchool && tawjihiAverage != null
+      && (Number.isNaN(Number(tawjihiAverage)) || tawjihiAverage < 0 || tawjihiAverage > 100)) {
+      return res.status(400).json({ error: 'bad_average', message: 'Average must be between 0 and 100.' });
     }
 
     const { rows } = await query(
       `UPDATE students SET
-         name        = COALESCE($2, name),
-         level       = COALESCE($3, level),
-         interests   = COALESCE($4, interests),
-         gpa         = COALESCE($5, gpa),
-         location    = COALESCE($6, location),
-         salary_pref = COALESCE($7, salary_pref)
+         name            = COALESCE($2, name),
+         level           = COALESCE($3, level),
+         interests       = COALESCE($4, interests),
+         gpa             = CASE WHEN $9 THEN gpa ELSE COALESCE($5, gpa) END,
+         tawjihi_average = CASE WHEN $9 THEN COALESCE($8, tawjihi_average) ELSE tawjihi_average END,
+         location        = COALESCE($6, location),
+         salary_pref     = COALESCE($7, salary_pref)
        WHERE user_id = $1
        RETURNING *`,
       [req.user.id, name ?? null, level ?? null, interests ?? null, gpa ?? null,
-       location ?? null, salaryPref ?? null],
+       location ?? null, salaryPref ?? null, tawjihiAverage ?? null, isHighSchool],
     );
-    if (!rows[0]) return res.status(404).json({ error: 'no_profile' });
     res.json(rows[0]);
   }),
 );
