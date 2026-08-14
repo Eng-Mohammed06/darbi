@@ -77,10 +77,11 @@ export default function AuthPage() {
           yearsExperience: form.yearsExperience ? Number(form.yearsExperience) : null,
           major: form.major || null,
         });
-        // Students answer the onboarding questionnaire before landing on their
-        // dashboard, so the chat advisor has something to ground its first
-        // reply in. Other roles have no such flow yet.
-        navigate(role === 'student' ? '/onboarding' : '/');
+        // Students verify their email, then fill in level/interests/location,
+        // then answer the onboarding questionnaire, before landing on their
+        // dashboard — see VerifyEmailPage, ProfileSetupPage, OnboardingPage.
+        // Other roles have no such flow yet.
+        navigate(role === 'student' ? '/verify-email' : '/');
       }
     } catch (err) {
       setError(
@@ -217,58 +218,10 @@ export default function AuthPage() {
               </DarkField>
 
               {mode === 'signup' && role === 'student' && (
-                <>
-                  <DarkField label="Level">
-                    <select className={darkInput} value={form.level ?? ''} onChange={set('level')}>
-                      <option value="">Select…</option>
-                      <option value="highschool">High school</option>
-                      <option value="undergraduate">Undergraduate</option>
-                      <option value="graduate">Graduate</option>
-                    </select>
-                  </DarkField>
-                  <DarkField label="Interests" hint="Comma separated — these drive your recommendations">
-                    <input className={darkInput} placeholder="Cybersecurity, Data Science" value={form.interests ?? ''} onChange={set('interests')} />
-                  </DarkField>
-                  <div
-                    className="grid"
-                    style={{
-                      // No transition here: the row/space itself snaps open in a single
-                      // cheap reflow. Only opacity+transform below are animated, since
-                      // those run on the compositor and stay smooth even if a layout
-                      // property (like this one) would otherwise stutter.
-                      gridTemplateRows: form.level ? '1fr' : '0fr',
-                      marginTop: form.level ? '1rem' : '0px',
-                    }}
-                  >
-                    <div
-                      className="overflow-hidden min-h-0"
-                      style={{
-                        opacity: form.level ? 1 : 0,
-                        transform: form.level ? 'translateY(0)' : 'translateY(-6px)',
-                        transition: 'opacity 250ms ease-out, transform 250ms ease-out',
-                        willChange: 'opacity, transform',
-                      }}
-                    >
-                      <DarkField
-                        label={form.level === 'highschool' ? 'Average' : 'GPA'}
-                        hint={form.level === 'highschool' ? 'Tawjihi average, out of 100' : 'Out of 4'}
-                      >
-                        <input
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          max={form.level === 'highschool' ? 100 : 4}
-                          className={darkInput}
-                          value={form.gpa ?? ''}
-                          onChange={set('gpa')}
-                        />
-                      </DarkField>
-                    </div>
-                  </div>
-                  <DarkField label="Location">
-                    <input className={darkInput} placeholder="Amman" value={form.location ?? ''} onChange={set('location')} />
-                  </DarkField>
-                </>
+                <p className="text-xs text-gray-500 -mt-1">
+                  After you verify your email, we'll ask about your level, interests, and location —
+                  that's what drives your recommendations.
+                </p>
               )}
 
               {mode === 'signup' && role === 'company' && (

@@ -3,6 +3,8 @@ import { AuthProvider, useAuth } from './services/auth.jsx';
 import { ToastProvider } from './components/common/toast.jsx';
 import AuthPage from './pages/AuthPage.jsx';
 import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
+import VerifyEmailPage from './pages/VerifyEmailPage.jsx';
+import ProfileSetupPage from './pages/ProfileSetupPage.jsx';
 import OnboardingPage from './pages/OnboardingPage.jsx';
 import StudentDashboard from './pages/StudentDashboard.jsx';
 import CompanyDashboard from './pages/CompanyDashboard.jsx';
@@ -43,14 +45,24 @@ function Account() {
   return <AccountPage />;
 }
 
-/** The post-signup questionnaire — student-only, and only while signed in. */
-function Onboarding() {
-  const { user, loading } = useAuth();
-  if (loading) return <p className="p-8 text-gray-500">Loading…</p>;
-  if (!user) return <Navigate to="/" replace />;
-  if (user.role !== 'student') return <Navigate to="/" replace />;
-  return <OnboardingPage />;
+/**
+ * The post-signup sequence — verify email, then level/interests/location,
+ * then the questionnaire — is student-only, and only while signed in. All
+ * three guard the same way, so one helper builds each route's element.
+ */
+function studentOnlyRoute(Page) {
+  return function Guarded() {
+    const { user, loading } = useAuth();
+    if (loading) return <p className="p-8 text-gray-500">Loading…</p>;
+    if (!user) return <Navigate to="/" replace />;
+    if (user.role !== 'student') return <Navigate to="/" replace />;
+    return <Page />;
+  };
 }
+
+const VerifyEmail = studentOnlyRoute(VerifyEmailPage);
+const ProfileSetup = studentOnlyRoute(ProfileSetupPage);
+const Onboarding = studentOnlyRoute(OnboardingPage);
 
 export default function App() {
   return (
@@ -61,6 +73,8 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/portal/:role" element={<AuthPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/profile-setup" element={<ProfileSetup />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/account" element={<Account />} />
             <Route path="/dashboard" element={<Dashboard />} />

@@ -81,6 +81,34 @@ export function DarkCard({ title, subtitle, children }) {
   );
 }
 
+/**
+ * Glassy centered card used by the post-signup, pre-dashboard sequence
+ * (verify email → profile setup → onboarding) — same look across all three
+ * so the sequence reads as one flow rather than three different screens.
+ */
+export function CenteredCard({ maxWidth = 'max-w-lg', children }) {
+  return (
+    <div
+      className="min-h-screen relative overflow-hidden flex items-center justify-center px-4 py-10"
+      style={{ background: 'var(--darbi-bg)' }}
+    >
+      <Wisps palette={['#06b6d4', '#ff5722']} opacity={0.4} fixed />
+      <div
+        className={`relative z-10 ${maxWidth} w-full text-center`}
+        style={{
+          background: 'var(--darbi-surface)',
+          border: '1px solid var(--darbi-border)',
+          borderRadius: 'var(--darbi-radius)',
+          boxShadow: '0 0 60px rgba(8,145,178,0.15)',
+          padding: '2rem',
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
 const TAB_ICONS = {
   advisor: '💬',
   pathways: '🧭',

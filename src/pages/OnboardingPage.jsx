@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api.js';
-import { Alert, Button, Wisps } from '../components/common/ui.jsx';
+import { Alert, Button, CenteredCard } from '../components/common/ui.jsx';
 
 /**
  * One-time, post-signup questionnaire. Answers are analyzed by Claude into a
@@ -30,18 +30,18 @@ export default function OnboardingPage() {
 
   if (error && !questions) {
     return (
-      <Centered>
+      <CenteredCard>
         <Alert>{error}</Alert>
         <Button onClick={() => navigate('/')}>Continue to dashboard</Button>
-      </Centered>
+      </CenteredCard>
     );
   }
 
   if (!questions) {
     return (
-      <Centered>
+      <CenteredCard>
         <p className="text-gray-500">Loading…</p>
-      </Centered>
+      </CenteredCard>
     );
   }
 
@@ -84,7 +84,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <Centered>
+    <CenteredCard>
       <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--darbi-gold)' }}>
         Question {step + 1} of {questions.length}
       </p>
@@ -166,29 +166,6 @@ export default function OnboardingPage() {
       >
         Skip for now
       </button>
-    </Centered>
-  );
-}
-
-function Centered({ children }) {
-  return (
-    <div
-      className="min-h-screen relative overflow-hidden flex items-center justify-center px-4 py-10"
-      style={{ background: 'var(--darbi-bg)' }}
-    >
-      <Wisps palette={['#06b6d4', '#ff5722']} opacity={0.4} fixed />
-      <div
-        className="relative z-10 max-w-lg w-full text-center"
-        style={{
-          background: 'var(--darbi-surface)',
-          border: '1px solid var(--darbi-border)',
-          borderRadius: 'var(--darbi-radius)',
-          boxShadow: '0 0 60px rgba(8,145,178,0.15)',
-          padding: '2rem',
-        }}
-      >
-        {children}
-      </div>
-    </div>
+    </CenteredCard>
   );
 }
