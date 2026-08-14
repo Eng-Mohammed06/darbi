@@ -5,14 +5,14 @@ import { Alert, Button, Card, EmptyState, Field, Shell, SkeletonLines, inputClas
 import { useToast } from '../components/common/toast.jsx';
 import { useLang } from '../i18n/index.jsx';
 
-const TABS = ['overview', 'users', 'companies', 'jobs'];
+const TABS = ['overview', 'users', 'companies', 'jobs', 'majors'];
 
 /**
- * The one admin account (server/index.js's ensureAdminAccount) — full
- * visibility and control over accounts and job listings. Deliberately
- * doesn't offer editing the reference catalog (majors/courses/universities):
- * that's regenerated from the approved spreadsheets, never hand-edited (see
- * CLAUDE.md and server/routes/admin.js's own comment on this).
+ * Full visibility and control over accounts, job listings, and the
+ * reference catalog. Reachable by the pure-admin account (server/index.js's
+ * ensureAdminAccount) and by any student/company/career account granted
+ * dual-role admin access from the Users tab below (db/schema.sql's
+ * users.is_admin) — server/routes/admin.js's requireAdmin accepts either.
  */
 export default function AdminDashboard() {
   const { t } = useLang();
@@ -25,6 +25,7 @@ export default function AdminDashboard() {
       {tab === 'users' && <Users />}
       {tab === 'companies' && <Companies />}
       {tab === 'jobs' && <Jobs />}
+      {tab === 'majors' && <Majors />}
     </Shell>
   );
 }
@@ -80,13 +81,19 @@ const ROLE_COLOR = {
 
 function Users() {
   const { t } = useLang();
+  const { user: me } = useAuth();
   const [users, setUsers] = useState(null);
   const [search, setSearch] = useState('');
+  const [detailId, setDetailId] = useState(null);
   const toast = useToast();
 
   useEffect(() => {
     api('/admin/users').then(setUsers).catch(() => setUsers([]));
   }, []);
+
+  function onAdminAccessChanged(id, isAdmin) {
+    setUsers((list) => list.map((u) => (u.id === id ? { ...u, is_admin: isAdmin } : u)));
+  }
 
   // Same optimistic-remove + 5s "Undo" toast used for company job postings
   // (src/pages/CompanyDashboard.jsx) — the row disappears immediately, the
@@ -130,9 +137,11 @@ function Users() {
       {filtered.length === 0 && <EmptyState icon="🔍" title={t('admin.users.noMatching')} />}
       <div>
         {filtered.map((u) => (
-          <div
+          <button
+            type="button"
             key={u.id}
-            className="flex items-center justify-between gap-3 py-3 border-b last:border-0"
+            onClick={() => setDetailId(u.id)}
+            className="w-full flex items-center justify-between gap-3 py-3 border-b last:border-0 text-left hover:bg-white/5 transition rounded-lg px-2 -mx-2"
             style={{ borderColor: 'var(--darbi-border)' }}
           >
             <div className="min-w-0">
@@ -141,10 +150,18 @@ function Users() {
                 {u.email} · @{u.username}
               </p>
             </div>
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex items-center gap-2 shrink-0">
               {!u.email_verified && (
                 <span className="text-xs" title={t('admin.users.emailNotVerified')} aria-label={t('admin.users.emailNotVerified')}>
                   ✉️
+                </span>
+              )}
+              {u.is_admin && (
+                <span
+                  className="text-xs font-bold uppercase tracking-wide px-2 py-1 rounded-full"
+                  style={{ background: 'color-mix(in srgb, var(--darbi-success) 15%, transparent)', color: 'var(--darbi-success)' }}
+                >
+                  {t('admin.users.detail.adminBadge')}
                 </span>
               )}
               <span
@@ -156,18 +173,163 @@ function Users() {
               >
                 {u.role}
               </span>
-              <button
-                type="button"
-                onClick={() => remove(u)}
+              <span
+                role="button"
+                tabIndex={0}
+                onClick={(e) => { e.stopPropagation(); remove(u); }}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); remove(u); } }}
                 className="text-xs text-red-400 hover:text-red-300 font-semibold"
               >
                 {t('common.delete')}
-              </button>
+              </span>
             </div>
-          </div>
+          </button>
         ))}
       </div>
+
+      {detailId != null && (
+        <UserDetailModal
+          userId={detailId}
+          onClose={() => setDetailId(null)}
+          canRevokeSelf={detailId !== me?.id}
+          onAdminAccessChanged={onAdminAccessChanged}
+        />
+      )}
     </Card>
+  );
+}
+
+function fmtDateTime(iso) {
+  if (!iso) return null;
+  return new Date(iso).toLocaleString(undefined, {
+    year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+  });
+}
+
+/**
+ * The panel behind clicking a user row — GET /api/admin/users/:id, plus the
+ * grant/revoke admin-access control. Student-only fields (recommendations,
+ * saved pathways, most-recommended major) show "not applicable" for other
+ * roles rather than being hidden, so the panel's shape doesn't jump around
+ * role to role.
+ */
+function UserDetailModal({ userId, onClose, canRevokeSelf, onAdminAccessChanged }) {
+  const { t } = useLang();
+  const toast = useToast();
+  const [detail, setDetail] = useState(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    setDetail(null);
+    api(`/admin/users/${userId}`)
+      .then((d) => { if (!cancelled) setDetail(d); })
+      .catch(() => { if (!cancelled) onClose(); });
+    return () => { cancelled = true; };
+  }, [userId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function toggleAdminAccess() {
+    if (!detail) return;
+    const next = !detail.is_admin;
+    setBusy(true);
+    try {
+      await api(`/admin/users/${userId}/admin-access`, { method: 'PATCH', body: { isAdmin: next } });
+      setDetail((d) => ({ ...d, is_admin: next }));
+      onAdminAccessChanged(userId, next);
+    } catch (err) {
+      toast.show(err.message, { kind: 'error' });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const dt = t('admin.users.detail');
+
+  return (
+    <div
+      className="fixed inset-0 z-[70] flex items-center justify-center px-4"
+      style={{ background: 'rgba(0,0,0,0.6)' }}
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-md p-6"
+        style={{ background: 'var(--darbi-surface-solid)', border: '1px solid var(--darbi-border)', borderRadius: 'var(--darbi-radius)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {!detail ? (
+          <p className="text-sm text-gray-400">{dt.loading}</p>
+        ) : (
+          <>
+            <div className="flex items-center gap-4 mb-5">
+              <div
+                className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center text-xl font-bold text-white shrink-0"
+                style={{ background: 'var(--darbi-gradient)' }}
+              >
+                {detail.avatar ? (
+                  <img src={detail.avatar} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <span aria-hidden="true">{(detail.name || detail.username || '?')[0].toUpperCase()}</span>
+                )}
+              </div>
+              <div className="min-w-0">
+                <h2 className="text-lg font-bold text-white truncate">{detail.name || detail.username}</h2>
+                <p className="text-xs text-gray-500 truncate">{detail.email} · @{detail.username}</p>
+              </div>
+            </div>
+
+            <dl className="text-sm space-y-2.5 mb-5">
+              <Row label={dt.joined} value={fmtDateTime(detail.created_at)} />
+              <Row label={dt.lastLogin} value={fmtDateTime(detail.last_login_at) ?? dt.never} />
+              <Row label={dt.emailVerified} value={detail.email_verified ? dt.yes : dt.no} />
+              <Row
+                label={dt.recommendCount}
+                value={detail.recommend_count != null ? detail.recommend_count : dt.notApplicable}
+              />
+              <Row
+                label={dt.savedPathwaysCount}
+                value={detail.saved_pathways_count != null ? detail.saved_pathways_count : dt.notApplicable}
+              />
+              <Row
+                label={dt.topMajor}
+                value={
+                  detail.role !== 'student'
+                    ? dt.notApplicable
+                    : detail.top_recommended_major
+                      ? dt.topMajorValue(detail.top_recommended_major.name, detail.top_recommended_major.count)
+                      : dt.none
+                }
+              />
+            </dl>
+
+            {detail.role !== 'admin' && (
+              <div className="mb-2">
+                <Button
+                  type="button"
+                  variant={detail.is_admin ? 'navy' : 'gold'}
+                  disabled={busy || (detail.is_admin && !canRevokeSelf)}
+                  onClick={toggleAdminAccess}
+                  style={{ width: '100%' }}
+                >
+                  {detail.is_admin ? dt.revokeAdmin : dt.grantAdmin}
+                </Button>
+              </div>
+            )}
+            <button type="button" onClick={onClose} className="w-full text-xs text-gray-400 hover:text-gray-200 py-2">
+              {dt.close}
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Row({ label, value }) {
+  return (
+    <div className="flex justify-between gap-4">
+      <dt className="text-gray-500">{label}</dt>
+      <dd className="text-white font-medium text-right">{value}</dd>
+    </div>
   );
 }
 
@@ -403,5 +565,830 @@ function PostAdminJob({ onPosted }) {
         <Button type="submit">{t('admin.postJob.submit')}</Button>
       </form>
     </Card>
+  );
+}
+
+// -------------------------------------------------------- reference catalog
+// The majors/courses/university-entry-average CRUD tab. A deliberate,
+// later exception to "reference data is regenerated from spreadsheets, never
+// hand-edited" (see CLAUDE.md hard rule #5) — the project owner asked for
+// full admin control here. Visually a natural evolution of the read-only
+// accordion in StudentDashboard.jsx's MajorExplorer: click a major to expand
+// it, but every field in the expansion is now editable.
+
+const DATA_QUALITY = ['high', 'medium', 'low', 'pending'];
+const QUALITY_COLOR = {
+  high: 'var(--darbi-success)',
+  medium: 'var(--darbi-gold)',
+  low: 'var(--darbi-error)',
+  pending: 'var(--darbi-text-muted)',
+};
+
+function Majors() {
+  const { t } = useLang();
+  const mt = t('admin.majorsTab');
+  const [majors, setMajors] = useState(null);
+  const [search, setSearch] = useState('');
+  const [showForm, setShowForm] = useState(false);
+  const [open, setOpen] = useState(null);
+  const toast = useToast();
+
+  useEffect(() => {
+    api('/majors').then(setMajors).catch(() => setMajors([]));
+  }, []);
+
+  function created(major) {
+    setMajors((list) => [major, ...(list ?? [])]);
+    setShowForm(false);
+    toast.show(mt.addedToast(major.name), { kind: 'success' });
+  }
+
+  function updated(id, row) {
+    setMajors((list) => list.map((m) => (m.id === id ? { ...m, ...row } : m)));
+  }
+
+  // Same optimistic-remove + 5s "Undo" toast used by the Users/Jobs tabs
+  // above — the row disappears immediately, the real DELETE only fires once
+  // the window passes, so this is the confirm flow instead of a native
+  // window.confirm().
+  function remove(major) {
+    setMajors((list) => list.filter((m) => m.id !== major.id));
+    setOpen((o) => (o === major.id ? null : o));
+    const timer = setTimeout(() => {
+      api(`/admin/majors/${major.id}`, { method: 'DELETE' }).catch(() => {});
+    }, 5000);
+    toast.show(mt.deletedToast(major.name), {
+      kind: 'info',
+      duration: 5000,
+      action: {
+        label: t('common.undo'),
+        onClick: () => { clearTimeout(timer); setMajors((list) => [major, ...list]); },
+      },
+    });
+  }
+
+  if (majors === null) {
+    return (
+      <Card title={mt.loading}>
+        <SkeletonLines lines={8} />
+      </Card>
+    );
+  }
+
+  const q = search.trim().toLowerCase();
+  const filtered = q
+    ? majors.filter((m) => `${m.name} ${m.faculty ?? ''}`.toLowerCase().includes(q))
+    : majors;
+
+  return (
+    <>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <input
+          className={inputClass}
+          style={{ maxWidth: 320 }}
+          placeholder={mt.searchPlaceholder}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <Button type="button" variant="navy" onClick={() => setShowForm((s) => !s)}>
+          {showForm ? t('common.cancel') : mt.addMajor}
+        </Button>
+      </div>
+
+      {showForm && <AddMajorForm onCreated={created} />}
+
+      <Card title={mt.countOf(filtered.length, majors.length)} accent={false}>
+        {filtered.length === 0 && <EmptyState icon="🎓" title={mt.noMatching} />}
+        <div>
+          {filtered.map((m) => (
+            <MajorRow
+              key={m.id}
+              major={m}
+              open={open === m.id}
+              onToggle={() => setOpen((o) => (o === m.id ? null : m.id))}
+              onUpdated={(row) => updated(m.id, row)}
+              onDeleted={() => remove(m)}
+            />
+          ))}
+        </div>
+      </Card>
+    </>
+  );
+}
+
+function AddMajorForm({ onCreated }) {
+  const { t } = useLang();
+  const mt = t('admin.majorsTab');
+  const [name, setName] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  async function submit(e) {
+    e.preventDefault();
+    setError('');
+    setBusy(true);
+    try {
+      const major = await api('/admin/majors', { method: 'POST', body: { name } });
+      setName('');
+      onCreated(major);
+    } catch (err) {
+      setError(err.code === 'slug_taken' ? mt.slugTakenError : err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card title={mt.addMajor} accent>
+      <Alert>{error}</Alert>
+      <form onSubmit={submit} className="flex flex-wrap items-end gap-3">
+        <div className="flex-1" style={{ minWidth: 220 }}>
+          <Field label={mt.fieldName}>
+            <input className={inputClass} value={name} onChange={(e) => setName(e.target.value)} required />
+          </Field>
+        </div>
+        <Button type="submit" disabled={busy}>{busy ? t('common.loading') : mt.addMajor}</Button>
+      </form>
+      <p className="text-xs text-gray-500 mt-2">{mt.addMajorHint}</p>
+    </Card>
+  );
+}
+
+function MajorRow({ major, open, onToggle, onUpdated, onDeleted }) {
+  const { t } = useLang();
+  const mt = t('admin.majorsTab');
+
+  return (
+    <div className="border-b last:border-0 py-3" style={{ borderColor: 'var(--darbi-border)' }}>
+      <button type="button" onClick={onToggle} className="w-full text-left flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="font-semibold text-white truncate">{major.name}</p>
+          <p className="text-xs text-gray-500 truncate">
+            {major.faculty || mt.noFaculty} · {mt.courseCount(major.course_count ?? 0)}
+          </p>
+        </div>
+        <span
+          className="text-xs font-bold uppercase tracking-wide px-2 py-1 rounded-full shrink-0"
+          style={{
+            background: `color-mix(in srgb, ${QUALITY_COLOR[major.data_quality] ?? 'var(--darbi-text-muted)'} 15%, transparent)`,
+            color: QUALITY_COLOR[major.data_quality] ?? 'var(--darbi-text-muted)',
+          }}
+        >
+          {mt.dataQualityLabels[major.data_quality] ?? major.data_quality}
+        </span>
+      </button>
+
+      {open && <MajorPanel major={major} onUpdated={onUpdated} onDeleted={onDeleted} />}
+    </div>
+  );
+}
+
+/**
+ * The expanded contents of a major row — own-field edit form, its courses,
+ * and its university entry-average links. Courses/universities/all-
+ * universities are only fetched once the row is actually open, same as
+ * MajorExplorer's toggle() in StudentDashboard.jsx.
+ */
+function MajorPanel({ major, onUpdated, onDeleted }) {
+  const [courses, setCourses] = useState(null);
+  const [universities, setUniversities] = useState(null);
+  const [allUniversities, setAllUniversities] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setCourses(null);
+    setUniversities(null);
+    setAllUniversities(null);
+    Promise.all([
+      api(`/majors/${major.slug}/courses`),
+      api(`/majors/${major.slug}/universities`),
+      api('/universities'),
+    ])
+      .then(([c, u, all]) => {
+        if (cancelled) return;
+        setCourses(c);
+        setUniversities(u);
+        setAllUniversities(all);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setCourses([]);
+        setUniversities([]);
+        setAllUniversities([]);
+      });
+    return () => { cancelled = true; };
+  }, [major.slug]);
+
+  return (
+    <div className="mt-3 ms-1 sm:ms-4 space-y-5">
+      <MajorEditForm major={major} onUpdated={onUpdated} onDeleted={onDeleted} />
+      <CoursesSection majorId={major.id} courses={courses} onCoursesChange={setCourses} />
+      <UniversitiesSection
+        majorId={major.id}
+        universities={universities}
+        allUniversities={allUniversities}
+        onUniversitiesChange={setUniversities}
+      />
+    </div>
+  );
+}
+
+function MajorEditForm({ major, onUpdated, onDeleted }) {
+  const { t } = useLang();
+  const mt = t('admin.majorsTab');
+  const toast = useToast();
+  const [form, setForm] = useState({
+    name: major.name ?? '',
+    faculty: major.faculty ?? '',
+    durationYears: major.duration_years ?? '',
+    entryRequirements: major.entry_requirements ?? '',
+    topJobs: (major.top_jobs ?? []).join(', '),
+    salaryEntryMin: major.salary_entry_min_jod ?? '',
+    salaryEntryMax: major.salary_entry_max_jod ?? '',
+    salaryEntryRaw: major.salary_entry_raw ?? '',
+    salary3yrMin: major.salary_3yr_min_jod ?? '',
+    salary3yrMax: major.salary_3yr_max_jod ?? '',
+    salary3yrRaw: major.salary_3yr_raw ?? '',
+    salary5yrMin: major.salary_5yr_min_jod ?? '',
+    salary5yrMax: major.salary_5yr_max_jod ?? '',
+    salary5yrRaw: major.salary_5yr_raw ?? '',
+    salarySource: major.salary_source ?? '',
+    salaryConfidence: major.salary_confidence ?? '',
+    dataQuality: major.data_quality ?? 'pending',
+  });
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+  const num = (v) => (v === '' || v == null ? null : Number(v));
+
+  async function submit(e) {
+    e.preventDefault();
+    setError('');
+    setBusy(true);
+    try {
+      const row = await api(`/admin/majors/${major.id}`, {
+        method: 'PUT',
+        body: {
+          name: form.name,
+          faculty: form.faculty || null,
+          duration_years: num(form.durationYears),
+          entry_requirements: form.entryRequirements || null,
+          top_jobs: form.topJobs.split(',').map((s) => s.trim()).filter(Boolean),
+          salary_entry_min_jod: num(form.salaryEntryMin),
+          salary_entry_max_jod: num(form.salaryEntryMax),
+          salary_entry_raw: form.salaryEntryRaw || null,
+          salary_3yr_min_jod: num(form.salary3yrMin),
+          salary_3yr_max_jod: num(form.salary3yrMax),
+          salary_3yr_raw: form.salary3yrRaw || null,
+          salary_5yr_min_jod: num(form.salary5yrMin),
+          salary_5yr_max_jod: num(form.salary5yrMax),
+          salary_5yr_raw: form.salary5yrRaw || null,
+          salary_source: form.salarySource || null,
+          salary_confidence: form.salaryConfidence || null,
+          data_quality: form.dataQuality,
+        },
+      });
+      onUpdated(row);
+      toast.show(mt.savedToast(row.name), { kind: 'success' });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <form onSubmit={submit} className="darbi-box" style={{ borderLeft: '4px solid var(--darbi-purple)' }}>
+      <Alert>{error}</Alert>
+      <div className="grid sm:grid-cols-2 gap-x-4">
+        <Field label={mt.fieldName}>
+          <input className={inputClass} value={form.name} onChange={set('name')} required />
+        </Field>
+        <Field label={mt.fieldFaculty}>
+          <input className={inputClass} value={form.faculty} onChange={set('faculty')} />
+        </Field>
+        <Field label={mt.fieldDurationYears}>
+          <input type="number" step="0.5" min="0" className={inputClass} value={form.durationYears} onChange={set('durationYears')} />
+        </Field>
+        <Field label={mt.fieldDataQuality}>
+          <select className={inputClass} value={form.dataQuality} onChange={set('dataQuality')}>
+            {DATA_QUALITY.map((q) => (
+              <option key={q} value={q}>{mt.dataQualityLabels[q]}</option>
+            ))}
+          </select>
+        </Field>
+      </div>
+      <Field label={mt.fieldEntryRequirements}>
+        <textarea rows="2" className={inputClass} value={form.entryRequirements} onChange={set('entryRequirements')} />
+      </Field>
+      <Field label={mt.fieldTopJobs} hint={mt.commaSeparated}>
+        <input className={inputClass} value={form.topJobs} onChange={set('topJobs')} />
+      </Field>
+
+      <p className="text-xs font-bold uppercase tracking-wide text-gray-500 mt-1 mb-2">{mt.salaryEntryHeading}</p>
+      <div className="grid sm:grid-cols-3 gap-x-4">
+        <Field label={mt.fieldSalaryMin}>
+          <input type="number" className={inputClass} value={form.salaryEntryMin} onChange={set('salaryEntryMin')} />
+        </Field>
+        <Field label={mt.fieldSalaryMax}>
+          <input type="number" className={inputClass} value={form.salaryEntryMax} onChange={set('salaryEntryMax')} />
+        </Field>
+        <Field label={mt.fieldSalaryRaw}>
+          <input className={inputClass} value={form.salaryEntryRaw} onChange={set('salaryEntryRaw')} />
+        </Field>
+      </div>
+
+      <p className="text-xs font-bold uppercase tracking-wide text-gray-500 mt-1 mb-2">{mt.salary3yrHeading}</p>
+      <div className="grid sm:grid-cols-3 gap-x-4">
+        <Field label={mt.fieldSalaryMin}>
+          <input type="number" className={inputClass} value={form.salary3yrMin} onChange={set('salary3yrMin')} />
+        </Field>
+        <Field label={mt.fieldSalaryMax}>
+          <input type="number" className={inputClass} value={form.salary3yrMax} onChange={set('salary3yrMax')} />
+        </Field>
+        <Field label={mt.fieldSalaryRaw}>
+          <input className={inputClass} value={form.salary3yrRaw} onChange={set('salary3yrRaw')} />
+        </Field>
+      </div>
+
+      <p className="text-xs font-bold uppercase tracking-wide text-gray-500 mt-1 mb-2">{mt.salary5yrHeading}</p>
+      <div className="grid sm:grid-cols-3 gap-x-4">
+        <Field label={mt.fieldSalaryMin}>
+          <input type="number" className={inputClass} value={form.salary5yrMin} onChange={set('salary5yrMin')} />
+        </Field>
+        <Field label={mt.fieldSalaryMax}>
+          <input type="number" className={inputClass} value={form.salary5yrMax} onChange={set('salary5yrMax')} />
+        </Field>
+        <Field label={mt.fieldSalaryRaw}>
+          <input className={inputClass} value={form.salary5yrRaw} onChange={set('salary5yrRaw')} />
+        </Field>
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-x-4">
+        <Field label={mt.fieldSalarySource}>
+          <input className={inputClass} value={form.salarySource} onChange={set('salarySource')} />
+        </Field>
+        <Field label={mt.fieldSalaryConfidence}>
+          <input className={inputClass} value={form.salaryConfidence} onChange={set('salaryConfidence')} />
+        </Field>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-3 mt-2">
+        <Button type="submit" disabled={busy}>{busy ? t('common.loading') : t('common.save')}</Button>
+        <button
+          type="button"
+          onClick={() => onDeleted(major)}
+          className="text-xs font-semibold"
+          style={{ color: 'var(--darbi-error)' }}
+        >
+          {mt.deleteMajor}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function CoursesSection({ majorId, courses, onCoursesChange }) {
+  const { t } = useLang();
+  const ct = t('admin.majorsTab.courses');
+  const toast = useToast();
+  const [showAdd, setShowAdd] = useState(false);
+
+  function added(course) {
+    onCoursesChange((list) => [course, ...(list ?? [])]);
+    setShowAdd(false);
+    toast.show(ct.addedToast(course.name), { kind: 'success' });
+  }
+
+  function updated(row) {
+    onCoursesChange((list) => (list ?? []).map((c) => (c.id === row.id ? row : c)));
+    toast.show(ct.savedToast(row.name), { kind: 'success' });
+  }
+
+  function removed(course) {
+    onCoursesChange((list) => (list ?? []).filter((c) => c.id !== course.id));
+    const timer = setTimeout(() => {
+      api(`/admin/courses/${course.id}`, { method: 'DELETE' }).catch(() => {});
+    }, 5000);
+    toast.show(ct.deletedToast(course.name), {
+      kind: 'info',
+      duration: 5000,
+      action: {
+        label: t('common.undo'),
+        onClick: () => { clearTimeout(timer); onCoursesChange((list) => [course, ...(list ?? [])]); },
+      },
+    });
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between gap-3 mb-2">
+        <h3 className="text-sm font-bold uppercase tracking-wide text-gray-400">{t('common.tabs.courses')}</h3>
+        <button
+          type="button"
+          onClick={() => setShowAdd((s) => !s)}
+          className="text-xs font-semibold"
+          style={{ color: 'var(--darbi-purple)' }}
+        >
+          {showAdd ? t('common.cancel') : ct.addCourse}
+        </button>
+      </div>
+
+      {showAdd && <CourseForm majorId={majorId} onSaved={added} onCancel={() => setShowAdd(false)} />}
+
+      {courses === null ? (
+        <SkeletonLines lines={3} />
+      ) : courses.length === 0 ? (
+        <p className="text-sm text-gray-500 italic">{ct.none}</p>
+      ) : (
+        <ul className="list-none pl-0 ps-0">
+          {courses.map((c) => (
+            <CourseRow key={c.id} course={c} onUpdated={updated} onDeleted={removed} />
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function CourseForm({ majorId, initial, onSaved, onCancel }) {
+  const { t } = useLang();
+  const ct = t('admin.majorsTab.courses');
+  const [form, setForm] = useState({
+    name: initial?.name ?? '',
+    provider: initial?.provider ?? '',
+    track: initial?.track ?? '',
+    duration: initial?.duration ?? '',
+    costRaw: initial?.cost_raw ?? '',
+    costMinJod: initial?.cost_min_jod ?? '',
+    costMaxJod: initial?.cost_max_jod ?? '',
+    costOnlineUsd: initial?.cost_online_usd ?? '',
+    whatYouLearn: initial?.what_you_learn ?? '',
+    accreditation: initial?.accreditation ?? '',
+    onlineAlternative: initial?.online_alternative ?? '',
+    notes: initial?.notes ?? '',
+  });
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  async function submit(e) {
+    e.preventDefault();
+    setError('');
+    setBusy(true);
+    const num = (v) => (v === '' || v == null ? null : Number(v));
+    const body = {
+      name: form.name,
+      provider: form.provider || null,
+      track: form.track || null,
+      duration: form.duration || null,
+      cost_raw: form.costRaw || null,
+      cost_min_jod: num(form.costMinJod),
+      cost_max_jod: num(form.costMaxJod),
+      cost_online_usd: form.costOnlineUsd || null,
+      what_you_learn: form.whatYouLearn || null,
+      accreditation: form.accreditation || null,
+      online_alternative: form.onlineAlternative || null,
+      notes: form.notes || null,
+    };
+    try {
+      const row = initial
+        ? await api(`/admin/courses/${initial.id}`, { method: 'PUT', body })
+        : await api('/admin/courses', { method: 'POST', body: { ...body, major_id: majorId } });
+      onSaved(row);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <form
+      onSubmit={submit}
+      className="mb-3 p-3"
+      style={{
+        background: 'color-mix(in srgb, var(--darbi-purple) 6%, transparent)',
+        border: '1px solid var(--darbi-border)',
+        borderRadius: 'var(--darbi-radius)',
+      }}
+    >
+      <Alert>{error}</Alert>
+      <Field label={ct.fieldName}>
+        <input className={inputClass} value={form.name} onChange={set('name')} required />
+      </Field>
+      <div className="grid sm:grid-cols-2 gap-x-4">
+        <Field label={ct.fieldProvider}>
+          <input className={inputClass} value={form.provider} onChange={set('provider')} />
+        </Field>
+        <Field label={ct.fieldTrack}>
+          <input className={inputClass} value={form.track} onChange={set('track')} />
+        </Field>
+        <Field label={ct.fieldDuration}>
+          <input className={inputClass} value={form.duration} onChange={set('duration')} />
+        </Field>
+        <Field label={ct.fieldCostRaw}>
+          <input className={inputClass} value={form.costRaw} onChange={set('costRaw')} />
+        </Field>
+        <Field label={ct.fieldCostMinJod}>
+          <input type="number" step="1" className={inputClass} value={form.costMinJod} onChange={set('costMinJod')} />
+        </Field>
+        <Field label={ct.fieldCostMaxJod}>
+          <input type="number" step="1" className={inputClass} value={form.costMaxJod} onChange={set('costMaxJod')} />
+        </Field>
+        <Field label={ct.fieldCostOnlineUsd}>
+          <input className={inputClass} value={form.costOnlineUsd} onChange={set('costOnlineUsd')} />
+        </Field>
+        <Field label={ct.fieldAccreditation}>
+          <input className={inputClass} value={form.accreditation} onChange={set('accreditation')} />
+        </Field>
+        <Field label={ct.fieldOnlineAlternative}>
+          <input className={inputClass} value={form.onlineAlternative} onChange={set('onlineAlternative')} />
+        </Field>
+      </div>
+      <Field label={ct.fieldWhatYouLearn}>
+        <textarea rows="2" className={inputClass} value={form.whatYouLearn} onChange={set('whatYouLearn')} />
+      </Field>
+      <Field label={ct.fieldNotes}>
+        <textarea rows="2" className={inputClass} value={form.notes} onChange={set('notes')} />
+      </Field>
+      <div className="flex gap-2">
+        <Button type="submit" disabled={busy}>{busy ? t('common.loading') : t('common.save')}</Button>
+        <Button type="button" variant="navy" onClick={onCancel}>{t('common.cancel')}</Button>
+      </div>
+    </form>
+  );
+}
+
+function CourseRow({ course, onUpdated, onDeleted }) {
+  const { t } = useLang();
+  const ct = t('admin.majorsTab.courses');
+  const [editing, setEditing] = useState(false);
+
+  if (editing) {
+    return (
+      <li>
+        <CourseForm
+          initial={course}
+          onSaved={(row) => { onUpdated(row); setEditing(false); }}
+          onCancel={() => setEditing(false)}
+        />
+      </li>
+    );
+  }
+
+  return (
+    <li className="flex items-start justify-between gap-3 py-2 border-b last:border-0" style={{ borderColor: 'var(--darbi-border)' }}>
+      <div className="min-w-0">
+        <p className="font-medium text-white truncate">{course.name}</p>
+        <p className="text-xs text-gray-500 truncate">
+          {course.provider}
+          {course.track && ` · ${course.track}`}
+          {course.cost_raw && ` · ${course.cost_raw} JOD`}
+        </p>
+      </div>
+      <div className="flex items-center gap-3 shrink-0 text-xs font-semibold">
+        <button type="button" onClick={() => setEditing(true)} style={{ color: 'var(--darbi-purple)' }}>
+          {ct.edit}
+        </button>
+        <button type="button" onClick={() => onDeleted(course)} style={{ color: 'var(--darbi-error)' }}>
+          {t('common.delete')}
+        </button>
+      </div>
+    </li>
+  );
+}
+
+function UniversitiesSection({ majorId, universities, allUniversities, onUniversitiesChange }) {
+  const { t } = useLang();
+  const ut = t('admin.majorsTab.universities');
+  const toast = useToast();
+  const [showAdd, setShowAdd] = useState(false);
+
+  // university_majors has no surrogate id (its PK is university_id + major_id
+  // + program_name), so rows are addressed by that composite key locally too.
+  const keyOf = (row) => `${row.university_id}::${row.program_name ?? ''}`;
+
+  function upsertLocal(row, uniMeta) {
+    onUniversitiesChange((list) => {
+      const l = list ?? [];
+      const idx = l.findIndex((u) => keyOf(u) === keyOf(row));
+      const merged = {
+        ...row,
+        name: uniMeta?.name ?? l[idx]?.name,
+        code: uniMeta?.code ?? l[idx]?.code,
+        website: uniMeta?.website ?? l[idx]?.website,
+      };
+      if (idx === -1) return [merged, ...l];
+      const next = [...l];
+      next[idx] = merged;
+      return next;
+    });
+  }
+
+  function added(row, uniMeta) {
+    upsertLocal(row, uniMeta);
+    setShowAdd(false);
+    toast.show(ut.addedToast(uniMeta?.name ?? row.program_name ?? ''), { kind: 'success' });
+  }
+
+  function updated(row, uniMeta) {
+    upsertLocal(row, uniMeta);
+    toast.show(ut.savedToast(uniMeta?.name ?? row.name ?? ''), { kind: 'success' });
+  }
+
+  function removed(row) {
+    onUniversitiesChange((list) => (list ?? []).filter((u) => keyOf(u) !== keyOf(row)));
+    const timer = setTimeout(() => {
+      api('/admin/university-majors', {
+        method: 'DELETE',
+        body: { universityId: row.university_id, majorId: row.major_id, programName: row.program_name ?? null },
+      }).catch(() => {});
+    }, 5000);
+    toast.show(ut.deletedToast(row.name), {
+      kind: 'info',
+      duration: 5000,
+      action: {
+        label: t('common.undo'),
+        onClick: () => { clearTimeout(timer); onUniversitiesChange((list) => [row, ...(list ?? [])]); },
+      },
+    });
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between gap-3 mb-2">
+        <h3 className="text-sm font-bold uppercase tracking-wide text-gray-400">{ut.heading}</h3>
+        <button
+          type="button"
+          onClick={() => setShowAdd((s) => !s)}
+          className="text-xs font-semibold"
+          style={{ color: 'var(--darbi-purple)' }}
+        >
+          {showAdd ? t('common.cancel') : ut.addLink}
+        </button>
+      </div>
+
+      {showAdd && (
+        <UniversityLinkForm
+          majorId={majorId}
+          allUniversities={allUniversities ?? []}
+          onSaved={added}
+          onCancel={() => setShowAdd(false)}
+        />
+      )}
+
+      {universities === null ? (
+        <SkeletonLines lines={3} />
+      ) : universities.length === 0 ? (
+        <p className="text-sm text-gray-500 italic">{ut.none}</p>
+      ) : (
+        <ul className="list-none pl-0 ps-0">
+          {universities.map((u) => (
+            <UniversityLinkRow
+              key={keyOf(u)}
+              row={u}
+              majorId={majorId}
+              allUniversities={allUniversities ?? []}
+              onUpdated={updated}
+              onDeleted={removed}
+            />
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function UniversityLinkForm({ majorId, initial, allUniversities, onSaved, onCancel }) {
+  const { t } = useLang();
+  const ut = t('admin.majorsTab.universities');
+  const [form, setForm] = useState({
+    universityId: initial?.university_id ?? '',
+    programName: initial?.program_name ?? '',
+    competitiveAverage: initial?.competitive_average ?? '',
+    minimumAverage: initial?.minimum_average ?? '',
+    entryYear: initial?.entry_year ?? '',
+  });
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  async function submit(e) {
+    e.preventDefault();
+    setError('');
+    if (!form.universityId) { setError(ut.selectUniversityError); return; }
+    setBusy(true);
+    const num = (v) => (v === '' || v == null ? null : Number(v));
+    try {
+      const row = await api('/admin/university-majors', {
+        method: 'PUT',
+        body: {
+          universityId: Number(form.universityId),
+          majorId,
+          programName: form.programName || null,
+          competitiveAverage: num(form.competitiveAverage),
+          minimumAverage: num(form.minimumAverage),
+          entryYear: num(form.entryYear),
+        },
+      });
+      const uni = allUniversities.find((u) => u.id === Number(form.universityId));
+      onSaved(row, uni);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <form
+      onSubmit={submit}
+      className="mb-3 p-3"
+      style={{
+        background: 'color-mix(in srgb, var(--darbi-gold) 6%, transparent)',
+        border: '1px solid var(--darbi-border)',
+        borderRadius: 'var(--darbi-radius)',
+      }}
+    >
+      <Alert>{error}</Alert>
+      {!initial ? (
+        <Field label={ut.fieldUniversity}>
+          <select className={inputClass} value={form.universityId} onChange={set('universityId')} required>
+            <option value="">{ut.selectUniversity}</option>
+            {allUniversities.map((u) => (
+              <option key={u.id} value={u.id}>{u.name} ({u.code})</option>
+            ))}
+          </select>
+        </Field>
+      ) : (
+        <p className="text-sm font-semibold text-white mb-3">
+          {initial.name} <span className="text-gray-500 font-normal">({initial.code})</span>
+        </p>
+      )}
+      <Field label={ut.fieldProgramName} hint={ut.programNameHint}>
+        <input className={inputClass} value={form.programName} onChange={set('programName')} />
+      </Field>
+      <div className="grid sm:grid-cols-3 gap-x-4">
+        <Field label={ut.fieldCompetitiveAverage} hint={ut.competitiveHint}>
+          <input type="number" step="0.01" min="0" max="100" className={inputClass} value={form.competitiveAverage} onChange={set('competitiveAverage')} />
+        </Field>
+        <Field label={ut.fieldMinimumAverage} hint={ut.minimumHint}>
+          <input type="number" step="0.01" min="0" max="100" className={inputClass} value={form.minimumAverage} onChange={set('minimumAverage')} />
+        </Field>
+        <Field label={ut.fieldEntryYear}>
+          <input type="number" step="1" className={inputClass} value={form.entryYear} onChange={set('entryYear')} />
+        </Field>
+      </div>
+      <div className="flex gap-2">
+        <Button type="submit" disabled={busy}>{busy ? t('common.loading') : t('common.save')}</Button>
+        <Button type="button" variant="navy" onClick={onCancel}>{t('common.cancel')}</Button>
+      </div>
+    </form>
+  );
+}
+
+function UniversityLinkRow({ row, majorId, allUniversities, onUpdated, onDeleted }) {
+  const { t } = useLang();
+  const ut = t('admin.majorsTab.universities');
+  const [editing, setEditing] = useState(false);
+
+  if (editing) {
+    return (
+      <li>
+        <UniversityLinkForm
+          majorId={majorId}
+          initial={row}
+          allUniversities={allUniversities}
+          onSaved={(r, uni) => { onUpdated(r, uni ?? row); setEditing(false); }}
+          onCancel={() => setEditing(false)}
+        />
+      </li>
+    );
+  }
+
+  return (
+    <li className="flex items-start justify-between gap-3 py-2 border-b last:border-0" style={{ borderColor: 'var(--darbi-border)' }}>
+      <div className="min-w-0">
+        <p className="font-medium text-white truncate">
+          {row.name} <span className="text-gray-500 font-normal">({row.code})</span>
+          {row.program_name && <span className="text-gray-500"> · {row.program_name}</span>}
+        </p>
+        <p className="text-xs text-gray-500 truncate">
+          {row.competitive_average != null ? ut.competitiveValue(row.competitive_average) : ut.competitiveNotPublished}
+          {' · '}
+          {row.minimum_average != null ? ut.minimumValue(row.minimum_average) : ut.minimumNotPublished}
+          {row.entry_year && ` · ${row.entry_year}`}
+        </p>
+      </div>
+      <div className="flex items-center gap-3 shrink-0 text-xs font-semibold">
+        <button type="button" onClick={() => setEditing(true)} style={{ color: 'var(--darbi-purple)' }}>
+          {ut.edit}
+        </button>
+        <button type="button" onClick={() => onDeleted(row)} style={{ color: 'var(--darbi-error)' }}>
+          {t('common.delete')}
+        </button>
+      </div>
+    </li>
   );
 }

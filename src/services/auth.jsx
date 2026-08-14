@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { api, setToken, clearToken, getToken } from './api.js';
 
 const AuthContext = createContext(null);
+const VIEW_MODE_KEY = 'darbi.viewMode';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -9,6 +10,29 @@ export function AuthProvider({ children }) {
   // `loading` starts true so a refresh doesn't flash the logged-out homepage
   // before /auth/me comes back.
   const [loading, setLoading] = useState(Boolean(getToken()));
+  // Which portal a dual-role account (user.is_admin === true, role isn't
+  // 'admin') is currently using — null means "their normal role's portal",
+  // 'admin' means they've switched into the Admin Portal. Persisted so it
+  // survives a page refresh, but reset on every fresh login/signup/logout so
+  // a new session always starts by asking again rather than remembering the
+  // previous account's choice.
+  const [viewMode, setViewModeState] = useState(() => {
+    try {
+      return localStorage.getItem(VIEW_MODE_KEY);
+    } catch {
+      return null;
+    }
+  });
+
+  function setViewMode(mode) {
+    setViewModeState(mode);
+    try {
+      if (mode) localStorage.setItem(VIEW_MODE_KEY, mode);
+      else localStorage.removeItem(VIEW_MODE_KEY);
+    } catch {
+      /* private browsing */
+    }
+  }
 
   useEffect(() => {
     if (!getToken()) return;
@@ -28,6 +52,8 @@ export function AuthProvider({ children }) {
       loading,
       setProfile,
       setUser,
+      viewMode,
+      setViewMode,
 
       async login(identifier, password) {
         const res = await api('/auth/login', {
@@ -38,6 +64,7 @@ export function AuthProvider({ children }) {
         setToken(res.token);
         setUser(res.user);
         setProfile(res.profile);
+        setViewMode(null);
         return res.user;
       },
 
@@ -46,6 +73,7 @@ export function AuthProvider({ children }) {
         setToken(res.token);
         setUser(res.user);
         setProfile(res.profile);
+        setViewMode(null);
         return res.user;
       },
 
@@ -89,9 +117,10 @@ export function AuthProvider({ children }) {
         clearToken();
         setUser(null);
         setProfile(null);
+        setViewMode(null);
       },
     }),
-    [user, profile, loading],
+    [user, profile, loading, viewMode],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -51,6 +51,8 @@ export default {
     perMonth: '/month',
     stageEntry: 'Entry',
     dismiss: 'Dismiss',
+    switchToAdminPortal: 'Switch to Admin Portal',
+    switchToMyPortal: 'Switch to my Portal',
   },
   ar: {
     tabs: {
@@ -100,5 +102,7 @@ export default {
     perMonth: '/شهريًا',
     stageEntry: 'بداية التعيين',
     dismiss: 'إغلاق',
+    switchToAdminPortal: 'التبديل إلى لوحة الإدارة',
+    switchToMyPortal: 'التبديل إلى بوابتي',
   },
 };

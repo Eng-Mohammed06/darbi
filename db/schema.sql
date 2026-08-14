@@ -49,6 +49,24 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_code_expires_at TIMESTAMPTZ;
 -- size, so a TEXT column is the simplest thing that actually works here.
 ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar TEXT;
 
+-- Dual-role admin access: an existing student/company/career account can be
+-- granted admin capability without changing its base `role` (which still
+-- decides its normal portal). The original 'admin' role value is unchanged
+-- and still means "pure admin, no other portal" (the one account
+-- auto-provisioned from ADMIN_EMAIL/ADMIN_PASSWORD). `is_admin` is the new,
+-- separate flag for everyone else — a role='student' row with is_admin=true
+-- is asked at login which portal to enter (server/routes/auth.js,
+-- src/pages/AuthPage.jsx). requireAdmin (server/lib/auth.js) checks this
+-- column fresh on every request rather than trusting a JWT claim, so
+-- granting or revoking access takes effect immediately, not after the
+-- token's 7-day expiry.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN NOT NULL DEFAULT false;
+
+-- Surfaced in the admin panel's per-user detail view ("time of login").
+-- Written by server/routes/auth.js's /login handler on every successful
+-- login; NULL until a user's first login after this column existed.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMPTZ;
+
 CREATE TABLE IF NOT EXISTS students (
   user_id       INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
   name          TEXT NOT NULL,
@@ -156,6 +174,11 @@ CREATE TABLE IF NOT EXISTS university_majors (
   evidence            TEXT,
   PRIMARY KEY (university_id, major_id, program_name)
 );
+
+-- Which admission cycle `competitive_average`/`minimum_average` apply to —
+-- these thresholds move year to year, and the admin panel edits them per
+-- row rather than keeping a full history. NULL means "not specified".
+ALTER TABLE university_majors ADD COLUMN IF NOT EXISTS entry_year INTEGER;
 
 CREATE TABLE IF NOT EXISTS courses (
   id                 SERIAL PRIMARY KEY,

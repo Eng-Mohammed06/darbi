@@ -148,7 +148,7 @@ router.post(
 
     res.status(201).json({
       token: signToken(user),
-      user: { id: user.id, email: user.email, username: user.username, role: user.role, email_verified: false, avatar: null },
+      user: { id: user.id, email: user.email, username: user.username, role: user.role, email_verified: false, avatar: null, is_admin: false },
       profile: await loadProfile(user.id, user.role),
     });
   }),
@@ -164,7 +164,7 @@ router.post(
     }
 
     const { rows } = await query(
-      `SELECT id, email, username, role, password_hash, email_verified, avatar FROM users
+      `SELECT id, email, username, role, password_hash, email_verified, avatar, is_admin FROM users
         WHERE lower(email) = lower($1) OR lower(username) = lower($1)`,
       [String(identifier).trim()],
     );
@@ -175,11 +175,13 @@ router.post(
     const ok = user && (await verifyPassword(String(password), user.password_hash));
     if (!ok) return res.status(401).json({ error: 'invalid_credentials' });
 
+    await query(`UPDATE users SET last_login_at = now() WHERE id = $1`, [user.id]);
+
     res.json({
       token: signToken(user),
       user: {
         id: user.id, email: user.email, username: user.username, role: user.role,
-        email_verified: user.email_verified, avatar: user.avatar,
+        email_verified: user.email_verified, avatar: user.avatar, is_admin: user.is_admin,
       },
       profile: await loadProfile(user.id, user.role),
     });
@@ -192,7 +194,7 @@ router.get(
   requireAuth,
   asyncRoute(async (req, res) => {
     const { rows } = await query(
-      `SELECT id, email, username, role, email_verified, avatar FROM users WHERE id = $1`,
+      `SELECT id, email, username, role, email_verified, avatar, is_admin FROM users WHERE id = $1`,
       [req.user.id],
     );
     const user = rows[0];

@@ -31,6 +31,10 @@ export default {
     errInvalidCredentials: 'That email and password combination is not correct.',
     errEmailTaken: 'An account already exists for that email. Try signing in.',
     errUsernameTaken: 'That username is already taken. Try another.',
+    portalChoiceTitle: 'Where would you like to go?',
+    portalChoiceBlurb: 'This account has admin access — pick a portal for this session.',
+    continueToPortal: (portalLabel) => `Continue to ${portalLabel} Portal`,
+    enterAdminPortal: 'Enter Admin Portal',
   },
   ar: {
     roleStudent: 'طالب',
@@ -64,5 +68,9 @@ export default {
     errInvalidCredentials: 'البريد الإلكتروني وكلمة المرور غير متطابقين.',
     errEmailTaken: 'يوجد حساب مسجّل بهذا البريد الإلكتروني بالفعل. جرّب تسجيل الدخول.',
     errUsernameTaken: 'اسم المستخدم هذا مستخدم بالفعل. جرّب اسمًا آخر.',
+    portalChoiceTitle: 'إلى أين تريد الذهاب؟',
+    portalChoiceBlurb: 'هذا الحساب يملك صلاحيات إدارية — اختر بوابة لهذه الجلسة.',
+    continueToPortal: (portalLabel) => `المتابعة إلى بوابة ${portalLabel}`,
+    enterAdminPortal: 'الدخول إلى لوحة الإدارة',
   },
 };

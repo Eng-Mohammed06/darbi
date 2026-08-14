@@ -22,14 +22,21 @@ const DASHBOARDS = {
   admin: AdminDashboard,
 };
 
-/** One route for all four roles — `users.role` decides what renders. */
+/**
+ * One route for all four roles — `users.role` decides what renders. A
+ * dual-role account (user.is_admin, role isn't 'admin' — see
+ * db/schema.sql) can override this per-session via `viewMode`, set by the
+ * portal-choice screen in AuthPage after login or the switcher in Shell's
+ * header.
+ */
 function Dashboard() {
-  const { user, loading } = useAuth();
+  const { user, loading, viewMode } = useAuth();
   const { t } = useLang();
   if (loading) return <p className="p-8 text-gray-500">{t('common.loading')}</p>;
   if (!user) return <Navigate to="/" replace />;
 
-  const Component = DASHBOARDS[user.role];
+  const effectiveRole = viewMode === 'admin' && user.is_admin ? 'admin' : user.role;
+  const Component = DASHBOARDS[effectiveRole];
   return Component ? <Component /> : <p className="p-8">Unknown role: {user.role}</p>;
 }
 

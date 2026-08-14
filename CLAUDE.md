@@ -59,8 +59,17 @@ and 5174. Don't "fix" these back to defaults.
 3. **Parameterised SQL only** — `$1`, `$2`. Never string-interpolate user input.
 4. `npm run db:migrate -- --drop` refuses to run against a non-local database
    unless `ALLOW_DESTRUCTIVE=1`. Leave that guard in place.
-5. Reference data is regenerated, not hand-edited: fix the spreadsheet, re-run
-   `python3 scripts/convert_xlsx.py <dir>`, then `npm run db:seed`.
+5. Reference data (majors, courses, university entry averages) is normally
+   regenerated, not hand-edited: fix the spreadsheet, re-run
+   `python3 scripts/convert_xlsx.py <dir>`, then `npm run db:seed`. **Updated:**
+   the admin panel (`/portal/admin`, `server/routes/admin.js`) now also
+   allows direct add/edit/delete on this catalog — the project owner
+   explicitly asked for this and chose not to visually flag admin-added rows
+   as distinct from spreadsheet-sourced ones. Prefer the spreadsheet+reseed
+   path when a fix belongs there (it's still the source of truth for the
+   original approved deliverables); use the admin panel for changes that
+   don't have a spreadsheet to go back to, like adding a major only the
+   admin knows about, or nudging a competitive average for a new year.
 
 ## Data pipeline
 

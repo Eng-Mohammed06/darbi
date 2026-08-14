@@ -181,7 +181,7 @@ const TAB_ICONS = {
 const tabKey = (rawId) => rawId.replace(/ (.)/g, (_, c) => c.toUpperCase());
 
 export function Shell({ title, subtitle, tabs, activeTab, onTabChange, children }) {
-  const { user } = useAuth();
+  const { user, viewMode, setViewMode } = useAuth();
   const { t } = useLang();
   const label = (rawId) => t(`common.tabs.${tabKey(rawId)}`);
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -228,6 +228,15 @@ export function Shell({ title, subtitle, tabs, activeTab, onTabChange, children 
             {subtitle && <p className="text-sm text-gray-400 mt-1">{subtitle}</p>}
           </div>
           <ThemeLangSwitcher dark />
+          {user?.is_admin && user.role !== 'admin' && (
+            <button
+              onClick={() => setViewMode(viewMode === 'admin' ? null : 'admin')}
+              className="hidden sm:block text-xs font-semibold px-3 py-1.5 rounded-full border transition hover:brightness-110 shrink-0"
+              style={{ borderColor: 'var(--darbi-border)', color: 'var(--darbi-purple)' }}
+            >
+              {viewMode === 'admin' ? t('common.switchToMyPortal') : t('common.switchToAdminPortal')}
+            </button>
+          )}
           {tabs && (
             <button
               onClick={() => setPaletteOpen(true)}

@@ -16,7 +16,7 @@ const ROLES = [
 export default function AuthPage() {
   const { role } = useParams();
   const navigate = useNavigate();
-  const { login, signup } = useAuth();
+  const { login, signup, setViewMode } = useAuth();
   const { t, lang } = useLang();
 
   const [mode, setMode] = useState('login');
@@ -24,6 +24,10 @@ export default function AuthPage() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [stats, setStats] = useState(null);
+  // Set right after a successful login for a dual-role account (is_admin,
+  // but role isn't the pure 'admin' account) — replaces the form with a
+  // "which portal?" choice instead of navigating straight away.
+  const [choosingPortal, setChoosingPortal] = useState(null);
 
   useEffect(() => {
     Promise.all([api('/majors', { auth: false }), api('/jobs', { auth: false })])
@@ -75,8 +79,12 @@ export default function AuthPage() {
     setBusy(true);
     try {
       if (mode === 'login') {
-        await login(form.email, form.password);
-        navigate('/');
+        const loggedInUser = await login(form.email, form.password);
+        if (loggedInUser.is_admin && loggedInUser.role !== 'admin') {
+          setChoosingPortal(loggedInUser);
+        } else {
+          navigate('/');
+        }
       } else {
         await signup({
           email: form.email,
@@ -154,6 +162,31 @@ export default function AuthPage() {
               boxShadow: `0 0 60px color-mix(in srgb, ${PURPLE_DARK} 15%, transparent)`,
             }}
           >
+            {choosingPortal ? (
+              <div className="text-center">
+                <h2 className="text-xl font-bold text-white mb-1">{t('auth.portalChoiceTitle')}</h2>
+                <p className="text-gray-400 text-sm mb-6">{t('auth.portalChoiceBlurb')}</p>
+                <div className="space-y-3">
+                  <button
+                    type="button"
+                    onClick={() => { setViewMode(null); navigate('/'); }}
+                    className="w-full rounded-full py-3 font-bold text-white transition"
+                    style={{ background: GRADIENT, boxShadow: `0 10px 30px color-mix(in srgb, ${PURPLE_DARK} 35%, transparent)` }}
+                  >
+                    {t('auth.continueToPortal')(roleLabels[choosingPortal.role] ?? choosingPortal.role)}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setViewMode('admin'); navigate('/'); }}
+                    className="w-full rounded-full py-3 font-bold transition"
+                    style={{ border: `1px solid color-mix(in srgb, ${PURPLE} 40%, transparent)`, color: 'var(--darbi-purple)' }}
+                  >
+                    {t('auth.enterAdminPortal')}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
             <div className="text-center mb-6">
               <h2 className="text-xl font-bold text-white">{copy.title}</h2>
               <p className="text-gray-400 text-sm mt-1">{copy.blurb}</p>
@@ -286,6 +319,8 @@ export default function AuthPage() {
                 {busy ? t('auth.working') : mode === 'login' ? t('auth.signIn') : t('auth.createAccount')}
               </button>
             </form>
+              </>
+            )}
           </div>
         </div>
       </div>
