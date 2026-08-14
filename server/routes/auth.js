@@ -30,7 +30,22 @@ async function sendBestEffort(to, { subject, html }) {
 
 /** Loads the role-specific profile that hangs off a user row. */
 async function loadProfile(userId, role) {
-  const table = { student: 'students', company: 'companies', career: 'career_profiles' }[role];
+  if (role === 'student') {
+    // Joined with major/university names — an undergraduate's declared
+    // major (server/routes/students.js) needs its display name everywhere
+    // this profile loads, not just on the routes that fetch it explicitly.
+    const { rows } = await query(
+      `SELECT s.*, m.name AS major_name, m.slug AS major_slug,
+              u.name AS university_name, u.code AS university_code
+         FROM students s
+         LEFT JOIN majors m ON m.id = s.major_id
+         LEFT JOIN universities u ON u.id = s.university_id
+        WHERE s.user_id = $1`,
+      [userId],
+    );
+    return rows[0] ?? null;
+  }
+  const table = { company: 'companies', career: 'career_profiles' }[role];
   const { rows } = await query(`SELECT * FROM ${table} WHERE user_id = $1`, [userId]);
   return rows[0] ?? null;
 }

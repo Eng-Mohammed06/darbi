@@ -54,7 +54,7 @@ export default function StudentDashboard() {
       )}
       {tab === 'profile' && <ProfileForm profile={profile} onSaved={setProfile} />}
       {tab === 'majors' && <MajorExplorer />}
-      {tab === 'courses' && <CourseChecklist onGoToPathways={() => setTab('pathways')} />}
+      {tab === 'courses' && <CourseChecklist profile={profile} onGoToPathways={() => setTab('pathways')} />}
       {tab === 'jobs' && <JobBoard />}
     </Shell>
   );
@@ -446,14 +446,16 @@ function MajorExplorer() {
 }
 
 /**
- * Course checklist, scoped to the majors the student has actually saved as
- * pathways — not the whole 139-course catalog, which was overwhelming and
- * mostly irrelevant to any one student. Each saved pathway gets its own
- * titled row; a student who saved more than one major sees them stacked,
- * one section per major, each with its own "finished" checkbox list and
+ * Course checklist, scoped to majors that actually matter to this student —
+ * their declared major (profile.major_id, an undergraduate picks this at
+ * profile setup) plus any pathways they've separately saved, rather than
+ * the whole 139-course catalog. The profile major always leads, labeled
+ * "Your major"; saved pathways follow, deduplicated against it. Each gets
+ * its own titled row — a student with more than one sees them stacked, one
+ * section per major, each with its own "finished" checkbox list and
  * chat-inferred badges.
  */
-function CourseChecklist({ onGoToPathways }) {
+function CourseChecklist({ profile, onGoToPathways }) {
   const [savedMajors, setSavedMajors] = useState(null);
   const [courses, setCourses] = useState([]);
   const [progress, setProgress] = useState({});
@@ -486,12 +488,24 @@ function CourseChecklist({ onGoToPathways }) {
     );
   }
 
-  if (savedMajors.length === 0) {
+  const rows = [];
+  if (profile?.major_id) {
+    rows.push({ id: profile.major_id, name: profile.major_name, isProfileMajor: true });
+  }
+  for (const m of savedMajors) {
+    if (!rows.some((r) => r.id === m.id)) rows.push({ id: m.id, name: m.name, isProfileMajor: false });
+  }
+
+  if (rows.length === 0) {
     return (
       <Card title="Courses" accent={false}>
         <EmptyState
           icon="⭐"
-          title="Save a pathway first — its courses show up here once you do."
+          title={
+            profile?.level === 'undergraduate'
+              ? "Set your major in Profile, or save a pathway — its courses show up here once you do."
+              : "Save a pathway first — its courses show up here once you do."
+          }
           action={onGoToPathways && <Button onClick={onGoToPathways}>Browse pathways</Button>}
         />
       </Card>
@@ -507,10 +521,28 @@ function CourseChecklist({ onGoToPathways }) {
         Check off what you've completed — or just tell the advisor in chat and it checks them for
         you.
       </p>
-      {savedMajors.map((major) => {
-        const list = courses.filter((c) => c.major_id === major.id);
+      {rows.map((row) => {
+        const list = courses.filter((c) => c.major_id === row.id);
         return (
-          <Card key={major.id} title={major.name} accent>
+          <Card
+            key={row.id}
+            accent
+            title={
+              row.isProfileMajor ? (
+                <>
+                  {row.name}{' '}
+                  <span
+                    className="text-xs font-semibold px-2 py-0.5 rounded-full align-middle"
+                    style={{ background: 'var(--darbi-gradient)', color: '#fff' }}
+                  >
+                    Your major
+                  </span>
+                </>
+              ) : (
+                row.name
+              )
+            }
+          >
             {list.length > 0 ? (
               <ul className="text-gray-300 space-y-2 list-none pl-0">
                 {list.map((c) => (
