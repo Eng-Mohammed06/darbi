@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './services/auth.jsx';
+import { ThemeProvider } from './services/theme.jsx';
+import { LanguageProvider, useLang } from './i18n/index.jsx';
 import { ToastProvider } from './components/common/toast.jsx';
 import AuthPage from './pages/AuthPage.jsx';
 import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
@@ -23,7 +25,8 @@ const DASHBOARDS = {
 /** One route for all four roles — `users.role` decides what renders. */
 function Dashboard() {
   const { user, loading } = useAuth();
-  if (loading) return <p className="p-8 text-gray-500">Loading…</p>;
+  const { t } = useLang();
+  if (loading) return <p className="p-8 text-gray-500">{t('common.loading')}</p>;
   if (!user) return <Navigate to="/" replace />;
 
   const Component = DASHBOARDS[user.role];
@@ -32,7 +35,8 @@ function Dashboard() {
 
 function Home() {
   const { user, loading } = useAuth();
-  if (loading) return <p className="p-8 text-gray-500">Loading…</p>;
+  const { t } = useLang();
+  if (loading) return <p className="p-8 text-gray-500">{t('common.loading')}</p>;
   // Already signed in? Skip straight to the dashboard, so '/' is the Advisor
   // page rather than bouncing to '/dashboard'. Signed out? Show the actual
   // pitch (LandingPage) instead of bouncing straight to a login form — a
@@ -44,7 +48,8 @@ function Home() {
 
 function Account() {
   const { user, loading } = useAuth();
-  if (loading) return <p className="p-8 text-gray-500">Loading…</p>;
+  const { t } = useLang();
+  if (loading) return <p className="p-8 text-gray-500">{t('common.loading')}</p>;
   if (!user) return <Navigate to="/" replace />;
   return <AccountPage />;
 }
@@ -57,7 +62,8 @@ function Account() {
 function studentOnlyRoute(Page) {
   return function Guarded() {
     const { user, loading } = useAuth();
-    if (loading) return <p className="p-8 text-gray-500">Loading…</p>;
+    const { t } = useLang();
+    if (loading) return <p className="p-8 text-gray-500">{t('common.loading')}</p>;
     if (!user) return <Navigate to="/" replace />;
     if (user.role !== 'student') return <Navigate to="/" replace />;
     return <Page />;
@@ -70,22 +76,26 @@ const Onboarding = studentOnlyRoute(OnboardingPage);
 
 export default function App() {
   return (
-    <ToastProvider>
-      <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/portal/:role" element={<AuthPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/verify-email" element={<VerifyEmail />} />
-            <Route path="/profile-setup" element={<ProfileSetup />} />
-            <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/account" element={<Account />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
-    </ToastProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/portal/:role" element={<AuthPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
+                <Route path="/profile-setup" element={<ProfileSetup />} />
+                <Route path="/onboarding" element={<Onboarding />} />
+                <Route path="/account" element={<Account />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </BrowserRouter>
+          </AuthProvider>
+        </ToastProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }

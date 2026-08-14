@@ -3,6 +3,7 @@ import { api } from '../services/api.js';
 import { useAuth } from '../services/auth.jsx';
 import { Alert, Button, Card, EmptyState, Field, Shell, SkeletonLines, inputClass } from '../components/common/ui.jsx';
 import { useToast } from '../components/common/toast.jsx';
+import { useLang } from '../i18n/index.jsx';
 
 const TABS = ['overview', 'users', 'companies', 'jobs'];
 
@@ -14,11 +15,12 @@ const TABS = ['overview', 'users', 'companies', 'jobs'];
  * CLAUDE.md and server/routes/admin.js's own comment on this).
  */
 export default function AdminDashboard() {
+  const { t } = useLang();
   const { user } = useAuth();
   const [tab, setTab] = useState('overview');
 
   return (
-    <Shell title="Darbi Admin" subtitle={user?.email} tabs={TABS} activeTab={tab} onTabChange={setTab}>
+    <Shell title={t('admin.pageTitle')} subtitle={user?.email} tabs={TABS} activeTab={tab} onTabChange={setTab}>
       {tab === 'overview' && <Overview />}
       {tab === 'users' && <Users />}
       {tab === 'companies' && <Companies />}
@@ -28,6 +30,7 @@ export default function AdminDashboard() {
 }
 
 function Overview() {
+  const { t } = useLang();
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
@@ -36,22 +39,22 @@ function Overview() {
 
   if (!stats) {
     return (
-      <Card title="Loading stats…">
+      <Card title={t('admin.overview.loadingStats')}>
         <SkeletonLines lines={6} />
       </Card>
     );
   }
 
   const cards = [
-    { label: 'Students', value: stats.users_by_role.student ?? 0 },
-    { label: 'Companies', value: stats.users_by_role.company ?? 0 },
-    { label: 'Graduates', value: stats.users_by_role.career ?? 0 },
-    { label: 'Total job listings', value: stats.jobs.total },
-    { label: 'Verified listings', value: stats.jobs.verified },
-    { label: 'Company-posted listings', value: stats.jobs.from_companies },
-    { label: 'Job applications', value: stats.applications },
-    { label: 'Chat messages sent', value: stats.chat_messages },
-    { label: 'Saved pathways', value: stats.saved_majors },
+    { label: t('admin.overview.students'), value: stats.users_by_role.student ?? 0 },
+    { label: t('admin.overview.companies'), value: stats.users_by_role.company ?? 0 },
+    { label: t('admin.overview.graduates'), value: stats.users_by_role.career ?? 0 },
+    { label: t('admin.overview.totalJobListings'), value: stats.jobs.total },
+    { label: t('admin.overview.verifiedListings'), value: stats.jobs.verified },
+    { label: t('admin.overview.companyPostedListings'), value: stats.jobs.from_companies },
+    { label: t('admin.overview.jobApplications'), value: stats.applications },
+    { label: t('admin.overview.chatMessagesSent'), value: stats.chat_messages },
+    { label: t('admin.overview.savedPathways'), value: stats.saved_majors },
   ];
 
   return (
@@ -68,9 +71,15 @@ function Overview() {
   );
 }
 
-const ROLE_COLOR = { student: '#06b6d4', company: '#ff5722', career: '#a78bfa', admin: '#22c55e' };
+const ROLE_COLOR = {
+  student: 'var(--darbi-purple)',
+  company: 'var(--darbi-gold)',
+  career: 'var(--darbi-ai-feature)',
+  admin: 'var(--darbi-success)',
+};
 
 function Users() {
+  const { t } = useLang();
   const [users, setUsers] = useState(null);
   const [search, setSearch] = useState('');
   const toast = useToast();
@@ -87,11 +96,11 @@ function Users() {
     const timer = setTimeout(() => {
       api(`/admin/users/${u.id}`, { method: 'DELETE' }).catch(() => {});
     }, 5000);
-    toast.show(`Deleted ${u.name || u.username}.`, {
+    toast.show(t('admin.users.deletedToast')(u.name || u.username), {
       kind: 'info',
       duration: 5000,
       action: {
-        label: 'Undo',
+        label: t('common.undo'),
         onClick: () => { clearTimeout(timer); setUsers((list) => [u, ...list]); },
       },
     });
@@ -99,7 +108,7 @@ function Users() {
 
   if (users === null) {
     return (
-      <Card title="Loading users…">
+      <Card title={t('admin.users.loading')}>
         <SkeletonLines lines={8} />
       </Card>
     );
@@ -111,14 +120,14 @@ function Users() {
     : users;
 
   return (
-    <Card title={`${users.length} accounts`} accent={false}>
+    <Card title={t('admin.users.accountsCount')(users.length)} accent={false}>
       <input
         className={`${inputClass} mb-4`}
-        placeholder="Search name, username, or email…"
+        placeholder={t('admin.users.searchPlaceholder')}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
-      {filtered.length === 0 && <EmptyState icon="🔍" title="No matching accounts." />}
+      {filtered.length === 0 && <EmptyState icon="🔍" title={t('admin.users.noMatching')} />}
       <div>
         {filtered.map((u) => (
           <div
@@ -134,13 +143,16 @@ function Users() {
             </div>
             <div className="flex items-center gap-3 shrink-0">
               {!u.email_verified && (
-                <span className="text-xs" title="Email not verified" aria-label="Email not verified">
+                <span className="text-xs" title={t('admin.users.emailNotVerified')} aria-label={t('admin.users.emailNotVerified')}>
                   ✉️
                 </span>
               )}
               <span
                 className="text-xs font-bold uppercase tracking-wide px-2 py-1 rounded-full"
-                style={{ background: `${ROLE_COLOR[u.role] ?? '#94a3b8'}22`, color: ROLE_COLOR[u.role] ?? '#94a3b8' }}
+                style={{
+                  background: `color-mix(in srgb, ${ROLE_COLOR[u.role] ?? 'var(--darbi-text-muted)'} 13%, transparent)`,
+                  color: ROLE_COLOR[u.role] ?? 'var(--darbi-text-muted)',
+                }}
               >
                 {u.role}
               </span>
@@ -149,7 +161,7 @@ function Users() {
                 onClick={() => remove(u)}
                 className="text-xs text-red-400 hover:text-red-300 font-semibold"
               >
-                Delete
+                {t('common.delete')}
               </button>
             </div>
           </div>
@@ -160,6 +172,7 @@ function Users() {
 }
 
 function Companies() {
+  const { t } = useLang();
   const [companies, setCompanies] = useState(null);
 
   useEffect(() => {
@@ -168,15 +181,15 @@ function Companies() {
 
   if (companies === null) {
     return (
-      <Card title="Loading companies…">
+      <Card title={t('admin.companies.loading')}>
         <SkeletonLines lines={6} />
       </Card>
     );
   }
 
   return (
-    <Card title={`${companies.length} companies`} accent={false}>
-      {companies.length === 0 && <EmptyState icon="🏢" title="No company accounts yet." />}
+    <Card title={t('admin.companies.count')(companies.length)} accent={false}>
+      {companies.length === 0 && <EmptyState icon="🏢" title={t('admin.companies.none')} />}
       <div>
         {companies.map((c) => (
           <div
@@ -192,13 +205,13 @@ function Companies() {
               </p>
             </div>
             <span className="text-xs text-gray-400 shrink-0">
-              {c.job_count} listing{c.job_count === 1 ? '' : 's'}
+              {t('admin.companies.listingCount')(c.job_count)}
             </span>
           </div>
         ))}
       </div>
       <p className="text-xs text-gray-500 mt-4">
-        Delete a company account from the Users tab — it cascades to their postings too.
+        {t('admin.companies.deleteHint')}
       </p>
     </Card>
   );
@@ -207,6 +220,7 @@ function Companies() {
 const JOBS_PAGE_SIZE = 30;
 
 function Jobs() {
+  const { t } = useLang();
   const [jobs, setJobs] = useState(null);
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
@@ -233,11 +247,11 @@ function Jobs() {
     const timer = setTimeout(() => {
       api(`/admin/jobs/${job.id}`, { method: 'DELETE' }).catch(() => {});
     }, 5000);
-    toast.show(`Deleted "${job.title}".`, {
+    toast.show(t('admin.jobs.deletedToast')(job.title), {
       kind: 'info',
       duration: 5000,
       action: {
-        label: 'Undo',
+        label: t('common.undo'),
         onClick: () => { clearTimeout(timer); setJobs((list) => [job, ...list]); },
       },
     });
@@ -245,7 +259,7 @@ function Jobs() {
 
   if (jobs === null) {
     return (
-      <Card title="Loading jobs…">
+      <Card title={t('admin.jobs.loading')}>
         <SkeletonLines lines={8} />
       </Card>
     );
@@ -262,12 +276,12 @@ function Jobs() {
         <input
           className={inputClass}
           style={{ maxWidth: 320 }}
-          placeholder="Search title or company…"
+          placeholder={t('admin.jobs.searchPlaceholder')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <Button type="button" variant="navy" onClick={() => setShowForm((s) => !s)}>
-          {showForm ? 'Cancel' : 'Post a job'}
+          {showForm ? t('common.cancel') : t('admin.jobs.postAJob')}
         </Button>
       </div>
 
@@ -280,8 +294,8 @@ function Jobs() {
         />
       )}
 
-      <Card title={`${filtered.length} of ${jobs.length} listings`} accent={false}>
-        {filtered.length === 0 && <EmptyState icon="💼" title="No matching listings." />}
+      <Card title={t('admin.jobs.countOf')(filtered.length, jobs.length)} accent={false}>
+        {filtered.length === 0 && <EmptyState icon="💼" title={t('admin.jobs.noMatching')} />}
         <div>
           {filtered.slice(0, visible).map((j) => (
             <div
@@ -299,14 +313,14 @@ function Jobs() {
               <div className="flex items-center gap-3 shrink-0">
                 <label className="flex items-center gap-1.5 text-xs text-gray-400 cursor-pointer">
                   <input type="checkbox" checked={j.verified} onChange={() => toggleVerified(j)} />
-                  Verified
+                  {t('admin.jobs.verified')}
                 </label>
                 <button
                   type="button"
                   onClick={() => remove(j)}
                   className="text-xs text-red-400 hover:text-red-300 font-semibold"
                 >
-                  Delete
+                  {t('common.delete')}
                 </button>
               </div>
             </div>
@@ -319,7 +333,7 @@ function Jobs() {
             className="text-xs font-semibold mt-3"
             style={{ color: 'var(--darbi-purple)' }}
           >
-            Show more ({filtered.length - visible} remaining)
+            {t('admin.jobs.showMore')(filtered.length - visible)}
           </button>
         )}
       </Card>
@@ -328,6 +342,7 @@ function Jobs() {
 }
 
 function PostAdminJob({ onPosted }) {
+  const { t } = useLang();
   const [form, setForm] = useState({});
   const [error, setError] = useState('');
   const toast = useToast();
@@ -350,7 +365,7 @@ function PostAdminJob({ onPosted }) {
           description: form.description || null,
         },
       });
-      toast.show(`Posted "${job.title}".`, { kind: 'success' });
+      toast.show(t('admin.postJob.postedToast')(job.title), { kind: 'success' });
       onPosted(job);
     } catch (err) {
       setError(err.message);
@@ -358,34 +373,34 @@ function PostAdminJob({ onPosted }) {
   }
 
   return (
-    <Card title="Post a job" accent>
+    <Card title={t('admin.postJob.title')} accent>
       <Alert>{error}</Alert>
       <form onSubmit={submit}>
-        <Field label="Job title">
+        <Field label={t('admin.postJob.jobTitle')}>
           <input className={inputClass} value={form.title ?? ''} onChange={set('title')} required />
         </Field>
-        <Field label="Company name">
+        <Field label={t('admin.postJob.companyName')}>
           <input className={inputClass} value={form.companyName ?? ''} onChange={set('companyName')} required />
         </Field>
-        <Field label="Required major(s)" hint="Comma separated">
+        <Field label={t('admin.postJob.requiredMajors')} hint={t('admin.postJob.commaSeparated')}>
           <input className={inputClass} value={form.majors ?? ''} onChange={set('majors')} />
         </Field>
-        <Field label="Minimum GPA" hint="Out of 4 — leave blank for no requirement">
+        <Field label={t('admin.postJob.minGpa')} hint={t('admin.postJob.minGpaHint')}>
           <input type="number" step="0.01" min="0" max="4" className={inputClass} value={form.minGpa ?? ''} onChange={set('minGpa')} />
         </Field>
-        <Field label="Salary range" hint="e.g. 800-1,200">
+        <Field label={t('admin.postJob.salaryRange')} hint={t('admin.postJob.salaryHint')}>
           <input className={inputClass} value={form.salary ?? ''} onChange={set('salary')} />
         </Field>
-        <Field label="Required skills" hint="Comma separated">
+        <Field label={t('admin.postJob.requiredSkills')} hint={t('admin.postJob.commaSeparated')}>
           <input className={inputClass} value={form.skills ?? ''} onChange={set('skills')} />
         </Field>
-        <Field label="Location">
+        <Field label={t('admin.postJob.location')}>
           <input className={inputClass} value={form.location ?? ''} onChange={set('location')} />
         </Field>
-        <Field label="Description">
+        <Field label={t('admin.postJob.description')}>
           <textarea rows="3" className={inputClass} value={form.description ?? ''} onChange={set('description')} />
         </Field>
-        <Button type="submit">Post job</Button>
+        <Button type="submit">{t('admin.postJob.submit')}</Button>
       </form>
     </Card>
   );

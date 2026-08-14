@@ -2,16 +2,18 @@ import { useEffect, useState } from 'react';
 import { api } from '../services/api.js';
 import { useAuth } from '../services/auth.jsx';
 import { Card, EmptyState, Shell, SkeletonLines } from '../components/common/ui.jsx';
+import { useLang } from '../i18n/index.jsx';
 
 const TABS = ['overview', 'learning paths', 'training centres'];
 
 export default function CareerDashboard() {
   const { profile } = useAuth();
+  const { t } = useLang();
   const [tab, setTab] = useState('overview');
 
   return (
     <Shell
-      title={`Welcome, ${profile?.name ?? 'there'} 📈`}
+      title={t('career.welcome')(profile?.name ?? t('career.namePlaceholder'))}
       subtitle={profile?.current_title}
       tabs={TABS}
       activeTab={tab}
@@ -25,21 +27,22 @@ export default function CareerDashboard() {
 }
 
 function Overview({ profile }) {
+  const { t } = useLang();
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <Card title="Current role">
-        <p className="text-2xl font-bold" style={{ color: '#ff5722' }}>
-          {profile?.current_title ?? 'Not set'}
+      <Card title={t('career.currentRole')}>
+        <p className="text-2xl font-bold" style={{ color: 'var(--darbi-gold)' }}>
+          {profile?.current_title ?? t('career.notSet')}
         </p>
       </Card>
-      <Card title="Experience">
-        <p className="text-2xl font-bold" style={{ color: '#ff5722' }}>
-          {profile?.years_experience != null ? `${profile.years_experience} years` : '—'}
+      <Card title={t('career.experience')}>
+        <p className="text-2xl font-bold" style={{ color: 'var(--darbi-gold)' }}>
+          {profile?.years_experience != null ? t('career.yearsExperience')(profile.years_experience) : '—'}
         </p>
       </Card>
-      <Card title="Field">
-        <p className="text-2xl font-bold" style={{ color: '#ff5722' }}>
-          {profile?.major ?? 'Not set'}
+      <Card title={t('career.field')}>
+        <p className="text-2xl font-bold" style={{ color: 'var(--darbi-gold)' }}>
+          {profile?.major ?? t('career.notSet')}
         </p>
       </Card>
     </div>
@@ -51,6 +54,7 @@ function Overview({ profile }) {
  * every Coursera / Udemy link and Jordanian centre the team verified.
  */
 function LearningPaths() {
+  const { t } = useLang();
   const [paths, setPaths] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -73,7 +77,7 @@ function LearningPaths() {
                 )}
                 {p.jordan_centers && (
                   <p className="text-xs text-gray-500 mt-2">
-                    <span className="font-semibold">In Jordan: </span>{p.jordan_centers}
+                    <span className="font-semibold">{t('career.inJordan')}</span>{p.jordan_centers}
                   </p>
                 )}
               </div>
@@ -82,13 +86,14 @@ function LearningPaths() {
         </Card>
       ))}
       {!loading && paths.length === 0 && (
-        <Card><EmptyState icon="🎓" title="No learning paths loaded yet." /></Card>
+        <Card><EmptyState icon="🎓" title={t('career.noLearningPaths')} /></Card>
       )}
     </>
   );
 }
 
 function TrainingCentres() {
+  const { t } = useLang();
   const [centres, setCentres] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -96,10 +101,10 @@ function TrainingCentres() {
   }, []);
 
   return (
-    <Card title={loading ? 'Loading training centres…' : `${centres.length} accredited centre(s) in Jordan`}>
+    <Card title={loading ? t('career.loadingCentres') : t('career.centresCount')(centres.length)}>
       {loading && <SkeletonLines lines={5} />}
       {!loading && centres.length === 0 && (
-        <EmptyState icon="🏫" title="No training centres loaded yet." />
+        <EmptyState icon="🏫" title={t('career.noCentres')} />
       )}
       <div className="divide-y divide-[color:var(--darbi-border)]">
         {centres.map((c) => (

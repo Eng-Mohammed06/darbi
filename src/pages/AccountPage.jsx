@@ -2,15 +2,15 @@ import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api.js';
 import { useAuth } from '../services/auth.jsx';
-import { Alert, Button, Card, Field, inputClass, Wisps } from '../components/common/ui.jsx';
+import { Alert, Button, Card, Field, inputClass, Wisps, PURPLE, GOLD, ThemeLangSwitcher } from '../components/common/ui.jsx';
 import { useToast } from '../components/common/toast.jsx';
-import { PASSWORD_HINT, passwordIssues } from '../lib/password.js';
+import { passwordHint, passwordIssues } from '../lib/password.js';
 import { readAvatarFile } from '../lib/avatar.js';
 import AvatarCropModal from '../components/common/AvatarCropModal.jsx';
 import PasswordStrengthMeter from '../components/common/PasswordStrengthMeter.jsx';
+import { useLang } from '../i18n/index.jsx';
 
 const TABS = ['profile', 'security'];
-const TAB_LABEL = { profile: 'Profile', security: 'Security' };
 
 /**
  * Settings page, not a scroll of five always-open forms — a profile summary
@@ -20,19 +20,22 @@ const TAB_LABEL = { profile: 'Profile', security: 'Security' };
  */
 export default function AccountPage() {
   const { logout } = useAuth();
+  const { t } = useLang();
   const [tab, setTab] = useState('profile');
+  const tabLabel = { profile: t('account.tabProfile'), security: t('account.tabSecurity') };
 
   return (
     <div className="min-h-screen relative overflow-hidden" style={{ background: 'var(--darbi-bg)' }}>
-      <Wisps palette={['#06b6d4', '#ff5722']} opacity={0.28} fixed />
+      <Wisps palette={[PURPLE, GOLD]} opacity={0.28} fixed />
 
       <header
         className="text-white relative z-10"
-        style={{ background: 'rgba(15,23,42,0.85)', borderBottom: '1px solid var(--darbi-border)' }}
+        style={{ background: 'color-mix(in srgb, var(--darbi-bg) 85%, transparent)', borderBottom: '1px solid var(--darbi-border)' }}
       >
         <div className="darbi-container py-5 flex items-center gap-4">
-          <Link to="/" className="text-gray-300 hover:text-white text-sm font-semibold shrink-0 transition">← Back</Link>
-          <h1 className="text-2xl font-bold flex-1">Account</h1>
+          <Link to="/" className="text-gray-300 hover:text-white text-sm font-semibold shrink-0 transition">{t('account.back')}</Link>
+          <h1 className="text-2xl font-bold flex-1">{t('account.title')}</h1>
+          <ThemeLangSwitcher dark />
         </div>
       </header>
 
@@ -41,17 +44,17 @@ export default function AccountPage() {
           <ProfileSummary />
 
           <div className="flex gap-2 mb-4">
-            {TABS.map((t) => (
+            {TABS.map((tabId) => (
               <button
-                key={t}
+                key={tabId}
                 type="button"
-                onClick={() => setTab(t)}
+                onClick={() => setTab(tabId)}
                 className={`text-sm px-4 py-2 rounded-full font-bold transition ${
-                  tab === t ? 'text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  tab === tabId ? 'text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
-                style={tab === t ? { background: 'var(--darbi-gradient)' } : { border: '1px solid rgba(255,255,255,0.1)' }}
+                style={tab === tabId ? { background: 'var(--darbi-gradient)' } : { border: '1px solid color-mix(in srgb, var(--darbi-navy) 15%, transparent)' }}
               >
-                {TAB_LABEL[t]}
+                {tabLabel[tabId]}
               </button>
             ))}
           </div>
@@ -61,7 +64,7 @@ export default function AccountPage() {
 
           <div className="flex justify-end mt-6">
             <button onClick={logout} className="text-sm text-gray-500 hover:text-red-400 transition">
-              Sign out
+              {t('account.signOut')}
             </button>
           </div>
         </div>
@@ -81,7 +84,11 @@ function ProfileSummary() {
         {user?.role && (
           <span
             className="inline-block mt-2 text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-full"
-            style={{ background: 'rgba(6,182,212,0.15)', color: 'var(--darbi-purple)', border: '1px solid rgba(6,182,212,0.3)' }}
+            style={{
+              background: 'color-mix(in srgb, var(--darbi-purple) 15%, transparent)',
+              color: 'var(--darbi-purple)',
+              border: '1px solid color-mix(in srgb, var(--darbi-purple) 30%, transparent)',
+            }}
           >
             {user.role}
           </span>
@@ -102,6 +109,7 @@ function ProfileSummary() {
  */
 function AvatarEditor() {
   const { user, uploadAvatar, removeAvatar } = useAuth();
+  const { t, lang } = useLang();
   const inputRef = useRef(null);
   const [cropSrc, setCropSrc] = useState(null);
   const [error, setError] = useState('');
@@ -114,7 +122,7 @@ function AvatarEditor() {
     if (!file) return;
     setError('');
     try {
-      const dataUri = await readAvatarFile(file);
+      const dataUri = await readAvatarFile(file, lang);
       setCropSrc(dataUri);
     } catch (err) {
       setError(err.message);
@@ -126,7 +134,7 @@ function AvatarEditor() {
     setBusy(true);
     try {
       await uploadAvatar(croppedDataUri);
-      toast.show('Profile picture updated.', { kind: 'success' });
+      toast.show(t('account.photoUpdated'), { kind: 'success' });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -139,7 +147,7 @@ function AvatarEditor() {
     setBusy(true);
     try {
       await removeAvatar();
-      toast.show('Profile picture removed.', { kind: 'success' });
+      toast.show(t('account.photoRemoved'), { kind: 'success' });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -164,7 +172,7 @@ function AvatarEditor() {
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={busy}
-          aria-label={user?.avatar ? 'Change photo' : 'Upload photo'}
+          aria-label={user?.avatar ? t('account.changePhoto') : t('account.uploadPhoto')}
           className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center text-xs transition hover:brightness-110"
           style={{ background: 'var(--darbi-surface-solid)', border: '2px solid var(--darbi-bg)' }}
         >
@@ -180,7 +188,7 @@ function AvatarEditor() {
       </div>
       {user?.avatar && (
         <button type="button" onClick={onRemove} disabled={busy} className="text-xs text-gray-500 underline mt-1.5 block">
-          Remove
+          {t('account.remove')}
         </button>
       )}
       {error && <p className="text-xs mt-1.5 max-w-[9rem]" style={{ color: 'var(--darbi-error)' }}>{error}</p>}
@@ -196,6 +204,7 @@ const NAME_ENDPOINT = { student: '/students/me', company: '/companies/me', caree
 
 function ProfileTab() {
   const { user, profile, setProfile, setUser } = useAuth();
+  const { t } = useLang();
 
   async function saveName(name) {
     const updated = await api(NAME_ENDPOINT[user.role], { method: 'PUT', body: { name } });
@@ -207,16 +216,16 @@ function ProfileTab() {
       const { user: updated } = await api('/auth/username', { method: 'PUT', body: { username } });
       setUser(updated);
     } catch (err) {
-      throw new Error(err.code === 'username_taken' ? 'That username is already taken. Try another.' : err.message);
+      throw new Error(err.code === 'username_taken' ? t('account.usernameTaken') : err.message);
     }
   }
 
   return (
     <Card accent={false}>
-      <EditableRow label="Name" value={profile?.name} onSave={saveName} successMessage="Name changed." />
-      <EditableRow label="Username" value={user?.username} onSave={saveUsername} successMessage="Username changed." />
+      <EditableRow label={t('account.name')} value={profile?.name} onSave={saveName} successMessage={t('account.nameChanged')} />
+      <EditableRow label={t('account.username')} value={user?.username} onSave={saveUsername} successMessage={t('account.usernameChanged')} />
       <div className="py-4">
-        <span className="block text-xs font-bold uppercase tracking-wide text-gray-500 mb-1">Email</span>
+        <span className="block text-xs font-bold uppercase tracking-wide text-gray-500 mb-1">{t('account.email')}</span>
         <span className="text-white">{user?.email}</span>
       </div>
     </Card>
@@ -224,6 +233,7 @@ function ProfileTab() {
 }
 
 function SecurityTab() {
+  const { t, lang } = useLang();
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [error, setError] = useState('');
@@ -243,16 +253,16 @@ function SecurityTab() {
     setError('');
 
     if (form.newPassword !== form.confirmPassword) {
-      setError('New password and confirmation do not match.');
+      setError(t('account.errPasswordMismatch'));
       return;
     }
     if (form.newPassword === form.currentPassword) {
-      setError('New password must be different from your current password.');
+      setError(t('account.errSamePassword'));
       return;
     }
-    const issues = passwordIssues(form.newPassword);
+    const issues = passwordIssues(form.newPassword, lang);
     if (issues.length) {
-      setError(`Password needs ${issues.join(', ')}.`);
+      setError(t('account.passwordNeeds')(issues.join(', ')));
       return;
     }
 
@@ -262,12 +272,12 @@ function SecurityTab() {
         method: 'PUT',
         body: { currentPassword: form.currentPassword, newPassword: form.newPassword },
       });
-      toast.show('Password changed.', { kind: 'success' });
+      toast.show(t('account.passwordChanged'), { kind: 'success' });
       cancel();
     } catch (err) {
       setError(
         {
-          invalid_credentials: 'Current password is not correct.',
+          invalid_credentials: t('account.errCurrentPasswordWrong'),
         }[err.code] ?? err.message,
       );
     } finally {
@@ -280,7 +290,7 @@ function SecurityTab() {
       {!editing ? (
         <div className="flex items-center justify-between gap-4">
           <div>
-            <span className="block text-xs font-bold uppercase tracking-wide text-gray-500 mb-1">Password</span>
+            <span className="block text-xs font-bold uppercase tracking-wide text-gray-500 mb-1">{t('account.password')}</span>
             <span className="text-white tracking-widest">••••••••</span>
           </div>
           <button
@@ -289,13 +299,13 @@ function SecurityTab() {
             className="text-xs font-bold shrink-0"
             style={{ color: 'var(--darbi-purple)' }}
           >
-            Change
+            {t('account.change')}
           </button>
         </div>
       ) : (
         <form onSubmit={submit}>
           <Alert>{error}</Alert>
-          <Field label="Current password">
+          <Field label={t('account.currentPassword')}>
             <input
               type="password"
               className={inputClass}
@@ -305,19 +315,19 @@ function SecurityTab() {
               required
             />
           </Field>
-          <Field label="New password" hint={PASSWORD_HINT}>
+          <Field label={t('account.newPassword')} hint={passwordHint(lang)}>
             <input type="password" className={inputClass} value={form.newPassword} onChange={set('newPassword')} required />
             <PasswordStrengthMeter password={form.newPassword} />
           </Field>
-          <Field label="Confirm new password">
+          <Field label={t('account.confirmNewPassword')}>
             <input type="password" className={inputClass} value={form.confirmPassword} onChange={set('confirmPassword')} required />
           </Field>
           <div className="flex items-center gap-3">
             <Button type="submit" disabled={busy}>
-              {busy ? 'Saving…' : 'Save password'}
+              {busy ? t('account.saving') : t('account.savePassword')}
             </Button>
             <button type="button" onClick={cancel} disabled={busy} className="text-xs text-gray-400 hover:text-gray-200">
-              Cancel
+              {t('account.cancel')}
             </button>
           </div>
         </form>
@@ -332,6 +342,7 @@ function SecurityTab() {
  * Save/Cancel to close it back up.
  */
 function EditableRow({ label, value, onSave, successMessage }) {
+  const { t } = useLang();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value ?? '');
   const [error, setError] = useState('');
@@ -365,10 +376,10 @@ function EditableRow({ label, value, onSave, successMessage }) {
         <div className="flex items-center justify-between gap-4">
           <div>
             <span className="block text-xs font-bold uppercase tracking-wide text-gray-500 mb-1">{label}</span>
-            <span className="text-white">{value || <span className="text-gray-500 italic">Not set</span>}</span>
+            <span className="text-white">{value || <span className="text-gray-500 italic">{t('account.notSet')}</span>}</span>
           </div>
           <button type="button" onClick={startEdit} className="text-xs font-bold shrink-0" style={{ color: 'var(--darbi-purple)' }}>
-            Edit
+            {t('account.edit')}
           </button>
         </div>
       ) : (
@@ -379,7 +390,7 @@ function EditableRow({ label, value, onSave, successMessage }) {
           </Field>
           <div className="flex items-center gap-3">
             <Button type="submit" disabled={busy}>
-              {busy ? 'Saving…' : 'Save'}
+              {busy ? t('account.saving') : t('account.save')}
             </Button>
             <button
               type="button"
@@ -387,7 +398,7 @@ function EditableRow({ label, value, onSave, successMessage }) {
               disabled={busy}
               className="text-xs text-gray-400 hover:text-gray-200"
             >
-              Cancel
+              {t('account.cancel')}
             </button>
           </div>
         </form>

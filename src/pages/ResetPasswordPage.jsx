@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../services/auth.jsx';
 import { DarkCard, DarkField, darkInput, GRADIENT, PURPLE_DARK } from '../components/common/ui.jsx';
 import { PASSWORD_HINT, passwordIssues } from '../lib/password.js';
+import { useLang } from '../i18n/index.jsx';
 
 /**
  * Two-step forgot-password flow: request a code by email/username, then
@@ -12,6 +13,7 @@ import { PASSWORD_HINT, passwordIssues } from '../lib/password.js';
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
   const { forgotPassword, resetPassword } = useAuth();
+  const { t } = useLang();
 
   const [step, setStep] = useState('request'); // 'request' | 'reset' | 'done'
   const [identifier, setIdentifier] = useState('');
@@ -39,12 +41,12 @@ export default function ResetPasswordPage() {
     e.preventDefault();
     setError('');
     if (newPassword !== confirmPassword) {
-      setError('New password and confirmation do not match.');
+      setError(t('resetPassword.errorMismatch'));
       return;
     }
     const issues = passwordIssues(newPassword);
     if (issues.length) {
-      setError(`Password needs ${issues.join(', ')}.`);
+      setError(t('resetPassword.errorPasswordNeeds')(issues.join(', ')));
       return;
     }
     setBusy(true);
@@ -54,8 +56,8 @@ export default function ResetPasswordPage() {
     } catch (err) {
       setError(
         {
-          invalid_code: 'That code is not correct.',
-          code_expired: 'That code expired — request a new one.',
+          invalid_code: t('resetPassword.errorInvalidCode'),
+          code_expired: t('resetPassword.errorCodeExpired'),
         }[err.code] ?? err.message,
       );
     } finally {
@@ -65,19 +67,23 @@ export default function ResetPasswordPage() {
 
   return (
     <DarkCard
-      title="Reset your password"
+      title={t('resetPassword.title')}
       subtitle={
         step === 'request'
-          ? 'We’ll email you a 6-digit code'
+          ? t('resetPassword.subtitleRequest')
           : step === 'reset'
-            ? `Enter the code sent to ${identifier}`
-            : 'Password changed'
+            ? t('resetPassword.subtitleReset')(identifier)
+            : t('resetPassword.subtitleDone')
       }
     >
       {error && (
         <div
           className="mb-4 px-4 py-3 rounded-xl text-sm"
-          style={{ background: 'rgba(255,107,122,0.1)', border: '1px solid rgba(255,107,122,0.3)', color: '#ff6b7a' }}
+          style={{
+            background: 'color-mix(in srgb, var(--darbi-error) 10%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--darbi-error) 30%, transparent)',
+            color: 'var(--darbi-error)',
+          }}
         >
           {error}
         </div>
@@ -85,7 +91,7 @@ export default function ResetPasswordPage() {
 
       {step === 'request' && (
         <form onSubmit={requestCode} className="space-y-4">
-          <DarkField label="Email or username">
+          <DarkField label={t('resetPassword.identifierLabel')}>
             <input
               className={darkInput}
               value={identifier}
@@ -98,16 +104,16 @@ export default function ResetPasswordPage() {
             type="submit"
             disabled={busy}
             className="w-full rounded-full py-3 font-bold text-white transition disabled:opacity-60"
-            style={{ background: GRADIENT, boxShadow: `0 10px 30px ${PURPLE_DARK}59` }}
+            style={{ background: GRADIENT, boxShadow: `0 10px 30px color-mix(in srgb, ${PURPLE_DARK} 35%, transparent)` }}
           >
-            {busy ? 'Sending…' : 'Send reset code'}
+            {busy ? t('resetPassword.sendingButton') : t('resetPassword.sendCodeButton')}
           </button>
         </form>
       )}
 
       {step === 'reset' && (
         <form onSubmit={submitReset} className="space-y-4">
-          <DarkField label="6-digit code">
+          <DarkField label={t('resetPassword.codeLabel')}>
             <input
               className={darkInput}
               inputMode="numeric"
@@ -118,7 +124,7 @@ export default function ResetPasswordPage() {
               autoFocus
             />
           </DarkField>
-          <DarkField label="New password" hint={PASSWORD_HINT}>
+          <DarkField label={t('resetPassword.newPasswordLabel')} hint={PASSWORD_HINT}>
             <input
               type="password"
               className={darkInput}
@@ -127,7 +133,7 @@ export default function ResetPasswordPage() {
               required
             />
           </DarkField>
-          <DarkField label="Confirm new password">
+          <DarkField label={t('resetPassword.confirmPasswordLabel')}>
             <input
               type="password"
               className={darkInput}
@@ -140,30 +146,30 @@ export default function ResetPasswordPage() {
             type="submit"
             disabled={busy}
             className="w-full rounded-full py-3 font-bold text-white transition disabled:opacity-60"
-            style={{ background: GRADIENT, boxShadow: `0 10px 30px ${PURPLE_DARK}59` }}
+            style={{ background: GRADIENT, boxShadow: `0 10px 30px color-mix(in srgb, ${PURPLE_DARK} 35%, transparent)` }}
           >
-            {busy ? 'Resetting…' : 'Reset password'}
+            {busy ? t('resetPassword.resettingButton') : t('resetPassword.resetButton')}
           </button>
           <button
             type="button"
             onClick={() => setStep('request')}
             className="w-full text-xs font-semibold text-gray-400 hover:text-gray-200"
           >
-            Didn't get a code? Try again
+            {t('resetPassword.retryButton')}
           </button>
         </form>
       )}
 
       {step === 'done' && (
         <div className="text-center space-y-4">
-          <p className="text-gray-300 text-sm">Your password has been changed. You can sign in now.</p>
+          <p className="text-gray-300 text-sm">{t('resetPassword.doneMessage')}</p>
           <button
             type="button"
             onClick={() => navigate('/portal/student')}
             className="w-full rounded-full py-3 font-bold text-white transition"
-            style={{ background: GRADIENT, boxShadow: `0 10px 30px ${PURPLE_DARK}59` }}
+            style={{ background: GRADIENT, boxShadow: `0 10px 30px color-mix(in srgb, ${PURPLE_DARK} 35%, transparent)` }}
           >
-            Back to sign in
+            {t('resetPassword.backToSignIn')}
           </button>
         </div>
       )}

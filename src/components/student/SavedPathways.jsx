@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../../services/api.js';
 import { Alert, Card, Salary } from '../common/ui.jsx';
 import PathwayCard from './PathwayCard.jsx';
+import { useLang } from '../../i18n/index.jsx';
 
 /**
  * Its own tab rather than a strip at the bottom of Pathways — saving a
@@ -9,6 +10,7 @@ import PathwayCard from './PathwayCard.jsx';
  * which made "saved" feel like it went nowhere.
  */
 export default function SavedPathways() {
+  const { t } = useLang();
   const [saved, setSaved] = useState([]);
   const [selected, setSelected] = useState(null);
   const [error, setError] = useState('');
@@ -29,10 +31,9 @@ export default function SavedPathways() {
 
   if (saved.length === 0) {
     return (
-      <Card title="Saved pathways">
+      <Card title={t('student.savedPathways.cardTitle')}>
         <p className="text-gray-400 text-sm">
-          Nothing saved yet. Open a pathway from the Pathways tab and hit “Save for later” — it
-          will show up here as a card.
+          {t('student.savedPathways.emptyBody')}
         </p>
       </Card>
     );
@@ -42,7 +43,7 @@ export default function SavedPathways() {
     <>
       <Alert>{error}</Alert>
 
-      <Card title={`${saved.length} saved pathway${saved.length === 1 ? '' : 's'}`}>
+      <Card title={t('student.savedPathways.count')(saved.length)}>
         <div className="grid sm:grid-cols-2 gap-3">
           {saved.map((m) => {
             const open = selected === m.slug;
@@ -50,8 +51,13 @@ export default function SavedPathways() {
               <div
                 key={m.slug}
                 className={`text-left p-4 rounded-2xl border-2 transition ${
-                  open ? 'border-cyan-400 bg-cyan-500/10' : 'border-white/10 hover:border-white/25'
+                  open ? '' : 'border-white/10 hover:border-white/25'
                 }`}
+                style={
+                  open
+                    ? { borderColor: 'var(--darbi-purple)', background: 'color-mix(in srgb, var(--darbi-purple) 10%, transparent)' }
+                    : undefined
+                }
               >
                 <div className="flex justify-between items-start gap-2">
                   <button
@@ -63,7 +69,7 @@ export default function SavedPathways() {
                   <button
                     onClick={() => unsave(m)}
                     className="text-gray-500 hover:text-red-400 shrink-0"
-                    aria-label={`Remove ${m.name}`}
+                    aria-label={t('student.savedPathways.removeAria')(m.name)}
                   >
                     ✕
                   </button>
@@ -82,9 +88,9 @@ export default function SavedPathways() {
                 <button
                   onClick={() => setSelected(open ? null : m.slug)}
                   className="text-xs font-semibold mt-3"
-                  style={{ color: '#67e8f9' }}
+                  style={{ color: 'var(--darbi-purple)' }}
                 >
-                  {open ? 'Hide pathway ▲' : 'View pathway ▼'}
+                  {open ? t('student.savedPathways.hidePathway') : t('student.savedPathways.viewPathway')}
                 </button>
               </div>
             );

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../services/auth.jsx';
 import { Alert, Button, CenteredCard } from '../components/common/ui.jsx';
+import { useLang } from '../i18n/index.jsx';
 
 /**
  * First stop after signup, before ProfileSetupPage and OnboardingPage.
@@ -12,6 +13,7 @@ import { Alert, Button, CenteredCard } from '../components/common/ui.jsx';
 export default function VerifyEmailPage() {
   const navigate = useNavigate();
   const { user, setUser, verifyEmail, resendVerification } = useAuth();
+  const { t } = useLang();
 
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
@@ -29,8 +31,8 @@ export default function VerifyEmailPage() {
     } catch (err) {
       setError(
         {
-          invalid_code: 'That code is not correct.',
-          code_expired: 'That code expired — send a new one.',
+          invalid_code: t('verifyEmail.errorInvalidCode'),
+          code_expired: t('verifyEmail.errorCodeExpired'),
         }[err.code] ?? err.message,
       );
     } finally {
@@ -44,7 +46,7 @@ export default function VerifyEmailPage() {
     setBusy(true);
     try {
       await resendVerification();
-      setStatus('New code sent — check your email.');
+      setStatus(t('verifyEmail.resendSuccess'));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -55,11 +57,13 @@ export default function VerifyEmailPage() {
   return (
     <CenteredCard>
       <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--darbi-gold)' }}>
-        Step 1 of 3
+        {t('verifyEmail.stepIndicator')}
       </p>
-      <h1 className="text-lg font-bold text-darbi-navy mt-2 mb-2">Verify your email</h1>
+      <h1 className="text-lg font-bold text-darbi-navy mt-2 mb-2">{t('verifyEmail.heading')}</h1>
       <p className="text-sm text-gray-400 mb-5">
-        We sent a 6-digit code to <span className="text-white font-semibold">{user?.email}</span>.
+        {t('verifyEmail.sentCodePrefix')}{' '}
+        <span className="text-white font-semibold">{user?.email}</span>
+        {t('verifyEmail.sentCodeSuffix')}
       </p>
 
       <Alert>{error}</Alert>
@@ -68,7 +72,7 @@ export default function VerifyEmailPage() {
       <form onSubmit={submit} className="space-y-4 text-left">
         <label className="block">
           <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
-            6-digit code
+            {t('verifyEmail.codeLabel')}
           </span>
           <input
             className="darbi-input text-center tracking-[0.4em]"
@@ -84,7 +88,7 @@ export default function VerifyEmailPage() {
 
         <div className="flex items-center justify-center">
           <Button type="submit" disabled={busy}>
-            {busy ? 'Checking…' : 'Verify'}
+            {busy ? t('verifyEmail.checkingButton') : t('verifyEmail.verifyButton')}
           </Button>
         </div>
       </form>
@@ -95,7 +99,7 @@ export default function VerifyEmailPage() {
         disabled={busy}
         className="text-xs text-gray-500 mt-5 underline block mx-auto"
       >
-        Resend code
+        {t('verifyEmail.resendButton')}
       </button>
       <button
         type="button"
@@ -103,7 +107,7 @@ export default function VerifyEmailPage() {
         disabled={busy}
         className="text-xs text-gray-500 mt-3 underline block mx-auto"
       >
-        Skip for now
+        {t('verifyEmail.skipButton')}
       </button>
     </CenteredCard>
   );

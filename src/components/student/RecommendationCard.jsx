@@ -1,4 +1,5 @@
 import { Salary } from '../common/ui.jsx';
+import { useLang } from '../../i18n/index.jsx';
 
 /**
  * The wireframe's results card, verbatim in structure:
@@ -21,6 +22,7 @@ export default function RecommendationCard({
   onUnsave,
   onLearnMore,
 }) {
+  const { t } = useLang();
   if (!major) return null;
 
   const entry = {
@@ -39,7 +41,7 @@ export default function RecommendationCard({
         <h3 className="text-lg font-bold text-darbi-navy uppercase tracking-wide">{major.name}</h3>
         {recommendation?.fit_score != null && (
           <span className="ml-auto text-sm text-gray-500 shrink-0">
-            {recommendation.fit_score}% fit
+            {t('student.recommendationCard.fitPercent')(recommendation.fit_score)}
           </span>
         )}
       </header>
@@ -47,40 +49,40 @@ export default function RecommendationCard({
       {recommendation?.why && <p className="text-gray-300 mb-3 text-sm">{recommendation.why}</p>}
 
       <dl className="text-sm space-y-1.5 mb-4">
-        <Row label="Average Salary">
-          <Salary band={entry} stage="Entry" confidence={major.salary_confidence} />
+        <Row label={t('student.recommendationCard.averageSalary')}>
+          <Salary band={entry} stage={t('common.stageEntry')} confidence={major.salary_confidence} />
         </Row>
 
-        <Row label="Universities">
+        <Row label={t('student.recommendationCard.universities')}>
           {major.universities?.length ? (
             major.universities.join(', ')
           ) : (
-            <span className="text-gray-500 italic">None on file</span>
+            <span className="text-gray-500 italic">{t('student.recommendationCard.noneOnFile')}</span>
           )}
         </Row>
 
-        <Row label="Top Jobs">
+        <Row label={t('student.recommendationCard.topJobs')}>
           {major.top_jobs?.length ? (
             major.top_jobs.slice(0, 3).join(', ')
           ) : (
-            <span className="text-gray-500 italic">Not listed</span>
+            <span className="text-gray-500 italic">{t('student.recommendationCard.notListed')}</span>
           )}
         </Row>
 
         {recommendation?.matching_interests?.length > 0 && (
-          <Row label="Matches">{recommendation.matching_interests.join(', ')}</Row>
+          <Row label={t('student.recommendationCard.matches')}>{recommendation.matching_interests.join(', ')}</Row>
         )}
       </dl>
 
       <div className="flex flex-wrap gap-2 darbi-stack-mobile">
         <button onClick={() => onLearnMore?.(major.slug)} className="darbi-btn darbi-btn-navy text-sm">
-          Learn more
+          {t('student.recommendationCard.learnMore')}
         </button>
         <button
           onClick={() => (saved ? onUnsave?.(major) : onSave?.(major))}
           className={`darbi-btn text-sm ${saved ? 'darbi-btn-navy hover:!text-red-400 hover:!border-red-400/50' : ''}`}
         >
-          {saved ? 'Saved — remove' : 'Save'}
+          {saved ? t('student.savedRemove') : t('common.save')}
         </button>
       </div>
     </article>

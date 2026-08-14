@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api.js';
 import { Alert, Button, CenteredCard } from '../components/common/ui.jsx';
+import { useLang } from '../i18n/index.jsx';
 
 /**
  * One-time, post-signup questionnaire. Answers are analyzed by Claude into a
@@ -15,6 +16,7 @@ import { Alert, Button, CenteredCard } from '../components/common/ui.jsx';
  */
 export default function OnboardingPage() {
   const navigate = useNavigate();
+  const { t } = useLang();
 
   const [questions, setQuestions] = useState(null);
   const [step, setStep] = useState(0);
@@ -25,14 +27,14 @@ export default function OnboardingPage() {
   useEffect(() => {
     api('/students/me/onboarding-questions')
       .then((res) => setQuestions(res.questions))
-      .catch(() => setError('Could not load the onboarding questions.'));
+      .catch(() => setError(t('onboarding.loadError')));
   }, []);
 
   if (error && !questions) {
     return (
       <CenteredCard>
         <Alert>{error}</Alert>
-        <Button onClick={() => navigate('/')}>Continue to dashboard</Button>
+        <Button onClick={() => navigate('/')}>{t('onboarding.continueToDashboard')}</Button>
       </CenteredCard>
     );
   }
@@ -40,7 +42,7 @@ export default function OnboardingPage() {
   if (!questions) {
     return (
       <CenteredCard>
-        <p className="text-gray-500">Loading…</p>
+        <p className="text-gray-500">{t('common.loading')}</p>
       </CenteredCard>
     );
   }
@@ -55,7 +57,7 @@ export default function OnboardingPage() {
 
   function next() {
     if (q.required && !value.trim()) {
-      setError('This one helps the advisor a lot — a sentence or two is enough.');
+      setError(t('onboarding.requiredHint'));
       return;
     }
     setError('');
@@ -78,7 +80,7 @@ export default function OnboardingPage() {
       });
       navigate('/');
     } catch {
-      setError('Could not save your answers. You can try again, or skip for now.');
+      setError(t('onboarding.saveError'));
       setAnalyzing(false);
     }
   }
@@ -86,7 +88,7 @@ export default function OnboardingPage() {
   return (
     <CenteredCard>
       <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--darbi-gold)' }}>
-        Question {step + 1} of {questions.length}
+        {t('onboarding.questionProgress')(step + 1, questions.length)}
       </p>
       <div
         className="flex gap-1.5 mt-3 mb-5"
@@ -99,7 +101,7 @@ export default function OnboardingPage() {
           <span
             key={i}
             className="flex-1 h-1.5 rounded-full transition-colors"
-            style={{ background: i <= step ? 'var(--darbi-gradient)' : 'rgba(255,255,255,0.1)' }}
+            style={{ background: i <= step ? 'var(--darbi-gradient)' : 'color-mix(in srgb, var(--darbi-navy) 15%, transparent)' }}
           />
         ))}
       </div>
@@ -112,7 +114,7 @@ export default function OnboardingPage() {
         {q.options?.length > 0 && (
           <label className="block">
             <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
-              Pick a suggested answer
+              {t('onboarding.pickSuggested')}
             </span>
             <select
               className="darbi-input"
@@ -122,7 +124,7 @@ export default function OnboardingPage() {
               }}
               disabled={analyzing}
             >
-              <option value="">Choose one…</option>
+              <option value="">{t('onboarding.chooseOne')}</option>
               {q.options.map((opt) => (
                 <option key={opt} value={opt}>
                   {opt.length > 70 ? `${opt.slice(0, 70)}…` : opt}
@@ -134,14 +136,14 @@ export default function OnboardingPage() {
 
         <label className="block">
           <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
-            {q.options?.length > 0 ? 'Or write your own' : 'Your answer'}
+            {q.options?.length > 0 ? t('onboarding.orWriteOwn') : t('onboarding.yourAnswer')}
           </span>
           <textarea
             className="darbi-input"
             rows={4}
             value={value}
             onChange={(e) => setAnswer(e.target.value)}
-            placeholder={q.required ? 'Type your answer…' : 'Optional — leave blank if none'}
+            placeholder={q.required ? t('onboarding.answerPlaceholderRequired') : t('onboarding.answerPlaceholderOptional')}
             disabled={analyzing}
             autoFocus
           />
@@ -151,11 +153,11 @@ export default function OnboardingPage() {
       <div className="flex items-center justify-center gap-3 mt-6">
         {step > 0 && (
           <Button variant="navy" onClick={back} disabled={analyzing}>
-            Back
+            {t('onboarding.back')}
           </Button>
         )}
         <Button onClick={next} disabled={analyzing}>
-          {analyzing ? 'Analyzing your answers…' : isLast ? 'Finish' : 'Next'}
+          {analyzing ? t('onboarding.analyzing') : isLast ? t('onboarding.finish') : t('onboarding.next')}
         </Button>
       </div>
 
@@ -164,7 +166,7 @@ export default function OnboardingPage() {
         disabled={analyzing}
         className="text-xs text-gray-500 mt-6 underline block mx-auto"
       >
-        Skip for now
+        {t('onboarding.skipForNow')}
       </button>
     </CenteredCard>
   );

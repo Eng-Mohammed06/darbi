@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useRef, useState } from 'react';
+import { useLang } from '../../i18n/index.jsx';
 
 const ToastContext = createContext(null);
 
@@ -16,6 +17,7 @@ const KIND_COLOR = {
  * switching tabs was easy to miss.
  */
 export function ToastProvider({ children }) {
+  const { t } = useLang();
   const [toasts, setToasts] = useState([]);
   const idRef = useRef(0);
 
@@ -40,35 +42,35 @@ export function ToastProvider({ children }) {
         className="fixed bottom-4 inset-x-0 sm:inset-x-auto sm:right-4 z-[60] flex flex-col gap-2 px-4 sm:px-0 items-center sm:items-end"
         aria-live="polite"
       >
-        {toasts.map((t) => (
+        {toasts.map((toastItem) => (
           <div
-            key={t.id}
+            key={toastItem.id}
             className="darbi-toast w-full sm:w-auto sm:max-w-sm flex items-center justify-between gap-3 py-3 px-4"
             style={{
               background: 'var(--darbi-surface-solid)',
               border: '1px solid var(--darbi-border)',
-              borderLeft: `4px solid ${KIND_COLOR[t.kind] ?? KIND_COLOR.info}`,
+              borderLeft: `4px solid ${KIND_COLOR[toastItem.kind] ?? KIND_COLOR.info}`,
               borderRadius: 'var(--darbi-radius)',
               boxShadow: '0 12px 32px rgba(0,0,0,0.4)',
             }}
           >
-            <span className="text-sm text-gray-200">{t.message}</span>
+            <span className="text-sm text-gray-200">{toastItem.message}</span>
             <div className="flex items-center gap-3 shrink-0">
-              {t.action && (
+              {toastItem.action && (
                 <button
                   onClick={() => {
-                    t.action.onClick();
-                    dismiss(t.id);
+                    toastItem.action.onClick();
+                    dismiss(toastItem.id);
                   }}
                   className="text-xs font-bold uppercase tracking-wide"
                   style={{ color: 'var(--darbi-purple)' }}
                 >
-                  {t.action.label}
+                  {toastItem.action.label}
                 </button>
               )}
               <button
-                onClick={() => dismiss(t.id)}
-                aria-label="Dismiss"
+                onClick={() => dismiss(toastItem.id)}
+                aria-label={t('common.dismiss')}
                 className="text-gray-500 hover:text-white transition"
               >
                 ✕

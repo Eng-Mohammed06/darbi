@@ -1,25 +1,32 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api.js';
+import { useTheme } from '../services/theme.jsx';
+import { useLang } from '../i18n/index.jsx';
 
 /**
  * The public home page — shown to anyone who isn't signed in yet (App.jsx's
  * Home only renders this when there's no user). There wasn't one before:
  * "/" just bounced straight to the student login form.
  *
- * Deliberately NOT DARBI's usual cyan/orange theme. This page recreates the
- * actual look of the design mockup it's built from (HP.html) — the
- * "engineering datasheet" system: IBM Plex Mono for every number, eyebrow
- * labels with a trailing rule, evidence chips with numbered badges, a faint
- * background grid. All of it is scoped under .hp-landing (see the <style>
- * block below) so none of it leaks into the rest of the app, which keeps
- * its own theme unchanged.
+ * Deliberately NOT DARBI's usual cyan/orange theme by default. This page
+ * recreates the actual look of the design mockup it's built from
+ * (HP.html) — the "engineering datasheet" system: IBM Plex Mono for every
+ * number, eyebrow labels with a trailing rule, evidence chips with numbered
+ * badges. All of it is scoped under .hp-landing (see the <style> block
+ * below) so none of it leaks into the rest of the app.
  *
- * HP.html itself ships seven named colour themes and a full English/Arabic
- * toggle (with RTL layout) — this page carries the same two switches,
- * using HP.html's exact token values, scoped and persisted to this page
- * alone (localStorage keys below) so flipping them here never touches the
- * rest of DARBI's UI.
+ * Theme and language are NOT page-local state — both read/write the same
+ * global ThemeProvider/LanguageProvider every other page uses (see
+ * src/services/theme.jsx and src/i18n/index.jsx), so a change made here is
+ * visible everywhere, including after logging in. "Classic" (the eighth
+ * theme option) is DARBI's original cyan/orange palette, carried over as an
+ * option rather than lost when the other seven were added.
+ *
+ * The three portal cards and the "JSYP 2026 · Team Sparks" eyebrow that
+ * used to sit here are gone — replaced by three paragraphs actually
+ * describing what the product does. Portal entry now lives in the header
+ * nav (Student / Employer / Career Boost), so nothing is unreachable.
  *
  * The centerpiece — a real grounded answer typed out live, with its sources
  * attached as tappable-looking chips — mirrors that mockup's landing view,
@@ -27,11 +34,14 @@ import { api } from '../services/api.js';
  * /api/pathways/:slug, already public) rather than invented.
  */
 
-const THEME_KEY = 'darbi.hpTheme';
-const LANG_KEY = 'darbi.hpLang';
-
-// Exact token values from HP.html's seven data-theme blocks.
+// Exact token values from HP.html's seven data-theme blocks, plus DARBI's
+// own original palette carried over as an eighth ("classic") option so it
+// isn't lost now that the switcher applies site-wide.
 const THEMES = [
+  { id: 'classic', en: 'Classic', ar: 'كلاسيكي', vars: {
+    ink: '#f8fafc', ink2: '#94a3b8', ink3: '#64748b', paper: '#0f172a', surface: '#1e293b',
+    rule: 'rgba(6,182,212,0.25)', rule2: 'rgba(6,182,212,0.15)', trust: '#06b6d4', trustBg: 'rgba(6,182,212,0.15)', caution: '#ff5722', onInk: '#0f172a',
+  } },
   { id: 'blueprint', en: 'Blueprint Night', ar: 'مخطط ليلي', vars: {
     ink: '#e6edf3', ink2: '#9fb0c0', ink3: '#6d8095', paper: '#0e141b', surface: '#17202a',
     rule: '#27343f', rule2: '#1e2833', trust: '#3fd0a6', trustBg: '#12302b', caution: '#f5b841', onInk: '#0e141b',
@@ -79,43 +89,6 @@ const MAJOR_NAME_AR = {
   'Software Engineering': 'هندسة البرمجيات',
 };
 
-const COPY = {
-  en: {
-    themeLabel: 'Theme',
-    eyebrow: 'JSYP 2026 · Team Sparks',
-    title: 'Career advice you can check.',
-    sub: "Darbi grounds every major, salary, and job it names in verified Jordanian data — never a guess. Pick how you're using it.",
-    portalGroup: 'Choose a portal',
-    roles: [
-      { role: 'student', title: "I'm a student", blurb: 'Chat with the advisor, build a pathway, track your own courses' },
-      { role: 'company', title: "I'm hiring", blurb: 'Post a role, filter students by major, GPA, and skills' },
-      { role: 'career', title: 'Career Boost', blurb: 'Close a named skill gap with courses that actually lead somewhere' },
-    ],
-    statsLabels: { majors: 'majors', courses: 'verified courses', jobs: 'verified job listings', trailing: 'every figure traced to a source.' },
-    panelEyebrow: 'Career advice you can check',
-    msgWho: 'Darbi advisor',
-    sourcesLabel: 'Sources for this answer',
-    loading: 'loading…',
-  },
-  ar: {
-    themeLabel: 'المظهر',
-    eyebrow: 'JSYP 2026 · فريق سباركس',
-    title: 'إرشاد مهني يمكنك التحقق منه.',
-    sub: 'منصة دربي تؤسس كل تخصص وراتب ووظيفة تذكرها على بيانات أردنية موثّقة — لا تخمين أبدًا. اختر طريقة استخدامك.',
-    portalGroup: 'اختر بوابتك',
-    roles: [
-      { role: 'student', title: 'أنا طالب', blurb: 'تحدّث مع المستشار، ابنِ مسارًا مهنيًا، وتابع مقرراتك' },
-      { role: 'company', title: 'أنا أوظّف', blurb: 'انشر وظيفة، وصفِّ الطلبة حسب التخصص والمعدل والمهارات' },
-      { role: 'career', title: 'تطوير المهارات', blurb: 'أغلق فجوة مهارة محددة بمقررات تقودك فعليًا إلى هدفك' },
-    ],
-    statsLabels: { majors: 'تخصصًا', courses: 'مقررًا موثقًا', jobs: 'وظيفة موثقة', trailing: 'كل رقم هنا موثّق بمصدر.' },
-    panelEyebrow: 'إرشاد مهني يمكنك التحقق منه',
-    msgWho: 'مستشار دربي',
-    sourcesLabel: 'مصادر هذه الإجابة',
-    loading: 'جارٍ التحميل…',
-  },
-};
-
 // Tried in a random order each load — whichever one actually has salary
 // data and a job listing wins, so the specimen never shows a "—" instead
 // of a number.
@@ -124,34 +97,11 @@ const SPECIMEN_SLUGS = [
   'electrical-engineering', 'chemical-engineering', 'biomedical-engineering',
 ];
 
-function readStored(key, fallback) {
-  try {
-    return localStorage.getItem(key) || fallback;
-  } catch {
-    return fallback;
-  }
-}
-
 export default function LandingPage() {
   const [stats, setStats] = useState(null);
   const [specimen, setSpecimen] = useState(null);
-  const [theme, setThemeState] = useState(() => readStored(THEME_KEY, 'blueprint'));
-  const [lang, setLangState] = useState(() => readStored(LANG_KEY, 'en'));
-
-  function setTheme(id) {
-    setThemeState(id);
-    try { localStorage.setItem(THEME_KEY, id); } catch { /* private browsing */ }
-  }
-  function toggleLang() {
-    setLangState((prev) => {
-      const next = prev === 'en' ? 'ar' : 'en';
-      try { localStorage.setItem(LANG_KEY, next); } catch { /* private browsing */ }
-      return next;
-    });
-  }
-
-  const t = COPY[lang];
-  const dir = lang === 'ar' ? 'rtl' : 'ltr';
+  const { theme, setTheme } = useTheme();
+  const { lang, dir, toggleLang, t } = useLang();
 
   useEffect(() => {
     Promise.all([api('/majors', { auth: false }), api('/jobs', { auth: false })])
@@ -182,6 +132,9 @@ export default function LandingPage() {
     return () => { cancelled = true; };
   }, []);
 
+  const pillars = t('landing.pillars');
+  const statsLabels = t('landing.statsLabels');
+
   return (
     <div className="hp-landing" data-theme={theme} dir={dir} lang={lang}>
       <style>{HP_CSS(THEMES)}</style>
@@ -192,8 +145,13 @@ export default function LandingPage() {
             <span className="hp-brand-mark">D</span>
             Darbi
           </span>
+          <nav className="hp-nav">
+            <Link to="/portal/student">{t('landing.navStudent')}</Link>
+            <Link to="/portal/company">{t('landing.navCompany')}</Link>
+            <Link to="/portal/career">{t('landing.navCareer')}</Link>
+          </nav>
           <span className="hp-spacer" />
-          <label className="hp-sr-only" htmlFor="hp-theme-sel">{t.themeLabel}</label>
+          <label className="hp-sr-only" htmlFor="hp-theme-sel">{t('landing.themeLabel')}</label>
           <select
             id="hp-theme-sel"
             className="hp-theme-sel"
@@ -214,36 +172,31 @@ export default function LandingPage() {
         <div className="hp-grid-2">
           <section className="hp-stack-l">
             <div className="hp-stack">
-              <span className="hp-eyebrow">{t.eyebrow}</span>
-              <h1>{t.title}</h1>
-              <p className="hp-muted" style={{ maxWidth: '46ch' }}>{t.sub}</p>
+              <h1>{t('landing.title')}</h1>
+              <p className="hp-muted" style={{ maxWidth: '46ch' }}>{t('landing.sub')}</p>
             </div>
 
-            <div className="hp-stack" role="group" aria-label={t.portalGroup}>
-              {t.roles.map((r) => (
-                <Link key={r.role} to={`/portal/${r.role}`} className="hp-card">
-                  <div className="hp-row">
-                    <strong>{r.title}</strong>
-                    <span className="hp-spacer" />
-                    <span className="hp-mono hp-small hp-arrow">→</span>
-                  </div>
-                  <span className="hp-small hp-muted">{r.blurb}</span>
-                </Link>
+            <div className="hp-stack">
+              {pillars.map((p) => (
+                <div key={p.title} className="hp-card">
+                  <strong>{p.title}</strong>
+                  <span className="hp-small hp-muted">{p.body}</span>
+                </div>
               ))}
             </div>
 
             {stats && (
               <p className="hp-small hp-muted hp-mono">
-                <CountUp to={stats.majors} /> {t.statsLabels.majors} · <CountUp to={stats.courses} /> {t.statsLabels.courses} ·{' '}
-                <CountUp to={stats.jobs} /> {t.statsLabels.jobs} — {t.statsLabels.trailing}
+                <CountUp to={stats.majors} /> {statsLabels.majors} · <CountUp to={stats.courses} /> {statsLabels.courses} ·{' '}
+                <CountUp to={stats.jobs} /> {statsLabels.jobs} — {statsLabels.trailing}
               </p>
             )}
           </section>
 
           <section className="hp-card hp-panel-invert">
-            <span className="hp-eyebrow">{t.panelEyebrow}</span>
+            <span className="hp-eyebrow">{t('landing.panelEyebrow')}</span>
             <div style={{ marginBlockStart: 14 }}>
-              <div className="hp-msg-who">{t.msgWho}</div>
+              <div className="hp-msg-who">{t('landing.msgWho')}</div>
               <Specimen key={lang} data={specimen} lang={lang} t={t} />
             </div>
           </section>
@@ -278,7 +231,7 @@ function Specimen({ data, lang, t }) {
   if (!data) {
     return (
       <p className="hp-mono hp-small" style={{ marginBlock: '8px 0', opacity: 0.5 }}>
-        {t.loading}
+        {t('landing.loading')}
       </p>
     );
   }
@@ -295,7 +248,7 @@ function Specimen({ data, lang, t }) {
       {done && (
         <>
           <div className="hp-small hp-muted" style={{ marginBlockStart: 14 }}>
-            {t.sourcesLabel}
+            {t('landing.sourcesLabel')}
           </div>
           <div className="hp-evidence">
             {chips.map((c, i) => (
@@ -391,9 +344,9 @@ function CountUp({ to }) {
  * Scoped recreation of HP.html's stylesheet — "engineering datasheet"
  * design system, ported as CSS custom properties under .hp-landing so
  * nothing here can affect any other page. `data-theme` picks which of the
- * seven token sets (built from the THEMES list, exact HP.html hex values)
- * applies; `dir="rtl"` swaps the whole layout for Arabic using the same
- * logical-property approach HP.html uses, so one stylesheet serves both.
+ * eight token sets (built from the THEMES list above) applies; `dir="rtl"`
+ * swaps the whole layout for Arabic using the same logical-property
+ * approach HP.html uses, so one stylesheet serves both.
  */
 function HP_CSS(themes) {
   const themeBlocks = themes
@@ -443,6 +396,14 @@ ${themeBlocks}
   inline-size: 26px; block-size: 26px; border-radius: 7px; background: var(--ink); color: var(--trust);
   display: grid; place-items: center; font-family: var(--font-mono); font-size: 15px; font-weight: 700; flex: none;
 }
+.hp-landing .hp-nav { display: flex; gap: 4px; margin-inline-start: 22px; }
+.hp-landing .hp-nav a {
+  padding: 8px 12px; border-radius: var(--r-md); text-decoration: none;
+  color: var(--ink-2); font-size: 13.5px; font-weight: 500; transition: background .15s, color .15s;
+}
+.hp-landing .hp-nav a:hover { background: var(--surface); color: var(--ink); }
+@media (max-width: 720px) { .hp-landing .hp-nav { display: none; } }
+
 .hp-landing .hp-eyebrow {
   font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
   color: var(--ink-3); display: flex; align-items: center; gap: 8px;
@@ -478,19 +439,10 @@ ${themeBlocks}
 
 .hp-landing .hp-card {
   background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r-lg);
-  padding: 16px 18px; text-decoration: none; color: inherit; display: grid; gap: 4px;
+  padding: 16px 18px; text-decoration: none; color: inherit; display: grid; gap: 6px;
   transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease;
 }
-.hp-landing a.hp-card { min-block-size: 56px; }
-.hp-landing a.hp-card:hover {
-  border-color: var(--trust); transform: translateY(-2px);
-  box-shadow: 0 10px 26px -16px color-mix(in srgb, var(--trust) 45%, transparent);
-}
-.hp-landing a.hp-card:focus-visible { outline: 2px solid var(--trust); outline-offset: 2px; }
 .hp-landing .hp-card strong { font-size: 15.5px; }
-.hp-landing .hp-arrow { color: var(--trust); display: inline-block; transition: transform .15s ease; }
-.hp-landing a.hp-card:hover .hp-arrow { transform: translateX(3px); }
-.hp-landing[dir="rtl"] a.hp-card:hover .hp-arrow { transform: scaleX(-1) translateX(3px); }
 
 .hp-landing .hp-panel-invert { background: var(--ink); border-color: var(--ink); color: var(--paper); }
 .hp-landing .hp-panel-invert .hp-eyebrow { color: color-mix(in srgb, var(--paper) 55%, var(--ink)); }

@@ -1,31 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { api, getToken } from '../../services/api.js';
 import { Alert, Button, Skeleton } from '../common/ui.jsx';
+import { useLang } from '../../i18n/index.jsx';
 
 // After a couple of real exchanges, nudge toward Recommendations — chat is
 // the front door, but it shouldn't be the only door a student ever finds.
 const BRIDGE_AFTER_MESSAGES = 4;
 
-/** Openers differ per journey — slide 4's "one flow, two journeys". */
-const OPENERS = {
-  highschool: [
-    'I like maths but I don’t know what engineers actually do',
-    'What should I study if I want to work with computers?',
-    'My family wants me to do medicine. What are my options?',
-  ],
-  undergraduate: [
-    'I’m halfway through my degree and having doubts',
-    'What can I add on top of my major to be more employable?',
-    'Which skills are Jordanian employers actually asking for?',
-  ],
-  graduate: [
-    'I graduated but can’t find work in my field',
-    'What certifications are worth doing in Jordan?',
-    'How do I move into software from another engineering field?',
-  ],
-};
-
 export default function ChatAdvisor({ student, onFallback }) {
+  const { t } = useLang();
+  const OPENERS = t('student.chat.openers');
   const [messages, setMessages] = useState([]);
   const [draft, setDraft] = useState('');
   const [streaming, setStreaming] = useState('');
@@ -120,13 +104,13 @@ export default function ChatAdvisor({ student, onFallback }) {
   if (!configured) {
     return (
       <Alert kind="warn">
-        The AI advisor is not configured on this server — <code>ANTHROPIC_API_KEY</code> is unset.{' '}
+        {t('student.chat.notConfiguredPrefix')}<code>ANTHROPIC_API_KEY</code>{t('student.chat.notConfiguredSuffix')}{' '}
         {onFallback && (
           <button onClick={onFallback} className="underline font-semibold">
-            See your recommendations instead
+            {t('student.chat.seeRecommendationsInstead')}
           </button>
         )}{' '}
-        — those rank your interests against DARBI’s verified course and job data, no AI required.
+        {t('student.chat.notConfiguredFooter')}
       </Alert>
     );
   }
@@ -145,9 +129,9 @@ export default function ChatAdvisor({ student, onFallback }) {
     >
       <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: '1px solid var(--darbi-border)' }}>
         <div>
-          <h2 className="font-bold text-darbi-navy">Talk to Darbi</h2>
+          <h2 className="font-bold text-darbi-navy">{t('student.chat.title')}</h2>
           <p className="text-xs text-gray-500">
-            Grounded in DARBI’s verified Jordanian course and job data
+            {t('student.chat.subtitle')}
           </p>
         </div>
         <div className="flex items-center gap-3 shrink-0">
@@ -155,14 +139,18 @@ export default function ChatAdvisor({ student, onFallback }) {
             <button
               onClick={onFallback}
               className="text-xs font-bold px-2.5 py-1 rounded-full transition hover:brightness-110"
-              style={{ background: 'rgba(6,182,212,0.15)', border: '1px solid rgba(6,182,212,0.35)', color: '#67e8f9' }}
+              style={{
+                background: 'color-mix(in srgb, var(--darbi-purple) 15%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--darbi-purple) 35%, transparent)',
+                color: 'var(--darbi-purple)',
+              }}
             >
-              See recommendations →
+              {t('student.chat.seeRecommendations')}
             </button>
           )}
           {messages.length > 0 && (
             <button onClick={reset} className="text-xs text-gray-500 hover:text-gray-300">
-              Start over
+              {t('student.chat.startOver')}
             </button>
           )}
         </div>
@@ -181,17 +169,17 @@ export default function ChatAdvisor({ student, onFallback }) {
           <div className="text-center mt-6">
             <div className="text-4xl mb-3">🎓</div>
             <p className="text-gray-200 font-medium mb-1">
-              Hi {student?.name?.split(' ')[0] ?? 'there'} — what’s on your mind?
+              {t('student.chat.greeting')(student?.name?.split(' ')[0] ?? t('student.chat.greetingNameFallback'))}
             </p>
             <p className="text-sm text-gray-500 mb-5">
-              Tell me what you enjoy, or what you’re unsure about. No forms.
+              {t('student.chat.greetingBody')}
             </p>
             <div className="flex flex-col gap-2 items-center">
               {openers.map((o) => (
                 <button
                   key={o}
                   onClick={() => send(o)}
-                  className="text-sm text-left text-gray-200 px-4 py-2 rounded-full border border-white/10 hover:border-cyan-400 hover:bg-white/5 transition max-w-md w-full"
+                  className="text-sm text-left text-gray-200 px-4 py-2 rounded-full border border-white/10 hover:border-[var(--darbi-purple)] hover:bg-white/5 transition max-w-md w-full"
                 >
                   {o}
                 </button>
@@ -216,9 +204,9 @@ export default function ChatAdvisor({ student, onFallback }) {
               <>
                 {' '}
                 <button onClick={onFallback} className="underline font-semibold">
-                  See your recommendations instead
+                  {t('student.chat.seeRecommendationsInstead')}
                 </button>
-                {' — those work without the AI.'}
+                {t('student.chat.noAiFallbackFooter')}
               </>
             )}
           </Alert>
@@ -236,12 +224,12 @@ export default function ChatAdvisor({ student, onFallback }) {
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          placeholder="Type your message…"
+          placeholder={t('student.chat.inputPlaceholder')}
           disabled={busy}
           className="darbi-input flex-1"
         />
         <Button type="submit" disabled={busy || !draft.trim()}>
-          {busy ? '…' : 'Send'}
+          {busy ? t('student.chat.sending') : t('student.chat.send')}
         </Button>
       </form>
     </div>

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../services/api.js';
+import { useLang } from '../../i18n/index.jsx';
 
-const GOLD = '#ff5722';
-const PURPLE = '#06b6d4';
+const GOLD = 'var(--darbi-gold)';
+const PURPLE = 'var(--darbi-purple)';
 
 /**
  * Slide 4's "visual path, not a list": study -> career -> market demand.
@@ -11,6 +12,7 @@ const PURPLE = '#06b6d4';
  * call — the card renders identically with or without API credit.
  */
 export default function PathwayCard({ slug, onSave, onUnsave, saved, onClose }) {
+  const { t } = useLang();
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
 
@@ -27,7 +29,7 @@ export default function PathwayCard({ slug, onSave, onUnsave, saved, onClose }) 
   }, [slug]);
 
   if (error) return <p className="text-red-400 text-sm">{error}</p>;
-  if (!data) return <p className="text-gray-500 text-sm">Building your pathway…</p>;
+  if (!data) return <p className="text-gray-500 text-sm">{t('student.pathways.building')}</p>;
 
   const { major, study, career, demand, salary, personalized } = data;
 
@@ -42,7 +44,7 @@ export default function PathwayCard({ slug, onSave, onUnsave, saved, onClose }) 
       >
         <div>
           <p className="text-xs uppercase tracking-wide" style={{ color: PURPLE }}>
-            Your pathway
+            {t('student.pathways.yourPathway')}
           </p>
           <h2 className="text-2xl font-bold text-white">{major.name}</h2>
         </div>
@@ -53,11 +55,11 @@ export default function PathwayCard({ slug, onSave, onUnsave, saved, onClose }) 
               className={`text-sm font-bold px-4 py-2 rounded-full text-white transition ${saved ? 'hover:text-red-400' : ''}`}
               style={saved ? { border: '1px solid var(--darbi-border)' } : { background: 'var(--darbi-gradient)' }}
             >
-              {saved ? 'Saved — remove' : 'Save for later'}
+              {saved ? t('student.savedRemove') : t('student.pathways.saveForLater')}
             </button>
           )}
           {onClose && (
-            <button onClick={onClose} className="text-gray-400 hover:text-white text-sm px-2 transition" aria-label="Close">
+            <button onClick={onClose} className="text-gray-400 hover:text-white text-sm px-2 transition" aria-label={t('student.pathways.close')}>
               ✕
             </button>
           )}
@@ -65,18 +67,19 @@ export default function PathwayCard({ slug, onSave, onUnsave, saved, onClose }) 
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3">
-        <Stage n="1" title="Study" arrow>
+        <Stage n="1" title={t('student.pathways.study')} arrow>
           {study.taught_at.length > 0 ? (
             <>
-              <p className="text-xs text-gray-500 mb-1">Taught at</p>
+              <p className="text-xs text-gray-500 mb-1">{t('student.pathways.taughtAt')}</p>
               <ul className="mb-3">
                 {study.taught_at.map((u) => (
                   <li key={`${u.code}-${u.program_name}`} className="text-sm">
                     <span className="font-semibold text-darbi-navy">{u.code}</span>
                     <span className="text-gray-500">
+                      {' · '}
                       {u.competitive_average != null
-                        ? ` · needs ${u.competitive_average}% Tawjihi`
-                        : ' · average not published'}
+                        ? t('student.majorExplorer.needsTawjihi')(u.competitive_average)
+                        : t('student.majorExplorer.averageNotPublished')}
                     </span>
                   </li>
                 ))}
@@ -84,22 +87,26 @@ export default function PathwayCard({ slug, onSave, onUnsave, saved, onClose }) 
             </>
           ) : (
             <p className="text-sm text-gray-500 italic mb-3">
-              No university on file for this major yet.
+              {t('student.pathways.noUniversity')}
             </p>
           )}
           {personalized && (
             <p
               className="text-xs mb-3 px-3 py-2 rounded-lg"
-              style={{ background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.25)', color: '#67e8f9' }}
+              style={{
+                background: 'color-mix(in srgb, var(--darbi-purple) 10%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--darbi-purple) 25%, transparent)',
+                color: 'var(--darbi-purple)',
+              }}
             >
               <span className="font-bold uppercase tracking-wide" style={{ fontSize: '0.65rem' }}>
-                Personalized for you
+                {t('student.pathways.personalizedForYou')}
               </span>
               <br />
               {personalized.why_this_fits}
             </p>
           )}
-          <p className="text-xs text-gray-500 mb-1">Start with</p>
+          <p className="text-xs text-gray-500 mb-1">{t('student.pathways.startWith')}</p>
           <ul className="space-y-1.5">
             {study.courses.slice(0, 3).map((c) => (
               <li key={c.name} className="text-sm text-gray-300">
@@ -110,10 +117,10 @@ export default function PathwayCard({ slug, onSave, onUnsave, saved, onClose }) 
           </ul>
         </Stage>
 
-        <Stage n="2" title="Career" arrow>
+        <Stage n="2" title={t('student.pathways.career')} arrow>
           {career.roles.length > 0 ? (
             <>
-              <p className="text-xs text-gray-500 mb-1">Roles this leads to</p>
+              <p className="text-xs text-gray-500 mb-1">{t('student.pathways.rolesLeadTo')}</p>
               <ul className="mb-3 space-y-1">
                 {career.roles.slice(0, 4).map((r, i) => (
                   <li key={i} className="text-sm">
@@ -124,7 +131,7 @@ export default function PathwayCard({ slug, onSave, onUnsave, saved, onClose }) 
               </ul>
               {career.skills.length > 0 && (
                 <>
-                  <p className="text-xs text-gray-500 mb-1.5">Skills employers ask for</p>
+                  <p className="text-xs text-gray-500 mb-1.5">{t('student.pathways.skillsEmployersAsk')}</p>
                   <div className="flex flex-wrap gap-1.5">
                     {career.skills.slice(0, 6).map((s) => (
                       <span
@@ -140,17 +147,16 @@ export default function PathwayCard({ slug, onSave, onUnsave, saved, onClose }) 
             </>
           ) : (
             <p className="text-sm text-gray-500 italic">
-              No listing on our board names this major yet. That is a gap in our job data, not a
-              verdict on the field.
+              {t('student.pathways.noJobListing')}
             </p>
           )}
         </Stage>
 
-        <Stage n="3" title="Market demand">
+        <Stage n="3" title={t('student.pathways.marketDemand')}>
           {salary.available && (
             <div className="mb-4 pb-3" style={{ borderBottom: '1px solid var(--darbi-border)' }}>
-              <p className="text-xs text-gray-500 mb-1">Salary progression</p>
-              {[['Entry', salary.entry], ['3 years', salary.three_year], ['5 years', salary.five_year]]
+              <p className="text-xs text-gray-500 mb-1">{t('student.pathways.salaryProgression')}</p>
+              {[[t('common.stageEntry'), salary.entry], [t('student.pathways.threeYears'), salary.three_year], [t('student.pathways.fiveYears'), salary.five_year]]
                 .filter(([, b]) => b?.min != null)
                 .map(([label, b]) => (
                   <p key={label} className="text-sm">
@@ -167,23 +173,21 @@ export default function PathwayCard({ slug, onSave, onUnsave, saved, onClose }) 
               {demand.listings}
             </p>
             <p className="text-sm text-gray-300">
-              verified listing{demand.listings === 1 ? '' : 's'} from {demand.companies}{' '}
-              compan{demand.companies === 1 ? 'y' : 'ies'}
+              {t('student.pathways.verifiedListingsFrom')(demand.listings, demand.companies)}
             </p>
           </div>
 
           <DemandBar share={demand.share_of_board} />
           <p className="text-xs text-gray-500 mb-3">
-            {demand.share_of_board}% of the {demand.total_listings_on_board} listings on DARBI’s
-            board
+            {t('student.pathways.shareOfBoard')(demand.share_of_board, demand.total_listings_on_board)}
           </p>
 
           {demand.employers.length > 0 && (
             <>
-              <p className="text-xs text-gray-500 mb-1">Hiring</p>
+              <p className="text-xs text-gray-500 mb-1">{t('student.pathways.hiring')}</p>
               <p className="text-sm text-gray-300">
                 {demand.employers.slice(0, 5).join(', ')}
-                {demand.employers.length > 5 && ` +${demand.employers.length - 5} more`}
+                {demand.employers.length > 5 && ` ${t('student.pathways.moreEmployers')(demand.employers.length - 5)}`}
               </p>
             </>
           )}
@@ -196,13 +200,13 @@ export default function PathwayCard({ slug, onSave, onUnsave, saved, onClose }) 
       >
         {salary.available ? (
           <>
-            Salary source: {(salary.source ?? '').split('\n')[0]}
-            {salary.confidence && ` · Confidence: ${salary.confidence.split('.')[0]}`}
+            {t('student.pathways.salarySourcePrefix')}{(salary.source ?? '').split('\n')[0]}
+            {salary.confidence && t('student.pathways.confidenceSuffix')(salary.confidence.split('.')[0])}
           </>
         ) : (
-          <>No salary band on file for this major.</>
+          <>{t('student.pathways.noSalaryBand')}</>
         )}
-        {' · '}Demand from {demand.total_listings_on_board} verified Jordanian listings.
+        {' · '}{t('student.pathways.demandFromSuffix')(demand.total_listings_on_board)}
       </div>
     </div>
   );

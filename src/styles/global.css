@@ -7,12 +7,13 @@
  * Option B — supersedes the earlier dark purple/gold theme app-wide, not just
  * on the login page). `darbi-navy`, `darbi-gold` and `darbi-purple` are kept as
  * token *names* for continuity with every component that already references
- * them, but now hold the new palette's values (cyan primary, orange accent) —
- * `darbi-navy` holds a light color throughout: it's the "heading on a dark
- * card" role, not a background. Only the dark-mode half of the doc's palette
- * is used, since this app has a single dark theme, no light/dark toggle.
+ * them. These are now the "classic" theme's values specifically — see the
+ * data-theme blocks below, which repoint every one of these custom
+ * properties for the other seven themes. `data-theme` is set on <html> by
+ * ThemeProvider (src/services/theme.jsx) and defaults to "classic", so
+ * nobody who never touches the switcher sees any change from before.
  */
-:root {
+:root, [data-theme="classic"] {
   --darbi-bg: #0f172a; /* page background */
   --darbi-surface: rgba(30, 41, 59, 0.88); /* card / box background — no backdrop-blur behind it, so opaque enough to stay legible on its own */
   --darbi-surface-solid: #1e293b; /* opaque variant, e.g. dropdown menus over content */
@@ -24,14 +25,76 @@
   --darbi-purple: #06b6d4;
   --darbi-purple-dark: #0891b2;
   --darbi-gradient: linear-gradient(90deg, #06b6d4, #00f5d4);
+  --darbi-text-muted: #94a3b8;
+}
 
-  /* New tokens filling the gaps the palette doc calls out (no AI signal color,
-     no error color in the previous theme). Not yet consumed everywhere an ad-hoc
-     color still does the same job — see Alert() in ui.jsx for the first user. */
+/*
+ * The other seven themes — HP.html's exact named palettes (same source as
+ * the landing page's own switcher), mapped onto DARBI's token names instead
+ * of introducing a second token vocabulary:
+ *   --darbi-bg/-surface/-border  <- theme paper/surface/rule
+ *   --darbi-navy (body + heading text) / --darbi-text-muted  <- theme ink/ink-2
+ *   --darbi-gold  <- theme caution   (DARBI's "gold" accent was already amber/orange)
+ *   --darbi-purple  <- theme trust   (DARBI's "purple" accent is the primary
+ *                                     interactive colour, same role trust plays in HP.html)
+ */
+[data-theme="blueprint"] {
+  --darbi-bg: #0e141b; --darbi-surface: #17202a; --darbi-surface-solid: #17202a; --darbi-border: #27343f;
+  --darbi-navy: #e6edf3; --darbi-text-muted: #9fb0c0;
+  --darbi-gold: #f5b841; --darbi-gold-dark: color-mix(in srgb, #f5b841 82%, black);
+  --darbi-purple: #3fd0a6; --darbi-purple-dark: color-mix(in srgb, #3fd0a6 82%, black);
+  --darbi-gradient: linear-gradient(90deg, #3fd0a6, color-mix(in srgb, #3fd0a6 70%, black));
+}
+[data-theme="limestone"] {
+  --darbi-bg: #efece5; --darbi-surface: #ffffff; --darbi-surface-solid: #ffffff; --darbi-border: #d9d4c7;
+  --darbi-navy: #101418; --darbi-text-muted: #565d66;
+  --darbi-gold: #e0a21a; --darbi-gold-dark: color-mix(in srgb, #e0a21a 82%, black);
+  --darbi-purple: #0f6b57; --darbi-purple-dark: color-mix(in srgb, #0f6b57 82%, black);
+  --darbi-gradient: linear-gradient(90deg, #0f6b57, color-mix(in srgb, #0f6b57 70%, black));
+}
+[data-theme="aqaba"] {
+  --darbi-bg: #e9eff0; --darbi-surface: #ffffff; --darbi-surface-solid: #ffffff; --darbi-border: #cbd8da;
+  --darbi-navy: #101a1d; --darbi-text-muted: #4f6167;
+  --darbi-gold: #d99a12; --darbi-gold-dark: color-mix(in srgb, #d99a12 82%, black);
+  --darbi-purple: #0a6b78; --darbi-purple-dark: color-mix(in srgb, #0a6b78 82%, black);
+  --darbi-gradient: linear-gradient(90deg, #0a6b78, color-mix(in srgb, #0a6b78 70%, black));
+}
+[data-theme="cobalt"] {
+  --darbi-bg: #eef0f3; --darbi-surface: #ffffff; --darbi-surface-solid: #ffffff; --darbi-border: #d4d8de;
+  --darbi-navy: #11151a; --darbi-text-muted: #545c66;
+  --darbi-gold: #d98016; --darbi-gold-dark: color-mix(in srgb, #d98016 82%, black);
+  --darbi-purple: #1f4ee0; --darbi-purple-dark: color-mix(in srgb, #1f4ee0 82%, black);
+  --darbi-gradient: linear-gradient(90deg, #1f4ee0, color-mix(in srgb, #1f4ee0 70%, black));
+}
+[data-theme="basalt"] {
+  --darbi-bg: #16130f; --darbi-surface: #211c17; --darbi-surface-solid: #211c17; --darbi-border: #372f27;
+  --darbi-navy: #ece4da; --darbi-text-muted: #a89c8e;
+  --darbi-gold: #e8a83c; --darbi-gold-dark: color-mix(in srgb, #e8a83c 82%, black);
+  --darbi-purple: #58c295; --darbi-purple-dark: color-mix(in srgb, #58c295 82%, black);
+  --darbi-gradient: linear-gradient(90deg, #58c295, color-mix(in srgb, #58c295 70%, black));
+}
+[data-theme="carbon"] {
+  --darbi-bg: #000000; --darbi-surface: #0d0d0d; --darbi-surface-solid: #0d0d0d; --darbi-border: #2b2b2b;
+  --darbi-navy: #f2f2f2; --darbi-text-muted: #a3a3a3;
+  --darbi-gold: #f0b429; --darbi-gold-dark: color-mix(in srgb, #f0b429 82%, black);
+  --darbi-purple: #35d0a0; --darbi-purple-dark: color-mix(in srgb, #35d0a0 82%, black);
+  --darbi-gradient: linear-gradient(90deg, #35d0a0, color-mix(in srgb, #35d0a0 70%, black));
+}
+[data-theme="paper"] {
+  --darbi-bg: #ffffff; --darbi-surface: #ffffff; --darbi-surface-solid: #ffffff; --darbi-border: #767676;
+  --darbi-navy: #0a0a0a; --darbi-text-muted: #3d3d3d;
+  --darbi-gold: #8a5a00; --darbi-gold-dark: color-mix(in srgb, #8a5a00 82%, black);
+  --darbi-purple: #00594a; --darbi-purple-dark: color-mix(in srgb, #00594a 82%, black);
+  --darbi-gradient: linear-gradient(90deg, #00594a, color-mix(in srgb, #00594a 70%, black));
+}
+
+:root {
+  /* Small semantic accents (AI badge, success, error) stay constant across
+     themes — they're status colours, not brand colours, and only ever cover
+     a badge or an icon, so a fixed value never clashes enough to matter. */
   --darbi-ai-feature: #a78bfa;
   --darbi-success: #22c55e;
   --darbi-error: #ff6b7a;
-  --darbi-text-muted: #94a3b8;
 
   --darbi-max-width: 800px; /* "Max width: 800px (centered)" */
   --darbi-box-padding: 20px; /* "Padding inside boxes: 20px" */
@@ -41,6 +104,92 @@
   --darbi-input-padding: 10px; /* "Padding: 10px" */
 }
 
+/*
+ * Every component in this app was written for one fixed dark background, so
+ * text/border colour is very often a literal Tailwind utility (text-white,
+ * text-gray-400, border-white/10, bg-black/40, …) rather than a --darbi-*
+ * token. That's fine against the four dark themes (classic, blueprint,
+ * basalt, carbon) — white-on-dark stays legible regardless of hue. It
+ * breaks against the four light themes (limestone, aqaba, cobalt, paper),
+ * where the same white text would land on a light page.
+ *
+ * Rewriting every one of those ~220 utility usages across every component
+ * would be a huge, error-prone change for a same-day deadline. Instead,
+ * this block remaps the literal classes themselves for just the light
+ * themes — one place, covers every current and future usage automatically.
+ * `!important` is deliberate: it only needs to beat Tailwind's own
+ * single-class-specificity utilities, and only inside this narrow,
+ * intentional override layer.
+ */
+[data-theme="limestone"] .text-white,
+[data-theme="aqaba"] .text-white,
+[data-theme="cobalt"] .text-white,
+[data-theme="paper"] .text-white,
+[data-theme="limestone"] .hover\:text-white:hover,
+[data-theme="aqaba"] .hover\:text-white:hover,
+[data-theme="cobalt"] .hover\:text-white:hover,
+[data-theme="paper"] .hover\:text-white:hover,
+[data-theme="limestone"] .text-gray-100,
+[data-theme="aqaba"] .text-gray-100,
+[data-theme="cobalt"] .text-gray-100,
+[data-theme="paper"] .text-gray-100 {
+  color: var(--darbi-navy) !important;
+}
+[data-theme="limestone"] .text-gray-200,
+[data-theme="aqaba"] .text-gray-200,
+[data-theme="cobalt"] .text-gray-200,
+[data-theme="paper"] .text-gray-200,
+[data-theme="limestone"] .text-gray-300,
+[data-theme="aqaba"] .text-gray-300,
+[data-theme="cobalt"] .text-gray-300,
+[data-theme="paper"] .text-gray-300 {
+  color: color-mix(in srgb, var(--darbi-navy) 78%, transparent) !important;
+}
+[data-theme="limestone"] .text-gray-400,
+[data-theme="aqaba"] .text-gray-400,
+[data-theme="cobalt"] .text-gray-400,
+[data-theme="paper"] .text-gray-400,
+[data-theme="limestone"] .text-gray-500,
+[data-theme="aqaba"] .text-gray-500,
+[data-theme="cobalt"] .text-gray-500,
+[data-theme="paper"] .text-gray-500,
+[data-theme="limestone"] .placeholder-gray-500::placeholder,
+[data-theme="aqaba"] .placeholder-gray-500::placeholder,
+[data-theme="cobalt"] .placeholder-gray-500::placeholder,
+[data-theme="paper"] .placeholder-gray-500::placeholder {
+  color: var(--darbi-text-muted) !important;
+}
+[data-theme="limestone"] .bg-white\/10,
+[data-theme="aqaba"] .bg-white\/10,
+[data-theme="cobalt"] .bg-white\/10,
+[data-theme="paper"] .bg-white\/10 {
+  background-color: color-mix(in srgb, var(--darbi-navy) 10%, transparent) !important;
+}
+[data-theme="limestone"] .hover\:bg-white\/5:hover,
+[data-theme="aqaba"] .hover\:bg-white\/5:hover,
+[data-theme="cobalt"] .hover\:bg-white\/5:hover,
+[data-theme="paper"] .hover\:bg-white\/5:hover {
+  background-color: color-mix(in srgb, var(--darbi-navy) 6%, transparent) !important;
+}
+[data-theme="limestone"] .bg-black\/40,
+[data-theme="aqaba"] .bg-black\/40,
+[data-theme="cobalt"] .bg-black\/40,
+[data-theme="paper"] .bg-black\/40 {
+  background-color: color-mix(in srgb, var(--darbi-navy) 8%, transparent) !important;
+}
+[data-theme="limestone"] .border-white\/10,
+[data-theme="aqaba"] .border-white\/10,
+[data-theme="cobalt"] .border-white\/10,
+[data-theme="paper"] .border-white\/10 {
+  border-color: color-mix(in srgb, var(--darbi-navy) 15%, transparent) !important;
+}
+[data-theme="limestone"] .border-white\/25,
+[data-theme="aqaba"] .border-white\/25,
+[data-theme="cobalt"] .border-white\/25,
+[data-theme="paper"] .border-white\/25 {
+  border-color: color-mix(in srgb, var(--darbi-navy) 32%, transparent) !important;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -48,12 +197,18 @@
 }
 
 body {
-  /* "Font Family: Sans-serif (Arial, Segoe UI, or similar)" */
-  font-family: 'Segoe UI', Arial, -apple-system, BlinkMacSystemFont, sans-serif;
+  /* "Font Family: Sans-serif (Arial, Segoe UI, or similar)" — Arabic text
+     falls back through IBM Plex Sans Arabic (loaded in index.html for the
+     landing page, but this stack lets it serve every other page too, since
+     the switcher now applies site-wide). */
+  font-family: 'Segoe UI', Arial, 'IBM Plex Sans Arabic', -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--darbi-bg);
-  color: #f8fafc;
+  color: var(--darbi-navy);
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
+
+html[dir="rtl"] body { font-size: 1.03em; line-height: 1.65; }
 
 @layer components {
   /* The 800px centred column the wireframe specifies. */
@@ -98,15 +253,15 @@ body {
   }
 
   /* Secondary/outline variant — was a solid navy fill, now an outline so it
-     reads as secondary against the same dark page background. */
+     reads as secondary against the same page background, in every theme. */
   .darbi-btn-navy {
     background: transparent;
-    color: #fff;
+    color: var(--darbi-navy);
     border: 1px solid var(--darbi-border);
     box-shadow: none;
   }
   .darbi-btn-navy:hover:not(:disabled) {
-    background: rgba(6, 182, 212, 0.12);
+    background: color-mix(in srgb, var(--darbi-purple) 12%, transparent);
     filter: none;
   }
 
@@ -114,36 +269,36 @@ body {
   .darbi-input {
     width: 100%;
     padding: var(--darbi-input-padding) 16px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid color-mix(in srgb, var(--darbi-navy) 12%, transparent);
     border-radius: 999px;
-    background: rgba(0, 0, 0, 0.4);
-    color: #fff;
+    background: color-mix(in srgb, var(--darbi-bg) 55%, black 15%);
+    color: var(--darbi-navy);
     transition: border-color 0.15s ease;
   }
   .darbi-input::placeholder {
-    color: #6b7280;
+    color: var(--darbi-text-muted);
   }
   .darbi-input:focus {
     outline: none;
     border-color: var(--darbi-purple);
   }
   .darbi-input:disabled {
-    background: rgba(255, 255, 255, 0.03);
+    background: color-mix(in srgb, var(--darbi-bg) 55%, black 5%);
   }
 }
 
 /* Chrome fills autofilled fields with a light background no matter what CSS
    the input itself carries, unless the -webkit-autofill pseudo-class is
-   overridden — applies to every dark input across the app now, not just
-   the login page. */
+   overridden — applies to every input across the app now, not just the
+   login page, and in every theme. */
 .darbi-input:-webkit-autofill,
 .darbi-input:-webkit-autofill:hover,
 .darbi-input:-webkit-autofill:focus,
 .darbi-dark-input:-webkit-autofill,
 .darbi-dark-input:-webkit-autofill:hover,
 .darbi-dark-input:-webkit-autofill:focus {
-  -webkit-text-fill-color: #fff;
-  -webkit-box-shadow: 0 0 0 1000px rgba(15, 23, 42, 0.9) inset;
+  -webkit-text-fill-color: var(--darbi-navy);
+  -webkit-box-shadow: 0 0 0 1000px color-mix(in srgb, var(--darbi-bg) 90%, black 10%) inset;
   transition: background-color 9999s ease-in-out 0s;
 }
 

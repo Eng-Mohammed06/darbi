@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../../services/api.js';
 import { Alert, Card, Skeleton } from '../common/ui.jsx';
 import PathwayCard from './PathwayCard.jsx';
+import { useLang } from '../../i18n/index.jsx';
 
 /**
  * Pathways tab: pick a major, see its pathway, save it.
@@ -10,6 +11,7 @@ import PathwayCard from './PathwayCard.jsx';
  * a parallel one — a saved pathway *is* a saved major; the card is derived.
  */
 export default function Pathways({ initialSlug }) {
+  const { t } = useLang();
   const [majors, setMajors] = useState([]);
   const [loadingMajors, setLoadingMajors] = useState(true);
   const [selected, setSelected] = useState(initialSlug ?? null);
@@ -49,10 +51,9 @@ export default function Pathways({ initialSlug }) {
     <>
       <Alert>{error}</Alert>
 
-      <Card title="Build a pathway">
+      <Card title={t('student.pathways.cardTitle')}>
         <p className="text-gray-400 text-sm mb-4">
-          Pick a major to see where it leads — what to study, the roles it opens, and how much
-          demand there actually is on DARBI’s job board.
+          {t('student.pathways.body')}
         </p>
         <div className="flex flex-wrap gap-2">
           {loadingMajors && Array.from({ length: 8 }).map((_, i) => (

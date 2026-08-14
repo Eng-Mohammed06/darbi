@@ -2,31 +2,22 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../services/auth.jsx';
 import { api } from '../services/api.js';
-import { Wisps, DarkField, darkInput, PURPLE, PURPLE_DARK, GOLD, GRADIENT } from '../components/common/ui.jsx';
-import { PASSWORD_HINT, passwordIssues } from '../lib/password.js';
+import { Wisps, DarkField, darkInput, PURPLE, PURPLE_DARK, GOLD, GRADIENT, ThemeLangSwitcher } from '../components/common/ui.jsx';
+import { passwordHint, passwordIssues } from '../lib/password.js';
+import { useLang } from '../i18n/index.jsx';
 import PasswordStrengthMeter from '../components/common/PasswordStrengthMeter.jsx';
 
 const ROLES = [
-  { role: 'student', label: 'Student', icon: '🎓' },
-  { role: 'career', label: 'Graduate', icon: '📈' },
-  { role: 'company', label: 'Company', icon: '🏢' },
+  { role: 'student', icon: '🎓' },
+  { role: 'career', icon: '📈' },
+  { role: 'company', icon: '🏢' },
 ];
-
-const COPY = {
-  student: { title: 'Student Portal', blurb: 'Find your engineering major' },
-  company: { title: 'Company Portal', blurb: 'Find engineering talent' },
-  career: { title: 'Career Boost', blurb: 'Advance your engineering career' },
-  // Not in ROLES, so no pill for it in the switcher below — reachable only
-  // by navigating to /portal/admin directly. No signup either: the single
-  // admin account only ever comes from ADMIN_EMAIL/ADMIN_PASSWORD at server
-  // boot (server/index.js), so this portal forces login-only mode further down.
-  admin: { title: 'Admin', blurb: 'Full platform control' },
-};
 
 export default function AuthPage() {
   const { role } = useParams();
   const navigate = useNavigate();
   const { login, signup } = useAuth();
+  const { t, lang } = useLang();
 
   const [mode, setMode] = useState('login');
   const [form, setForm] = useState({});
@@ -51,13 +42,20 @@ export default function AuthPage() {
   useEffect(() => {
     setForm({});
     setError('');
-    // No self-serve admin signup — see COPY.admin's comment — so landing
-    // here always means signing in, never toggled to "Create account".
+    // No self-serve admin signup — see t('auth.portal.admin')'s comment
+    // below — so landing here always means signing in, never toggled to
+    // "Create account".
     if (role === 'admin') setMode('login');
   }, [role]);
 
-  const copy = COPY[role];
-  if (!copy) return <p className="p-8">Unknown portal.</p>;
+  const roleLabels = { student: t('auth.roleStudent'), career: t('auth.roleGraduate'), company: t('auth.roleCompany') };
+  // The single admin account only ever comes from ADMIN_EMAIL/ADMIN_PASSWORD
+  // at server boot (server/index.js) — no self-serve admin signup, and no
+  // pill for it in the ROLES switcher, reachable only by navigating to
+  // /portal/admin directly.
+  const portalCopy = t('auth.portal');
+  const copy = portalCopy[role];
+  if (!copy) return <p className="p-8">{t('auth.unknownPortal')}</p>;
   const isAdmin = role === 'admin';
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
@@ -67,9 +65,9 @@ export default function AuthPage() {
     setError('');
 
     if (mode === 'signup') {
-      const issues = passwordIssues(form.password);
+      const issues = passwordIssues(form.password, lang);
       if (issues.length) {
-        setError(`Password needs ${issues.join(', ')}.`);
+        setError(t('auth.passwordNeeds')(issues.join(', ')));
         return;
       }
     }
@@ -106,9 +104,9 @@ export default function AuthPage() {
     } catch (err) {
       setError(
         {
-          invalid_credentials: 'That email and password combination is not correct.',
-          email_taken: 'An account already exists for that email. Try signing in.',
-          username_taken: 'That username is already taken. Try another.',
+          invalid_credentials: t('auth.errInvalidCredentials'),
+          email_taken: t('auth.errEmailTaken'),
+          username_taken: t('auth.errUsernameTaken'),
         }[err.code] ?? err.message,
       );
     } finally {
@@ -117,27 +115,30 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex relative overflow-hidden" style={{ background: '#0f172a' }}>
+    <div className="min-h-screen flex relative overflow-hidden" style={{ background: 'var(--darbi-bg)' }}>
       {/* One background spanning the full width, not one per half — two
           separate Wisps each confined to a half-width panel left a hard
           seam down the middle where neither's blobs reached. */}
       <Wisps palette={[PURPLE, GOLD]} opacity={0.5} fixed />
 
+      <div className="absolute top-4 end-4 z-20">
+        <ThemeLangSwitcher dark />
+      </div>
+
       <div className="hidden lg:flex lg:w-1/2 relative z-10 flex-col justify-center px-16">
         <div>
           <h1
             className="text-6xl font-extrabold text-white tracking-tight"
-            style={{ textShadow: `0 0 50px ${PURPLE}99` }}
+            style={{ textShadow: `0 0 50px color-mix(in srgb, ${PURPLE} 60%, transparent)` }}
           >
             Darbi
           </h1>
-          <p className="text-lg mt-3" style={{ color: '#67e8f9' }}>
+          <p className="text-lg mt-3" style={{ color: 'var(--darbi-purple)' }}>
             Career Assistant Platform
           </p>
           {stats && (
             <p className="text-gray-400 text-sm mt-6">
-              {stats.majors} majors · {stats.courses} verified courses · {stats.jobs} verified job
-              listings
+              {t('auth.statsLine')(stats.majors, stats.courses, stats.jobs)}
             </p>
           )}
         </div>
@@ -148,9 +149,9 @@ export default function AuthPage() {
           <div
             className="rounded-3xl p-8"
             style={{
-              background: 'rgba(30,41,59,0.9)',
-              border: `1px solid ${PURPLE}40`,
-              boxShadow: `0 0 60px ${PURPLE_DARK}26`,
+              background: 'var(--darbi-surface)',
+              border: `1px solid color-mix(in srgb, ${PURPLE} 25%, transparent)`,
+              boxShadow: `0 0 60px color-mix(in srgb, ${PURPLE_DARK} 15%, transparent)`,
             }}
           >
             <div className="text-center mb-6">
@@ -161,7 +162,10 @@ export default function AuthPage() {
             {!isAdmin && (
               <div
                 className="flex rounded-full p-1 mb-5"
-                style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.08)' }}
+                style={{
+                  background: 'color-mix(in srgb, var(--darbi-bg) 55%, black 15%)',
+                  border: '1px solid color-mix(in srgb, var(--darbi-navy) 10%, transparent)',
+                }}
               >
                 {ROLES.map((r) => (
                   <button
@@ -173,7 +177,7 @@ export default function AuthPage() {
                     }`}
                     style={role === r.role ? { background: GRADIENT } : undefined}
                   >
-                    <span>{r.icon}</span> {r.label}
+                    <span>{r.icon}</span> {roleLabels[r.role]}
                   </button>
                 ))}
               </div>
@@ -191,7 +195,7 @@ export default function AuthPage() {
                     }`}
                     style={mode === m ? { borderColor: PURPLE } : undefined}
                   >
-                    {m === 'login' ? 'Sign in' : 'Create account'}
+                    {m === 'login' ? t('auth.signIn') : t('auth.createAccount')}
                   </button>
                 ))}
               </div>
@@ -200,7 +204,11 @@ export default function AuthPage() {
             {error && (
               <div
                 className="mb-4 px-4 py-3 rounded-xl text-sm"
-                style={{ background: 'rgba(255,107,122,0.1)', border: '1px solid rgba(255,107,122,0.3)', color: '#ff6b7a' }}
+                style={{
+                  background: 'color-mix(in srgb, var(--darbi-error) 10%, transparent)',
+                  border: '1px solid color-mix(in srgb, var(--darbi-error) 30%, transparent)',
+                  color: 'var(--darbi-error)',
+                }}
               >
                 {error}
               </div>
@@ -208,12 +216,12 @@ export default function AuthPage() {
 
             <form onSubmit={submit} className="space-y-4">
               {mode === 'signup' && (
-                <DarkField label="Username">
+                <DarkField label={t('auth.username')}>
                   <input className={darkInput} value={form.username ?? ''} onChange={set('username')} required />
                 </DarkField>
               )}
 
-              <DarkField label={mode === 'login' ? 'Email / Username' : 'Email'}>
+              <DarkField label={mode === 'login' ? t('auth.emailOrUsername') : t('auth.email')}>
                 <input
                   type={mode === 'login' ? 'text' : 'email'}
                   className={darkInput}
@@ -224,17 +232,17 @@ export default function AuthPage() {
               </DarkField>
 
               <DarkField
-                label="Password"
-                hint={mode === 'signup' ? PASSWORD_HINT : undefined}
+                label={t('auth.password')}
+                hint={mode === 'signup' ? passwordHint(lang) : undefined}
                 action={
                   mode === 'login' && (
                     <button
                       type="button"
                       onClick={() => navigate('/reset-password')}
                       className="text-xs font-semibold hover:underline"
-                      style={{ color: '#67e8f9' }}
+                      style={{ color: 'var(--darbi-purple)' }}
                     >
-                      Forgot password?
+                      {t('auth.forgotPassword')}
                     </button>
                   )
                 }
@@ -245,27 +253,26 @@ export default function AuthPage() {
 
               {mode === 'signup' && role === 'student' && (
                 <p className="text-xs text-gray-500 -mt-1">
-                  After you verify your email, we'll ask about your level, interests, and location —
-                  that's what drives your recommendations.
+                  {t('auth.studentSignupNote')}
                 </p>
               )}
 
               {mode === 'signup' && role === 'company' && (
-                <DarkField label="Industry">
-                  <input className={darkInput} placeholder="Software" value={form.industry ?? ''} onChange={set('industry')} />
+                <DarkField label={t('auth.industry')}>
+                  <input className={darkInput} placeholder={t('auth.industryPlaceholder')} value={form.industry ?? ''} onChange={set('industry')} />
                 </DarkField>
               )}
 
               {mode === 'signup' && role === 'career' && (
                 <>
-                  <DarkField label="Current role">
-                    <input className={darkInput} placeholder="Senior Engineer" value={form.currentTitle ?? ''} onChange={set('currentTitle')} />
+                  <DarkField label={t('auth.currentRole')}>
+                    <input className={darkInput} placeholder={t('auth.currentRolePlaceholder')} value={form.currentTitle ?? ''} onChange={set('currentTitle')} />
                   </DarkField>
-                  <DarkField label="Years of experience">
+                  <DarkField label={t('auth.yearsExperience')}>
                     <input type="number" min="0" className={darkInput} value={form.yearsExperience ?? ''} onChange={set('yearsExperience')} />
                   </DarkField>
-                  <DarkField label="Engineering major">
-                    <input className={darkInput} placeholder="Computer Engineering" value={form.major ?? ''} onChange={set('major')} />
+                  <DarkField label={t('auth.engineeringMajor')}>
+                    <input className={darkInput} placeholder={t('auth.engineeringMajorPlaceholder')} value={form.major ?? ''} onChange={set('major')} />
                   </DarkField>
                 </>
               )}
@@ -274,9 +281,9 @@ export default function AuthPage() {
                 type="submit"
                 disabled={busy}
                 className="w-full rounded-full py-3 font-bold text-white transition disabled:opacity-60"
-                style={{ background: GRADIENT, boxShadow: `0 10px 30px ${PURPLE_DARK}59` }}
+                style={{ background: GRADIENT, boxShadow: `0 10px 30px color-mix(in srgb, ${PURPLE_DARK} 35%, transparent)` }}
               >
-                {busy ? 'Working…' : mode === 'login' ? 'Sign in' : 'Create account'}
+                {busy ? t('auth.working') : mode === 'login' ? t('auth.signIn') : t('auth.createAccount')}
               </button>
             </form>
           </div>

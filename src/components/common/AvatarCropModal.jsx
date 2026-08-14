@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useLang } from '../../i18n/index.jsx';
 
 /**
  * Circular crop/pan/zoom editor shown after picking a file, before it's
@@ -13,6 +14,7 @@ const MIN_ZOOM = 1;
 const MAX_ZOOM = 3;
 
 export default function AvatarCropModal({ src, onCancel, onConfirm }) {
+  const { t } = useLang();
   const imgRef = useRef(null);
   const dragRef = useRef(null);
   const [baseScale, setBaseScale] = useState(1);
@@ -107,8 +109,8 @@ export default function AvatarCropModal({ src, onCancel, onConfirm }) {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-white font-bold mb-1">Adjust your photo</h2>
-        <p className="text-xs text-gray-400 mb-4">Drag to reposition, use the slider to zoom.</p>
+        <h2 className="text-white font-bold mb-1">{t('account.cropTitle')}</h2>
+        <p className="text-xs text-gray-400 mb-4">{t('account.cropHint')}</p>
 
         <div
           className="mx-auto rounded-full overflow-hidden relative touch-none select-none"
@@ -150,7 +152,7 @@ export default function AvatarCropModal({ src, onCancel, onConfirm }) {
           value={zoom}
           onChange={onZoomChange}
           className="w-full mt-4"
-          aria-label="Zoom"
+          aria-label={t('account.cropZoom')}
         />
 
         <div className="flex items-center justify-center gap-3 mt-5">
@@ -159,10 +161,10 @@ export default function AvatarCropModal({ src, onCancel, onConfirm }) {
             onClick={onCancel}
             className="text-xs font-semibold text-gray-400 hover:text-gray-200 px-4 py-2"
           >
-            Cancel
+            {t('account.cropCancel')}
           </button>
           <button type="button" onClick={confirm} className="darbi-btn text-sm px-6">
-            Use this photo
+            {t('account.cropConfirm')}
           </button>
         </div>
       </div>

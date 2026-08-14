@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api.js';
 import { useAuth } from '../services/auth.jsx';
 import { Alert, Button, CenteredCard } from '../components/common/ui.jsx';
+import { useLang } from '../i18n/index.jsx';
 
 /**
  * Common interests among Jordanian engineering students, spanning both
@@ -64,6 +65,7 @@ const INTEREST_OPTIONS = [
 export default function ProfileSetupPage() {
   const navigate = useNavigate();
   const { setProfile } = useAuth();
+  const { t } = useLang();
 
   const [level, setLevel] = useState('');
   const [average, setAverage] = useState('');
@@ -123,7 +125,7 @@ export default function ProfileSetupPage() {
       setProfile(profile);
       navigate('/onboarding');
     } catch (err) {
-      setError(err.message ?? 'Could not save your profile. You can try again, or skip for now.');
+      setError(err.message ?? t('profileSetup.saveError'));
     } finally {
       setBusy(false);
     }
@@ -134,11 +136,11 @@ export default function ProfileSetupPage() {
   return (
     <CenteredCard>
       <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--darbi-gold)' }}>
-        Step 2 of 3
+        {t('profileSetup.step2of3')}
       </p>
-      <h1 className="text-lg font-bold text-darbi-navy mt-2 mb-2">Tell us about you</h1>
+      <h1 className="text-lg font-bold text-darbi-navy mt-2 mb-2">{t('profileSetup.heading')}</h1>
       <p className="text-sm text-gray-400 mb-5">
-        This drives your recommendations — you can always change it later from your profile.
+        {t('profileSetup.subheading')}
       </p>
 
       <Alert>{error}</Alert>
@@ -146,12 +148,12 @@ export default function ProfileSetupPage() {
       <form onSubmit={submit} className="space-y-4 text-left">
         <label className="block">
           <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
-            Level
+            {t('profileSetup.levelLabel')}
           </span>
           <select className="darbi-input" value={level} onChange={(e) => setLevel(e.target.value)}>
-            <option value="">Select…</option>
-            <option value="highschool">High school</option>
-            <option value="undergraduate">Undergraduate</option>
+            <option value="">{t('profileSetup.selectPlaceholder')}</option>
+            <option value="highschool">{t('profileSetup.highSchool')}</option>
+            <option value="undergraduate">{t('profileSetup.undergraduate')}</option>
           </select>
         </label>
 
@@ -173,11 +175,11 @@ export default function ProfileSetupPage() {
             {isUndergrad && (
               <div>
                 <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
-                  GPA scale
+                  {t('profileSetup.gpaScaleLabel')}
                 </span>
                 <div
                   className="flex rounded-full p-1"
-                  style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid var(--darbi-border)' }}
+                  style={{ background: 'color-mix(in srgb, var(--darbi-bg) 55%, black 10%)', border: '1px solid var(--darbi-border)' }}
                 >
                   {['4', '100'].map((scale) => (
                     <button
@@ -189,19 +191,19 @@ export default function ProfileSetupPage() {
                       }`}
                       style={gpaScale === scale ? { background: 'var(--darbi-gradient)' } : undefined}
                     >
-                      Out of {scale}
+                      {t('profileSetup.outOf')(scale)}
                     </button>
                   ))}
                 </div>
                 <span className="block text-xs text-gray-500 mt-1">
-                  Some universities grade out of 100 instead of the usual 4.0 — pick whichever yours uses.
+                  {t('profileSetup.gpaScaleHint')}
                 </span>
               </div>
             )}
 
             <label className="block">
               <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
-                {level === 'highschool' ? 'Average' : 'GPA'}
+                {level === 'highschool' ? t('profileSetup.averageLabel') : t('profileSetup.gpaLabel')}
               </span>
               <input
                 type="number"
@@ -213,7 +215,7 @@ export default function ProfileSetupPage() {
                 onChange={(e) => setAverage(e.target.value)}
               />
               <span className="block text-xs text-gray-500 mt-1">
-                {level === 'highschool' ? 'Tawjihi average, out of 100' : `Out of ${gpaScale}`}
+                {level === 'highschool' ? t('profileSetup.tawjihiHint') : t('profileSetup.outOf')(gpaScale)}
               </span>
             </label>
 
@@ -221,14 +223,14 @@ export default function ProfileSetupPage() {
               <>
                 <label className="block">
                   <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
-                    University
+                    {t('profileSetup.universityLabel')}
                   </span>
                   <select
                     className="darbi-input"
                     value={universityId}
                     onChange={(e) => setUniversityId(e.target.value)}
                   >
-                    <option value="">Select…</option>
+                    <option value="">{t('profileSetup.selectPlaceholder')}</option>
                     {universities.map((u) => (
                       <option key={u.id} value={u.id}>
                         {u.name}
@@ -239,10 +241,10 @@ export default function ProfileSetupPage() {
 
                 <label className="block">
                   <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
-                    Major
+                    {t('profileSetup.majorLabel')}
                   </span>
                   <select className="darbi-input" value={majorId} onChange={(e) => setMajorId(e.target.value)}>
-                    <option value="">Select…</option>
+                    <option value="">{t('profileSetup.selectPlaceholder')}</option>
                     {majors.map((m) => (
                       <option key={m.id} value={m.id}>
                         {m.name}
@@ -257,17 +259,17 @@ export default function ProfileSetupPage() {
 
         <label className="block">
           <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
-            Interests
+            {t('profileSetup.interestsLabel')}
           </span>
           <select className="darbi-input" value="" onChange={(e) => addInterest(e.target.value)}>
-            <option value="">Add an interest…</option>
+            <option value="">{t('profileSetup.addInterestPlaceholder')}</option>
             {INTEREST_OPTIONS.filter((o) => !interests.includes(o)).map((o) => (
               <option key={o} value={o}>
                 {o}
               </option>
             ))}
           </select>
-          <span className="block text-xs text-gray-500 mt-1">These drive your recommendations — pick as many as apply.</span>
+          <span className="block text-xs text-gray-500 mt-1">{t('profileSetup.interestsHint')}</span>
         </label>
 
         {interests.length > 0 && (
@@ -288,11 +290,11 @@ export default function ProfileSetupPage() {
 
         <label className="block">
           <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
-            Location
+            {t('profileSetup.locationLabel')}
           </span>
           <input
             className="darbi-input"
-            placeholder="Amman"
+            placeholder={t('profileSetup.locationPlaceholder')}
             value={location}
             onChange={(e) => setLocation(e.target.value)}
           />
@@ -300,7 +302,7 @@ export default function ProfileSetupPage() {
 
         <div className="flex items-center justify-center pt-1">
           <Button type="submit" disabled={busy}>
-            {busy ? 'Saving…' : 'Continue'}
+            {busy ? t('profileSetup.saving') : t('profileSetup.continueBtn')}
           </Button>
         </div>
       </form>
@@ -311,7 +313,7 @@ export default function ProfileSetupPage() {
         disabled={busy}
         className="text-xs text-gray-500 mt-5 underline block mx-auto"
       >
-        Skip for now
+        {t('profileSetup.skipForNow')}
       </button>
     </CenteredCard>
   );

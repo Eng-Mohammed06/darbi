@@ -11,20 +11,61 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../services/auth.jsx';
+import { useTheme } from '../../services/theme.jsx';
+import { useLang } from '../../i18n/index.jsx';
 
-// Shared with the pre-login dark-card pages (AuthPage, ResetPasswordPage) —
-// same glassy cyan/orange aesthetic, kept separate from the post-login
-// `darbi-*` tokens in global.css since these two visual systems (logged-out
-// vs. logged-in) are deliberately different per the approved mockup. Names
-// (PURPLE/GOLD) are historical from the previous palette; values are current.
-export const PURPLE = '#06b6d4';
-export const PURPLE_DARK = '#0891b2';
-export const GOLD = '#ff5722';
-export const GRADIENT = 'linear-gradient(90deg,#06b6d4,#00f5d4)';
+// Shared with the pre-login dark-card pages (AuthPage, ResetPasswordPage).
+// These used to be literal hex values, independent of global.css's --darbi-*
+// tokens (a deliberate split between logged-out and logged-in visual
+// systems). Now that the theme switcher applies everywhere, both point at
+// the same tokens so a theme change reaches these pages too. Names
+// (PURPLE/GOLD) are historical from the previous palette.
+export const PURPLE = 'var(--darbi-purple)';
+export const PURPLE_DARK = 'var(--darbi-purple-dark)';
+export const GOLD = 'var(--darbi-gold)';
+export const GRADIENT = 'var(--darbi-gradient)';
 
 export const darkInput =
   'darbi-dark-input w-full rounded-full bg-black/40 border border-white/10 text-white placeholder-gray-500 ' +
-  'px-5 py-3 text-sm focus:outline-none focus:border-cyan-400 transition';
+  'px-5 py-3 text-sm focus:outline-none focus:border-[var(--darbi-purple)] transition';
+
+/**
+ * The theme + language switcher, dropped into every page's header (Shell,
+ * AccountPage, DarkCard) so both apply everywhere, not just the landing
+ * page — reading/writing the same global ThemeProvider/LanguageProvider
+ * every other page uses, so a change here is instantly visible everywhere.
+ */
+export function ThemeLangSwitcher({ dark = false }) {
+  const { theme, setTheme, themes } = useTheme();
+  const { lang, toggleLang, t } = useLang();
+  const textClass = dark ? 'text-white' : '';
+  return (
+    <div className="flex items-center gap-2 shrink-0">
+      <label className="sr-only" htmlFor="darbi-theme-sel">{t('common.theme')}</label>
+      <select
+        id="darbi-theme-sel"
+        value={theme}
+        onChange={(e) => setTheme(e.target.value)}
+        className={`hidden sm:block text-xs rounded-full px-3 py-1.5 bg-transparent border transition ${textClass}`}
+        style={{ borderColor: 'var(--darbi-border)' }}
+      >
+        {themes.map((th) => (
+          <option key={th.id} value={th.id} style={{ color: '#000' }}>
+            {th[lang]}
+          </option>
+        ))}
+      </select>
+      <button
+        type="button"
+        onClick={toggleLang}
+        className={`text-xs font-semibold rounded-full px-3 py-1.5 border transition hover:brightness-110 ${textClass}`}
+        style={{ borderColor: 'var(--darbi-border)' }}
+      >
+        {lang === 'en' ? t('common.langToggleToArabic') : t('common.langToggleToEnglish')}
+      </button>
+    </div>
+  );
+}
 
 export function DarkField({ label, hint, action, children }) {
   return (
@@ -42,21 +83,25 @@ export function DarkField({ label, hint, action, children }) {
 /** Dark-card shell used by every pre-login page (AuthPage, ResetPasswordPage). */
 export function DarkCard({ title, subtitle, children }) {
   return (
-    <div className="min-h-screen flex relative overflow-hidden" style={{ background: '#0f172a' }}>
+    <div className="min-h-screen flex relative overflow-hidden" style={{ background: 'var(--darbi-bg)' }}>
       {/* One background spanning the full width, not one per half — two
           separate Wisps each confined to a half-width panel left a hard
           seam down the middle where neither's blobs reached. */}
       <Wisps palette={[PURPLE, GOLD]} opacity={0.5} fixed />
 
+      <div className="absolute top-4 end-4 z-20">
+        <ThemeLangSwitcher dark />
+      </div>
+
       <div className="hidden lg:flex lg:w-1/2 relative z-10 flex-col justify-center px-16">
         <div>
           <h1
             className="text-6xl font-extrabold text-white tracking-tight"
-            style={{ textShadow: `0 0 50px ${PURPLE}99` }}
+            style={{ textShadow: `0 0 50px color-mix(in srgb, ${PURPLE} 60%, transparent)` }}
           >
             Darbi
           </h1>
-          <p className="text-lg mt-3" style={{ color: '#67e8f9' }}>
+          <p className="text-lg mt-3" style={{ color: 'var(--darbi-purple)' }}>
             Career Assistant Platform
           </p>
         </div>
@@ -67,9 +112,9 @@ export function DarkCard({ title, subtitle, children }) {
           <div
             className="rounded-3xl p-8"
             style={{
-              background: 'rgba(30,41,59,0.9)',
-              border: `1px solid ${PURPLE}40`,
-              boxShadow: `0 0 60px ${PURPLE_DARK}26`,
+              background: 'var(--darbi-surface)',
+              border: `1px solid color-mix(in srgb, ${PURPLE} 25%, transparent)`,
+              boxShadow: `0 0 60px color-mix(in srgb, ${PURPLE_DARK} 15%, transparent)`,
             }}
           >
             <div className="text-center mb-6">
@@ -95,14 +140,14 @@ export function CenteredCard({ maxWidth = 'max-w-lg', children }) {
       className="min-h-screen relative overflow-hidden flex items-center justify-center px-4 py-10"
       style={{ background: 'var(--darbi-bg)' }}
     >
-      <Wisps palette={['#06b6d4', '#ff5722']} opacity={0.4} fixed />
+      <Wisps palette={[PURPLE, GOLD]} opacity={0.4} fixed />
       <div
         className={`relative z-10 ${maxWidth} w-full text-center`}
         style={{
           background: 'var(--darbi-surface)',
           border: '1px solid var(--darbi-border)',
           borderRadius: 'var(--darbi-radius)',
-          boxShadow: '0 0 60px rgba(8,145,178,0.15)',
+          boxShadow: `0 0 60px color-mix(in srgb, ${PURPLE} 15%, transparent)`,
           padding: '2rem',
         }}
       >
@@ -131,10 +176,14 @@ const TAB_ICONS = {
   'training centres': '🏫',
 };
 
-const label = (t) => t[0].toUpperCase() + t.slice(1);
+// "saved pathways" -> "savedPathways", matching the camelCase keys in
+// src/i18n/dict/common.js's `tabs` map.
+const tabKey = (rawId) => rawId.replace(/ (.)/g, (_, c) => c.toUpperCase());
 
 export function Shell({ title, subtitle, tabs, activeTab, onTabChange, children }) {
   const { user } = useAuth();
+  const { t } = useLang();
+  const label = (rawId) => t(`common.tabs.${tabKey(rawId)}`);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [paletteQuery, setPaletteQuery] = useState('');
   const navigate = useNavigate();
@@ -157,37 +206,39 @@ export function Shell({ title, subtitle, tabs, activeTab, onTabChange, children 
 
   const paletteItems = useMemo(() => {
     const items = [
-      ...(tabs ?? []).map((t) => ({ label: label(t), icon: TAB_ICONS[t] ?? '•', run: () => onTabChange(t) })),
-      { label: 'Account', icon: '👤', run: () => navigate('/account') },
+      ...(tabs ?? []).map((rawId) => ({ label: label(rawId), icon: TAB_ICONS[rawId] ?? '•', run: () => onTabChange(rawId) })),
+      { label: t('common.account'), icon: '👤', run: () => navigate('/account') },
     ];
     const q = paletteQuery.trim().toLowerCase();
     return q ? items.filter((i) => i.label.toLowerCase().includes(q)) : items;
-  }, [tabs, paletteQuery, onTabChange, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tabs, paletteQuery, onTabChange, navigate, t]);
 
   return (
     <div className="min-h-screen relative overflow-hidden" style={{ background: 'var(--darbi-bg)' }}>
-      <Wisps palette={['#06b6d4', '#ff5722']} opacity={0.28} fixed />
+      <Wisps palette={[PURPLE, GOLD]} opacity={0.28} fixed />
 
       <header
         className="text-white relative z-30"
-        style={{ background: 'rgba(15,23,42,0.85)', borderBottom: '1px solid var(--darbi-border)' }}
+        style={{ background: 'color-mix(in srgb, var(--darbi-bg) 85%, transparent)', borderBottom: '1px solid var(--darbi-border)' }}
       >
         <div className="darbi-container py-5 flex items-center gap-4">
           <div className="flex-1">
             <h1 className="text-2xl font-bold text-white">{title}</h1>
             {subtitle && <p className="text-sm text-gray-400 mt-1">{subtitle}</p>}
           </div>
+          <ThemeLangSwitcher dark />
           {tabs && (
             <button
               onClick={() => setPaletteOpen(true)}
               className="hidden md:flex items-center gap-1.5 text-xs font-semibold text-gray-400 hover:text-white border border-white/10 rounded-full px-3 py-1.5 transition shrink-0"
             >
-              <span aria-hidden="true">⌘K</span> Jump to…
+              <span aria-hidden="true">⌘K</span> {t('common.jumpTo')}
             </button>
           )}
           <Link
             to="/account"
-            aria-label="Account"
+            aria-label={t('common.account')}
             className="text-2xl leading-none shrink-0 w-9 h-9 flex items-center justify-center rounded-full overflow-hidden"
             style={{ background: 'var(--darbi-gradient)' }}
           >
@@ -204,18 +255,18 @@ export function Shell({ title, subtitle, tabs, activeTab, onTabChange, children 
           hamburger-menu-only nav hid every section but the active one behind
           a click nobody had a reason to try. */}
       {tabs && (
-        <div className="relative z-20" style={{ background: 'rgba(15,23,42,0.85)', borderBottom: '1px solid var(--darbi-border)' }}>
+        <div className="relative z-20" style={{ background: 'color-mix(in srgb, var(--darbi-bg) 85%, transparent)', borderBottom: '1px solid var(--darbi-border)' }}>
           <div className="darbi-container py-3 flex flex-wrap justify-center gap-2">
-            {tabs.map((t) => (
+            {tabs.map((rawId) => (
               <button
-                key={t}
-                onClick={() => onTabChange(t)}
+                key={rawId}
+                onClick={() => onTabChange(rawId)}
                 className={`text-sm px-4 py-2 rounded-full font-bold transition ${
-                  activeTab === t ? 'text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  activeTab === rawId ? 'text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
-                style={activeTab === t ? { background: 'var(--darbi-gradient)' } : { border: '1px solid rgba(255,255,255,0.1)' }}
+                style={activeTab === rawId ? { background: 'var(--darbi-gradient)' } : { border: '1px solid color-mix(in srgb, var(--darbi-navy) 15%, transparent)' }}
               >
-                {label(t)}
+                {label(rawId)}
               </button>
             ))}
           </div>
@@ -245,13 +296,13 @@ export function Shell({ title, subtitle, tabs, activeTab, onTabChange, children 
               autoFocus
               value={paletteQuery}
               onChange={(e) => setPaletteQuery(e.target.value)}
-              placeholder="Jump to…"
+              placeholder={t('common.jumpToPlaceholder')}
               className="w-full px-4 py-3 bg-transparent text-white placeholder-gray-500 focus:outline-none"
               style={{ borderBottom: '1px solid var(--darbi-border)' }}
             />
             <div className="max-h-72 overflow-y-auto py-1">
               {paletteItems.length === 0 && (
-                <p className="px-4 py-3 text-sm text-gray-500">No matches.</p>
+                <p className="px-4 py-3 text-sm text-gray-500">{t('common.noMatches')}</p>
               )}
               {paletteItems.map((item) => (
                 <button
@@ -277,6 +328,7 @@ export function Shell({ title, subtitle, tabs, activeTab, onTabChange, children 
  */
 function EmailVerifyBanner() {
   const { user, setUser, verifyEmail, resendVerification } = useAuth();
+  const { t } = useLang();
   const [open, setOpen] = useState(false);
   const [code, setCode] = useState('');
   const [status, setStatus] = useState('');
@@ -294,13 +346,13 @@ function EmailVerifyBanner() {
     try {
       const updated = await verifyEmail(code);
       setUser(updated);
-      setStatus('Email verified.');
+      setStatus(t('common.verifySuccess'));
       setCode('');
     } catch (err) {
       setError(
         {
-          invalid_code: 'That code is not correct.',
-          code_expired: 'That code expired — send a new one.',
+          invalid_code: t('common.verifyInvalidCode'),
+          code_expired: t('common.verifyCodeExpired'),
         }[err.code] ?? err.message,
       );
     } finally {
@@ -314,7 +366,7 @@ function EmailVerifyBanner() {
     setBusy(true);
     try {
       await resendVerification();
-      setStatus('New code sent — check your email.');
+      setStatus(t('common.verifyResendSuccess'));
       setOpen(true);
     } catch (err) {
       setError(err.message);
@@ -326,30 +378,41 @@ function EmailVerifyBanner() {
   return (
     <div
       className="relative z-20"
-      style={{ background: 'rgba(255,87,34,0.12)', borderBottom: '1px solid rgba(255,87,34,0.3)' }}
+      style={{
+        background: 'color-mix(in srgb, var(--darbi-gold) 12%, transparent)',
+        borderBottom: '1px solid color-mix(in srgb, var(--darbi-gold) 30%, transparent)',
+      }}
     >
       <div className="darbi-container py-3 text-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <span style={{ color: '#ffab91' }}>
-            Verify your email ({user.email}) to keep your account secure.
+          <span style={{ color: 'var(--darbi-gold)' }}>
+            {t('common.verifyBanner')(user.email)}
           </span>
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setOpen((o) => !o)}
               className="text-xs font-bold px-3 py-1.5 rounded-full shrink-0 transition hover:brightness-110"
-              style={{ background: 'rgba(255,87,34,0.2)', border: '1px solid rgba(255,87,34,0.4)', color: '#ffab91' }}
+              style={{
+                background: 'color-mix(in srgb, var(--darbi-gold) 20%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--darbi-gold) 40%, transparent)',
+                color: 'var(--darbi-gold)',
+              }}
             >
-              {open ? 'Hide' : 'Enter code'}
+              {open ? t('common.verifyHide') : t('common.verifyEnterCode')}
             </button>
             <button
               type="button"
               onClick={resend}
               disabled={busy}
               className="text-xs font-bold px-3 py-1.5 rounded-full shrink-0 transition hover:brightness-110 disabled:opacity-60"
-              style={{ background: 'rgba(255,87,34,0.2)', border: '1px solid rgba(255,87,34,0.4)', color: '#ffab91' }}
+              style={{
+                background: 'color-mix(in srgb, var(--darbi-gold) 20%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--darbi-gold) 40%, transparent)',
+                color: 'var(--darbi-gold)',
+              }}
             >
-              Resend code
+              {t('common.verifyResend')}
             </button>
           </div>
         </div>
@@ -359,7 +422,7 @@ function EmailVerifyBanner() {
             <input
               className="darbi-input py-2"
               style={{ maxWidth: 160 }}
-              placeholder="6-digit code"
+              placeholder={t('common.verifyCodePlaceholder')}
               inputMode="numeric"
               maxLength={6}
               value={code}
@@ -367,12 +430,12 @@ function EmailVerifyBanner() {
               required
             />
             <button type="submit" disabled={busy} className="darbi-btn text-sm py-2 disabled:opacity-60">
-              {busy ? 'Checking…' : 'Verify'}
+              {busy ? t('common.verifyChecking') : t('common.verifySubmit')}
             </button>
           </form>
         )}
         {status && <p className="mt-2 text-green-400">{status}</p>}
-        {error && <p className="mt-2" style={{ color: '#ff6b7a' }}>{error}</p>}
+        {error && <p className="mt-2" style={{ color: 'var(--darbi-error)' }}>{error}</p>}
       </div>
     </div>
   );
@@ -447,8 +510,18 @@ export const Alert = ({ kind = 'error', children }) =>
       className="px-4 py-3 mb-4 border text-sm"
       style={
         kind === 'error'
-          ? { background: 'rgba(255,107,122,0.1)', borderColor: 'rgba(255,107,122,0.35)', color: '#ff6b7a', borderRadius: 'var(--darbi-radius)' }
-          : { background: 'rgba(255,87,34,0.1)', borderColor: 'rgba(255,87,34,0.35)', color: '#ffab91', borderRadius: 'var(--darbi-radius)' }
+          ? {
+              background: 'color-mix(in srgb, var(--darbi-error) 10%, transparent)',
+              borderColor: 'color-mix(in srgb, var(--darbi-error) 35%, transparent)',
+              color: 'var(--darbi-error)',
+              borderRadius: 'var(--darbi-radius)',
+            }
+          : {
+              background: 'color-mix(in srgb, var(--darbi-gold) 10%, transparent)',
+              borderColor: 'color-mix(in srgb, var(--darbi-gold) 35%, transparent)',
+              color: 'var(--darbi-gold)',
+              borderRadius: 'var(--darbi-radius)',
+            }
       }
     >
       {children}
@@ -460,9 +533,10 @@ export const Alert = ({ kind = 'error', children }) =>
  * number, with the stage named. `confidence` is the grade salaries_data.xlsx
  * assigned itself — surfaced on hover so a judge can see we tracked it.
  */
-export function Salary({ band, stage = 'Entry', confidence }) {
+export function Salary({ band, stage, confidence }) {
+  const { t } = useLang();
   if (!band || band.min == null) {
-    return <span className="text-gray-500 italic text-sm">No band on file</span>;
+    return <span className="text-gray-500 italic text-sm">{t('common.noSalaryBand')}</span>;
   }
   const value = band.min === band.max ? `${band.min}` : `${band.min}–${band.max}`;
   return (
@@ -470,7 +544,7 @@ export function Salary({ band, stage = 'Entry', confidence }) {
       <span className="font-bold" style={{ color: 'var(--darbi-gold)' }}>
         {value} JD
       </span>
-      <span className="text-gray-400 text-sm">/month · {stage}</span>
+      <span className="text-gray-400 text-sm">{t('common.perMonth')} · {stage ?? t('common.stageEntry')}</span>
     </span>
   );
 }
