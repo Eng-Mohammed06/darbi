@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../services/auth.jsx';
 import { api } from '../services/api.js';
 import { Wisps, DarkField, darkInput, PURPLE, PURPLE_DARK, GOLD, GRADIENT } from '../components/common/ui.jsx';
+import { PASSWORD_HINT, passwordIssues } from '../lib/password.js';
 
 const ROLES = [
   { role: 'student', label: 'Student', icon: '🎓' },
@@ -54,6 +55,15 @@ export default function AuthPage() {
   async function submit(e) {
     e.preventDefault();
     setError('');
+
+    if (mode === 'signup') {
+      const issues = passwordIssues(form.password);
+      if (issues.length) {
+        setError(`Password needs ${issues.join(', ')}.`);
+        return;
+      }
+    }
+
     setBusy(true);
     try {
       if (mode === 'login') {
@@ -89,7 +99,6 @@ export default function AuthPage() {
           invalid_credentials: 'That email and password combination is not correct.',
           email_taken: 'An account already exists for that email. Try signing in.',
           username_taken: 'That username is already taken. Try another.',
-          weak_password: 'Password must be at least 6 characters.',
         }[err.code] ?? err.message,
       );
     } finally {
@@ -200,7 +209,7 @@ export default function AuthPage() {
 
               <DarkField
                 label="Password"
-                hint={mode === 'signup' ? 'At least 6 characters' : undefined}
+                hint={mode === 'signup' ? PASSWORD_HINT : undefined}
                 action={
                   mode === 'login' && (
                     <button

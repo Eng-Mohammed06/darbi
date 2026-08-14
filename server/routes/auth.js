@@ -6,6 +6,7 @@ import {
   signToken,
   requireAuth,
   asyncRoute,
+  passwordIssues,
 } from '../lib/auth.js';
 import { sendMail, generateCode, verificationEmail, resetPasswordEmail, welcomeEmail } from '../lib/mail.js';
 
@@ -55,8 +56,12 @@ router.post(
     if (!ROLES.includes(role)) {
       return res.status(400).json({ error: 'bad_role', allowed: ROLES });
     }
-    if (String(password).length < 6) {
-      return res.status(400).json({ error: 'weak_password', message: 'Use at least 6 characters.' });
+    const signupIssues = passwordIssues(password);
+    if (signupIssues.length) {
+      return res.status(400).json({
+        error: 'weak_password',
+        message: `Password needs ${signupIssues.join(', ')}.`,
+      });
     }
 
     const normalizedEmail = String(email).trim().toLowerCase();
@@ -275,8 +280,12 @@ router.post(
     if (!identifier || !code || !newPassword) {
       return res.status(400).json({ error: 'missing_fields', need: ['identifier', 'code', 'newPassword'] });
     }
-    if (String(newPassword).length < 6) {
-      return res.status(400).json({ error: 'weak_password', message: 'Use at least 6 characters.' });
+    const newPasswordIssues = passwordIssues(newPassword);
+    if (newPasswordIssues.length) {
+      return res.status(400).json({
+        error: 'weak_password',
+        message: `Password needs ${newPasswordIssues.join(', ')}.`,
+      });
     }
 
     const { rows } = await query(
@@ -340,8 +349,12 @@ router.put(
     if (!currentPassword || !newPassword) {
       return res.status(400).json({ error: 'missing_fields', need: ['currentPassword', 'newPassword'] });
     }
-    if (String(newPassword).length < 6) {
-      return res.status(400).json({ error: 'weak_password', message: 'Use at least 6 characters.' });
+    const newPasswordIssues = passwordIssues(newPassword);
+    if (newPasswordIssues.length) {
+      return res.status(400).json({
+        error: 'weak_password',
+        message: `Password needs ${newPasswordIssues.join(', ')}.`,
+      });
     }
 
     const { rows } = await query(`SELECT password_hash FROM users WHERE id = $1`, [req.user.id]);

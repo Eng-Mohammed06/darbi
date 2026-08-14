@@ -18,6 +18,26 @@ if (process.env.NODE_ENV === 'production' && SECRET === 'dev-only-change-me') {
 export const hashPassword = (plain) => bcrypt.hash(plain, 10);
 export const verifyPassword = (plain, hash) => bcrypt.compare(plain, hash);
 
+const SPECIAL_CHAR = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~`]/;
+
+/**
+ * Returns the unmet requirements for a password (empty array = strong
+ * enough). Kept as a list rather than a single true/false so the error
+ * message can tell the user exactly what's missing, not just "too weak".
+ * Mirrored on the frontend (src/lib/password.js) for instant feedback —
+ * this is the version that actually gets enforced.
+ */
+export function passwordIssues(password) {
+  const p = String(password ?? '');
+  const issues = [];
+  if (p.length < 8) issues.push('at least 8 characters');
+  if (!/[A-Z]/.test(p)) issues.push('an uppercase letter');
+  if (!/[a-z]/.test(p)) issues.push('a lowercase letter');
+  if (!/[0-9]/.test(p)) issues.push('a number');
+  if (!SPECIAL_CHAR.test(p)) issues.push('a special character (e.g. ! @ # $ %)');
+  return issues;
+}
+
 export const signToken = (user) =>
   jwt.sign({ sub: user.id, role: user.role, email: user.email }, SECRET, {
     expiresIn: TOKEN_TTL,

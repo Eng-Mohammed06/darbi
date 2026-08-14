@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../services/auth.jsx';
 import { DarkCard, DarkField, darkInput, GRADIENT, PURPLE_DARK } from '../components/common/ui.jsx';
+import { PASSWORD_HINT, passwordIssues } from '../lib/password.js';
 
 /**
  * Two-step forgot-password flow: request a code by email/username, then
@@ -41,6 +42,11 @@ export default function ResetPasswordPage() {
       setError('New password and confirmation do not match.');
       return;
     }
+    const issues = passwordIssues(newPassword);
+    if (issues.length) {
+      setError(`Password needs ${issues.join(', ')}.`);
+      return;
+    }
     setBusy(true);
     try {
       await resetPassword(identifier, code, newPassword);
@@ -50,7 +56,6 @@ export default function ResetPasswordPage() {
         {
           invalid_code: 'That code is not correct.',
           code_expired: 'That code expired — request a new one.',
-          weak_password: 'Password must be at least 6 characters.',
         }[err.code] ?? err.message,
       );
     } finally {
@@ -113,7 +118,7 @@ export default function ResetPasswordPage() {
               autoFocus
             />
           </DarkField>
-          <DarkField label="New password" hint="At least 6 characters">
+          <DarkField label="New password" hint={PASSWORD_HINT}>
             <input
               type="password"
               className={darkInput}

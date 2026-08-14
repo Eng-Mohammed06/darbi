@@ -4,6 +4,7 @@ import { api } from '../services/api.js';
 import { useAuth } from '../services/auth.jsx';
 import { Alert, Button, Card, Field, inputClass, Wisps } from '../components/common/ui.jsx';
 import { useToast } from '../components/common/toast.jsx';
+import { PASSWORD_HINT, passwordIssues } from '../lib/password.js';
 
 export default function AccountPage() {
   const { user, profile, logout } = useAuth();
@@ -158,6 +159,12 @@ function ChangePassword() {
       return;
     }
 
+    const issues = passwordIssues(form.newPassword);
+    if (issues.length) {
+      setError(`Password needs ${issues.join(', ')}.`);
+      return;
+    }
+
     setBusy(true);
     try {
       await api('/auth/password', {
@@ -170,7 +177,6 @@ function ChangePassword() {
       setError(
         {
           invalid_credentials: 'Current password is not correct.',
-          weak_password: 'New password must be at least 6 characters.',
         }[err.code] ?? err.message,
       );
     } finally {
@@ -185,7 +191,7 @@ function ChangePassword() {
         <Field label="Current password">
           <input type="password" className={inputClass} value={form.currentPassword} onChange={set('currentPassword')} required />
         </Field>
-        <Field label="New password" hint="At least 6 characters">
+        <Field label="New password" hint={PASSWORD_HINT}>
           <input type="password" className={inputClass} value={form.newPassword} onChange={set('newPassword')} required />
         </Field>
         <Field label="Confirm new password">
