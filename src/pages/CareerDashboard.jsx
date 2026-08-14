@@ -52,12 +52,16 @@ function Overview({ profile }) {
  */
 function LearningPaths() {
   const [paths, setPaths] = useState([]);
-  useEffect(() => { api('/career/paths', { auth: false }).then(setPaths).catch(() => {}); }, []);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    api('/career/paths', { auth: false }).then(setPaths).catch(() => {}).finally(() => setLoading(false));
+  }, []);
 
   const tracks = [...new Set(paths.map((p) => p.track))];
 
   return (
     <>
+      {loading && <Card>Loading learning paths…</Card>}
       {tracks.map((track) => (
         <Card key={track} title={track}>
           <div className="divide-y divide-[color:var(--darbi-border)]">
@@ -77,17 +81,20 @@ function LearningPaths() {
           </div>
         </Card>
       ))}
-      {paths.length === 0 && <Card>No learning paths loaded.</Card>}
+      {!loading && paths.length === 0 && <Card>No learning paths loaded.</Card>}
     </>
   );
 }
 
 function TrainingCentres() {
   const [centres, setCentres] = useState([]);
-  useEffect(() => { api('/career/centres', { auth: false }).then(setCentres).catch(() => {}); }, []);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    api('/career/centres', { auth: false }).then(setCentres).catch(() => {}).finally(() => setLoading(false));
+  }, []);
 
   return (
-    <Card title={`${centres.length} accredited centre(s) in Jordan`}>
+    <Card title={loading ? 'Loading training centres…' : `${centres.length} accredited centre(s) in Jordan`}>
       <div className="divide-y divide-[color:var(--darbi-border)]">
         {centres.map((c) => (
           <div key={c.id} className="py-3">

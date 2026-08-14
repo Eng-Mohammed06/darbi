@@ -28,6 +28,10 @@ export default function ChatAdvisor({ student, onFallback }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [configured, setConfigured] = useState(true);
+  // Without this, a returning user with real chat history briefly saw the
+  // "what's on your mind?" opener screen every load, as if history was lost,
+  // until GET /chat resolved.
+  const [loadingHistory, setLoadingHistory] = useState(true);
   const endRef = useRef(null);
 
   useEffect(() => {
@@ -36,7 +40,8 @@ export default function ChatAdvisor({ student, onFallback }) {
         setMessages(r.messages);
         setConfigured(r.configured);
       })
-      .catch((err) => setError(err.message));
+      .catch((err) => setError(err.message))
+      .finally(() => setLoadingHistory(false));
   }, []);
 
   // Keep the newest text in view as it streams in.
@@ -149,7 +154,11 @@ export default function ChatAdvisor({ student, onFallback }) {
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 py-4">
-        {messages.length === 0 && !streaming && (
+        {loadingHistory && (
+          <p className="text-center text-sm text-gray-500 mt-6">Loading your conversation…</p>
+        )}
+
+        {!loadingHistory && messages.length === 0 && !streaming && (
           <div className="text-center mt-6">
             <div className="text-4xl mb-3">🎓</div>
             <p className="text-gray-200 font-medium mb-1">

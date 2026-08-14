@@ -258,10 +258,13 @@ function ProfileForm({ profile, onSaved }) {
 
 function MajorExplorer() {
   const [majors, setMajors] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(null);
   const [detail, setDetail] = useState({ courses: [], universities: [] });
 
-  useEffect(() => { api('/majors', { auth: false }).then(setMajors).catch(() => {}); }, []);
+  useEffect(() => {
+    api('/majors', { auth: false }).then(setMajors).catch(() => {}).finally(() => setLoading(false));
+  }, []);
 
   async function toggle(slug) {
     if (open === slug) return setOpen(null);
@@ -274,7 +277,7 @@ function MajorExplorer() {
   }
 
   return (
-    <Card title={`${majors.length} engineering majors`}>
+    <Card title={loading ? 'Loading majors…' : `${majors.length} engineering majors`}>
       {majors.map((m) => (
         <div key={m.slug} className="border-b last:border-0 border-[color:var(--darbi-border)] py-3">
           <button onClick={() => toggle(m.slug)} className="w-full text-left flex justify-between items-center">
@@ -347,6 +350,7 @@ const JOBS_PAGE_SIZE = 20;
  */
 function JobBoard() {
   const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [major, setMajor] = useState('');
   const [visible, setVisible] = useState(JOBS_PAGE_SIZE);
   const [open, setOpen] = useState(null);
@@ -355,7 +359,8 @@ function JobBoard() {
 
   useEffect(() => {
     const q = major ? `?major=${encodeURIComponent(major)}` : '';
-    api(`/jobs${q}`, { auth: false }).then(setJobs).catch(() => {});
+    setLoading(true);
+    api(`/jobs${q}`, { auth: false }).then(setJobs).catch(() => {}).finally(() => setLoading(false));
     setVisible(JOBS_PAGE_SIZE);
   }, [major]);
 
@@ -378,7 +383,7 @@ function JobBoard() {
   }
 
   return (
-    <Card title={`${jobs.length} verified job listings`}>
+    <Card title={loading ? 'Loading job listings…' : `${jobs.length} verified job listings`}>
       <Field label="Filter by major">
         <input className={inputClass} placeholder="Computer Science" value={major} onChange={(e) => setMajor(e.target.value)} />
       </Field>

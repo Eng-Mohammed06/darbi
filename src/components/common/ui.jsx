@@ -94,13 +94,16 @@ export function Shell({ title, subtitle, tabs, activeTab, onTabChange, children 
       >
         <div className="darbi-container py-5 flex items-center gap-4">
           {tabs && (
+            // A bare glyph hid every section but "Advisor" behind a click nobody
+            // had a reason to try — the label makes it read as navigation.
             <button
               onClick={() => setMenuOpen((o) => !o)}
               aria-label="Menu"
               aria-expanded={menuOpen}
-              className="text-2xl leading-none shrink-0 px-1"
+              className="flex flex-col items-center gap-0.5 shrink-0 px-1.5 py-0.5 rounded-lg hover:bg-white/5 transition"
             >
-              ☰
+              <span className="text-2xl leading-none">☰</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Menu</span>
             </button>
           )}
           <div className="flex-1">
@@ -216,12 +219,12 @@ function EmailVerifyBanner() {
           <span style={{ color: '#ffab91' }}>
             Verify your email ({user.email}) to keep your account secure.
           </span>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setOpen((o) => !o)}
-              className="font-semibold hover:underline shrink-0"
-              style={{ color: '#ffab91' }}
+              className="text-xs font-bold px-3 py-1.5 rounded-full shrink-0 transition hover:brightness-110"
+              style={{ background: 'rgba(255,87,34,0.2)', border: '1px solid rgba(255,87,34,0.4)', color: '#ffab91' }}
             >
               {open ? 'Hide' : 'Enter code'}
             </button>
@@ -229,8 +232,8 @@ function EmailVerifyBanner() {
               type="button"
               onClick={resend}
               disabled={busy}
-              className="font-semibold hover:underline shrink-0 disabled:opacity-60"
-              style={{ color: '#ffab91' }}
+              className="text-xs font-bold px-3 py-1.5 rounded-full shrink-0 transition hover:brightness-110 disabled:opacity-60"
+              style={{ background: 'rgba(255,87,34,0.2)', border: '1px solid rgba(255,87,34,0.4)', color: '#ffab91' }}
             >
               Resend code
             </button>

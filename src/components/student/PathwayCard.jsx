@@ -46,7 +46,7 @@ export default function PathwayCard({ slug, onSave, onUnsave, saved, onClose }) 
           {(onSave || onUnsave) && (
             <button
               onClick={() => (saved ? onUnsave?.(major) : onSave?.(major))}
-              className="text-sm font-bold px-4 py-2 rounded-full text-white"
+              className={`text-sm font-bold px-4 py-2 rounded-full text-white transition ${saved ? 'hover:text-red-400' : ''}`}
               style={saved ? { border: '1px solid var(--darbi-border)' } : { background: 'var(--darbi-gradient)' }}
             >
               {saved ? 'Saved — remove' : 'Save for later'}

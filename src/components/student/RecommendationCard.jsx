@@ -78,7 +78,7 @@ export default function RecommendationCard({
         </button>
         <button
           onClick={() => (saved ? onUnsave?.(major) : onSave?.(major))}
-          className={`darbi-btn text-sm ${saved ? 'darbi-btn-navy' : ''}`}
+          className={`darbi-btn text-sm ${saved ? 'darbi-btn-navy hover:!text-red-400 hover:!border-red-400/50' : ''}`}
         >
           {saved ? 'Saved — remove' : 'Save'}
         </button>

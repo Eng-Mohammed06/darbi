@@ -147,7 +147,8 @@ function JobPreview({ form }) {
  * open roles at once, closer to an ATS dashboard than a single profile. */
 function MyJobs() {
   const [jobs, setJobs] = useState([]);
-  const load = () => api('/companies/me/jobs').then(setJobs).catch(() => {});
+  const [loading, setLoading] = useState(true);
+  const load = () => api('/companies/me/jobs').then(setJobs).catch(() => {}).finally(() => setLoading(false));
   useEffect(() => { load(); }, []);
 
   async function remove(id) {
@@ -158,10 +159,12 @@ function MyJobs() {
   return (
     <>
       <div className="flex items-baseline justify-between mb-4">
-        <h2 className="text-lg font-bold text-darbi-navy">{jobs.length} active posting{jobs.length === 1 ? '' : 's'}</h2>
+        <h2 className="text-lg font-bold text-darbi-navy">
+          {loading ? 'Loading postings…' : `${jobs.length} active posting${jobs.length === 1 ? '' : 's'}`}
+        </h2>
       </div>
 
-      {jobs.length === 0 && <Card><p className="text-gray-400">Nothing posted yet.</p></Card>}
+      {!loading && jobs.length === 0 && <Card><p className="text-gray-400">Nothing posted yet.</p></Card>}
 
       <div className="grid sm:grid-cols-2 gap-4">
         {jobs.map((j) => (
@@ -251,18 +254,20 @@ function JobPosting({ job: j, onRemove }) {
  * a plain list of names. */
 function FindStudents() {
   const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ major: '', minGpa: '' });
 
   useEffect(() => {
     const q = new URLSearchParams();
     if (filters.major) q.set('major', filters.major);
     if (filters.minGpa) q.set('minGpa', filters.minGpa);
-    api(`/companies/students?${q}`).then(setStudents).catch(() => {});
+    setLoading(true);
+    api(`/companies/students?${q}`).then(setStudents).catch(() => {}).finally(() => setLoading(false));
   }, [filters]);
 
   return (
     <>
-      <Card title={`${students.length} matching student(s)`} accent={false}>
+      <Card title={loading ? 'Searching…' : `${students.length} matching student(s)`} accent={false}>
         <div className="grid md:grid-cols-2 gap-4">
           <Field label="Interest / major">
             <input className={inputClass} placeholder="Cybersecurity" value={filters.major}
@@ -296,7 +301,8 @@ function FindStudents() {
       </div>
 
       <p className="text-xs text-gray-500 mt-4">
-        Contact details are not shown here — students are contacted through the platform.
+        This is browse-only — DARBI has no messaging yet. Contact details aren't shown here to
+        protect student privacy; post a matching job and applicants will show up under My Jobs.
       </p>
     </>
   );

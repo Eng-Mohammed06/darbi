@@ -11,12 +11,13 @@ import PathwayCard from './PathwayCard.jsx';
  */
 export default function Pathways({ initialSlug }) {
   const [majors, setMajors] = useState([]);
+  const [loadingMajors, setLoadingMajors] = useState(true);
   const [selected, setSelected] = useState(initialSlug ?? null);
   const [savedSlugs, setSavedSlugs] = useState([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    api('/majors', { auth: false }).then(setMajors).catch(() => {});
+    api('/majors', { auth: false }).then(setMajors).catch(() => {}).finally(() => setLoadingMajors(false));
     loadSaved();
   }, []);
 
@@ -53,6 +54,7 @@ export default function Pathways({ initialSlug }) {
           Pick a major to see where it leads — what to study, the roles it opens, and how much
           demand there actually is on DARBI’s job board.
         </p>
+        {loadingMajors && <p className="text-sm text-gray-500">Loading majors…</p>}
         <div className="flex flex-wrap gap-2">
           {majors.map((m) => (
             <button
