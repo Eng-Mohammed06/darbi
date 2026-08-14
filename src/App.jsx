@@ -11,6 +11,7 @@ import CompanyDashboard from './pages/CompanyDashboard.jsx';
 import CareerDashboard from './pages/CareerDashboard.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
 import AccountPage from './pages/AccountPage.jsx';
+import LandingPage from './pages/LandingPage.jsx';
 
 const DASHBOARDS = {
   student: StudentDashboard,
@@ -33,11 +34,12 @@ function Home() {
   const { user, loading } = useAuth();
   if (loading) return <p className="p-8 text-gray-500">Loading…</p>;
   // Already signed in? Skip straight to the dashboard, so '/' is the Advisor
-  // page rather than bouncing to '/dashboard'. Signed out? The login page
-  // has its own Student/Graduate/Company switcher, so there's no separate
-  // portal-picker page to bounce to first.
+  // page rather than bouncing to '/dashboard'. Signed out? Show the actual
+  // pitch (LandingPage) instead of bouncing straight to a login form — a
+  // first-time visitor should see what Darbi is before being asked for a
+  // password.
   if (user) return <Dashboard />;
-  return <Navigate to="/portal/student" replace />;
+  return <LandingPage />;
 }
 
 function Account() {
