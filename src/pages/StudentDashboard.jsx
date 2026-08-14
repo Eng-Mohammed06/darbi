@@ -14,9 +14,6 @@ import { useToast } from '../components/common/toast.jsx';
 const slugify = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 const TABS = ['advisor', 'pathways', 'saved pathways', 'recommendations', 'profile', 'majors', 'jobs'];
-// The 4 most-used sections get a permanent icon in the mobile bottom bar;
-// the rest (saved pathways, profile, majors) sit under "More".
-const PRIMARY_TABS = ['advisor', 'recommendations', 'pathways', 'jobs'];
 
 export default function StudentDashboard() {
   const { profile, setProfile } = useAuth();
@@ -29,7 +26,6 @@ export default function StudentDashboard() {
       title={`Welcome, ${profile?.name ?? 'student'} 🎓`}
       subtitle={profile?.level ? `${profile.level} · ${profile.location ?? 'Jordan'}` : undefined}
       tabs={TABS}
-      primaryTabs={PRIMARY_TABS}
       activeTab={tab}
       onTabChange={setTab}
     >

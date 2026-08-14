@@ -99,20 +99,10 @@ const TAB_ICONS = {
 
 const label = (t) => t[0].toUpperCase() + t.slice(1);
 
-/**
- * `primaryTabs` picks which tabs (and in what order) get a permanent icon in
- * the mobile bottom bar — everything else lands under "More". Defaults to
- * the first 4 tabs if the caller doesn't specify (fine for the 3-tab
- * Company/Career dashboards, which just show all of them).
- */
-export function Shell({ title, subtitle, tabs, activeTab, onTabChange, primaryTabs, children }) {
-  const [menuOpen, setMenuOpen] = useState(false);
+export function Shell({ title, subtitle, tabs, activeTab, onTabChange, children }) {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [paletteQuery, setPaletteQuery] = useState('');
   const navigate = useNavigate();
-
-  const bottomTabs = tabs ? (primaryTabs ?? tabs.slice(0, 4)) : [];
-  const hasOverflow = tabs && tabs.length > bottomTabs.length;
 
   // ⌘K / Ctrl+K opens a searchable jump-to-tab palette — the app has no
   // cross-page router for dashboard tabs (they're per-dashboard component
@@ -148,20 +138,6 @@ export function Shell({ title, subtitle, tabs, activeTab, onTabChange, primaryTa
         style={{ background: 'rgba(15,23,42,0.85)', borderBottom: '1px solid var(--darbi-border)' }}
       >
         <div className="darbi-container py-5 flex items-center gap-4">
-          {tabs && (
-            // A bare glyph hid every section but "Advisor" behind a click nobody
-            // had a reason to try — the label makes it read as navigation.
-            // Hidden on mobile now that the bottom tab bar covers navigation there.
-            <button
-              onClick={() => setMenuOpen((o) => !o)}
-              aria-label="Menu"
-              aria-expanded={menuOpen}
-              className="hidden md:flex flex-col items-center gap-0.5 shrink-0 px-1.5 py-0.5 rounded-lg hover:bg-white/5 transition"
-            >
-              <span className="text-2xl leading-none">☰</span>
-              <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Menu</span>
-            </button>
-          )}
           <div className="flex-1">
             <h1 className="text-2xl font-bold text-white">{title}</h1>
             {subtitle && <p className="text-sm text-gray-400 mt-1">{subtitle}</p>}
@@ -183,76 +159,32 @@ export function Shell({ title, subtitle, tabs, activeTab, onTabChange, primaryTa
             👤
           </Link>
         </div>
-
-        {tabs && menuOpen && (
-          <>
-            <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
-            {/* `fixed`, not `absolute` — this menu opens from two triggers: the
-                desktop hamburger near the top, and the mobile "More" bottom-bar
-                button, which is often tapped after scrolling deep into a long
-                list (e.g. Jobs). An absolutely-positioned menu scrolled with the
-                document and could open entirely off-screen above the viewport.
-                Anchored near the bottom on mobile (above the bottom bar) and
-                near the top on desktop (under the header), matching where each
-                trigger actually is. */}
-            <div
-              className="fixed left-4 z-20 flex flex-col gap-1.5 p-3 min-w-[220px] max-h-[60vh] overflow-y-auto bottom-24 md:bottom-auto md:top-20"
-              style={{
-                background: 'var(--darbi-surface-solid)',
-                border: '1px solid var(--darbi-border)',
-                borderRadius: 'var(--darbi-radius)',
-                boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
-              }}
-            >
-              {tabs.map((t) => (
-                <button
-                  key={t}
-                  onClick={() => { onTabChange(t); setMenuOpen(false); }}
-                  className={`w-full text-left px-4 py-2.5 rounded-full font-bold text-sm transition ${
-                    activeTab === t ? 'text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'
-                  }`}
-                  style={activeTab === t ? { background: 'var(--darbi-gradient)' } : undefined}
-                >
-                  {label(t)}
-                </button>
-              ))}
-            </div>
-          </>
-        )}
       </header>
-      <EmailVerifyBanner />
-      <main className={`darbi-container py-8 relative z-10 ${tabs ? 'pb-24 md:pb-8' : ''}`}>{children}</main>
 
+      {/* All tabs, side by side, centred above the content — the previous
+          hamburger-menu-only nav hid every section but the active one behind
+          a click nobody had a reason to try. */}
       {tabs && (
-        <nav
-          className="md:hidden fixed bottom-0 inset-x-0 z-30 flex items-stretch"
-          style={{ background: 'rgba(15,23,42,0.95)', borderTop: '1px solid var(--darbi-border)' }}
-        >
-          {bottomTabs.map((t) => (
-            <button
-              key={t}
-              onClick={() => onTabChange(t)}
-              className="flex-1 flex flex-col items-center gap-0.5 py-2.5"
-              style={{ color: activeTab === t ? 'var(--darbi-purple)' : '#94a3b8' }}
-            >
-              <span className="text-lg leading-none">{TAB_ICONS[t] ?? '•'}</span>
-              <span className="text-[10px] font-semibold">{label(t)}</span>
-            </button>
-          ))}
-          {hasOverflow && (
-            <button
-              onClick={() => setMenuOpen((o) => !o)}
-              aria-label="More sections"
-              aria-expanded={menuOpen}
-              className="flex-1 flex flex-col items-center gap-0.5 py-2.5"
-              style={{ color: !bottomTabs.includes(activeTab) ? 'var(--darbi-purple)' : '#94a3b8' }}
-            >
-              <span className="text-lg leading-none">⋯</span>
-              <span className="text-[10px] font-semibold">More</span>
-            </button>
-          )}
-        </nav>
+        <div className="relative z-20" style={{ background: 'rgba(15,23,42,0.85)', borderBottom: '1px solid var(--darbi-border)' }}>
+          <div className="darbi-container py-3 flex flex-wrap justify-center gap-2">
+            {tabs.map((t) => (
+              <button
+                key={t}
+                onClick={() => onTabChange(t)}
+                className={`text-sm px-4 py-2 rounded-full font-bold transition ${
+                  activeTab === t ? 'text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'
+                }`}
+                style={activeTab === t ? { background: 'var(--darbi-gradient)' } : { border: '1px solid rgba(255,255,255,0.1)' }}
+              >
+                {label(t)}
+              </button>
+            ))}
+          </div>
+        </div>
       )}
+
+      <EmailVerifyBanner />
+      <main className="darbi-container py-8 relative z-10">{children}</main>
 
       {paletteOpen && (
         <div
