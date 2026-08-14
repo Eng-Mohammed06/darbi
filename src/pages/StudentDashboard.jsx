@@ -129,7 +129,7 @@ function Recommendations({ profile, onGoToProfile, onSeePathway }) {
         </Button>
       </div>
 
-      {busy && !result && <Card>Analysing your profile\u2026</Card>}
+      {busy && !result && <Card>Analysing your profile…</Card>}
 
       {visible.map((r, i) => (
         <RecommendationCard
