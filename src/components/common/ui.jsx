@@ -116,6 +116,7 @@ const TAB_ICONS = {
   recommendations: '🎯',
   profile: '👤',
   majors: '📚',
+  courses: '✅',
   jobs: '💼',
   'post a job': '📝',
   'my jobs': '📋',

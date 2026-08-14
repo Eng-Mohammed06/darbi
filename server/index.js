@@ -105,6 +105,19 @@ app.get('/api/majors/:slug/courses', async (req, res, next) => {
   }
 });
 
+/** Every course, across every major — backs the Courses tab's flat checklist. */
+app.get('/api/courses', async (_req, res, next) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT id, major_id, major_name, track, name, provider, cost_raw, what_you_learn
+         FROM courses ORDER BY major_name NULLS LAST, name`,
+    );
+    res.json(rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.get('/api/jobs', async (req, res, next) => {
   try {
     const { major, minGpa } = req.query;

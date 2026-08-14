@@ -13,7 +13,7 @@ import { useToast } from '../components/common/toast.jsx';
 /** Mirrors slugify() in scripts/convert_xlsx.py, which generated majors.slug. */
 const slugify = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
-const TABS = ['advisor', 'pathways', 'saved pathways', 'recommendations', 'profile', 'majors', 'jobs'];
+const TABS = ['advisor', 'pathways', 'saved pathways', 'recommendations', 'profile', 'majors', 'courses', 'jobs'];
 
 export default function StudentDashboard() {
   const { profile, setProfile } = useAuth();
@@ -43,6 +43,7 @@ export default function StudentDashboard() {
       )}
       {tab === 'profile' && <ProfileForm profile={profile} onSaved={setProfile} />}
       {tab === 'majors' && <MajorExplorer />}
+      {tab === 'courses' && <CourseChecklist />}
       {tab === 'jobs' && <JobBoard />}
     </Shell>
   );
@@ -375,6 +376,98 @@ function MajorExplorer() {
               )}
             </div>
           )}
+        </div>
+      ))}
+    </Card>
+  );
+}
+
+/**
+ * Every course, across every major, as one flat checklist — the Majors tab
+ * already shows courses per major, but only after expanding each one; this
+ * is the single place to see and check off everything at once, which is
+ * what a student going through the chat advisor's course questions actually
+ * wants open. Same "finished" checkbox + chat-inferred badges as there.
+ */
+function CourseChecklist() {
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [progress, setProgress] = useState({});
+
+  useEffect(() => {
+    api('/courses', { auth: false }).then(setCourses).catch(() => {}).finally(() => setLoading(false));
+    api('/students/me/course-progress').then(setProgress).catch(() => {});
+  }, []);
+
+  async function toggleCompleted(courseId, checked) {
+    setProgress((p) => {
+      const next = { ...p };
+      if (checked) next[courseId] = 'completed';
+      else delete next[courseId];
+      return next;
+    });
+    if (checked) {
+      await api(`/students/me/course-progress/${courseId}`, { method: 'PUT', body: { status: 'completed' } });
+    } else {
+      await api(`/students/me/course-progress/${courseId}`, { method: 'DELETE' });
+    }
+  }
+
+  if (loading) {
+    return (
+      <Card title="Loading courses…">
+        <SkeletonLines lines={8} />
+      </Card>
+    );
+  }
+
+  const groups = new Map();
+  for (const c of courses) {
+    const key = c.major_name ?? 'Cross-cutting (any major)';
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(c);
+  }
+
+  const done = Object.values(progress).filter((s) => s === 'completed').length;
+
+  return (
+    <Card title={`${courses.length} courses`} accent={false}>
+      <p className="text-sm text-gray-400 mb-5">
+        {done > 0 ? `${done} marked finished. ` : ''}
+        Check off what you've completed — or just tell the advisor in chat and it checks them for
+        you.
+      </p>
+      {[...groups.entries()].map(([majorName, list]) => (
+        <div key={majorName} className="mb-6 last:mb-0">
+          <h3 className="font-bold text-darbi-navy mb-2">{majorName}</h3>
+          <ul className="text-gray-300 space-y-2 list-none pl-0">
+            {list.map((c) => (
+              <li key={c.id} className="flex items-start gap-2">
+                <input
+                  type="checkbox"
+                  className="mt-1 shrink-0"
+                  checked={progress[c.id] === 'completed'}
+                  onChange={(e) => toggleCompleted(c.id, e.target.checked)}
+                  aria-label={`Mark "${c.name}" as finished`}
+                />
+                <label className="flex-1">
+                  <span className="font-medium">{c.name}</span>
+                  {c.provider && <span className="text-gray-500"> — {c.provider}</span>}
+                  {c.cost_raw && <span className="text-gray-500"> · {c.cost_raw} JOD</span>}
+                  {progress[c.id] === 'in_progress' && (
+                    <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-white/10" style={{ color: 'var(--darbi-purple)' }}>
+                      Taking now
+                    </span>
+                  )}
+                  {progress[c.id] === 'planned' && (
+                    <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-white/10 text-gray-400">
+                      Considering
+                    </span>
+                  )}
+                </label>
+              </li>
+            ))}
+          </ul>
         </div>
       ))}
     </Card>
