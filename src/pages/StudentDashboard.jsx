@@ -446,14 +446,13 @@ function MajorExplorer() {
 }
 
 /**
- * Course checklist, scoped to majors that actually matter to this student —
- * their declared major (profile.major_id, an undergraduate picks this at
- * profile setup) plus any pathways they've separately saved, rather than
- * the whole 139-course catalog. The profile major always leads, labeled
- * "Your major"; saved pathways follow, deduplicated against it. Each gets
- * its own titled row — a student with more than one sees them stacked, one
- * section per major, each with its own "finished" checkbox list and
- * chat-inferred badges.
+ * Course checklist, scoped to majors that actually matter to this student
+ * rather than the whole 139-course catalog. A student with a declared major
+ * (profile.major_id, an undergraduate picks this at profile setup) sees only
+ * that major's courses — full stop, not saved pathways on top of it. A
+ * student with no declared major yet (a high schooler still exploring) sees
+ * whatever pathways they've saved instead, one titled row per major, since
+ * that's their only way to pick what shows up here.
  */
 function CourseChecklist({ profile, onGoToPathways }) {
   const [savedMajors, setSavedMajors] = useState(null);
@@ -488,13 +487,11 @@ function CourseChecklist({ profile, onGoToPathways }) {
     );
   }
 
-  const rows = [];
-  if (profile?.major_id) {
-    rows.push({ id: profile.major_id, name: profile.major_name, isProfileMajor: true });
-  }
-  for (const m of savedMajors) {
-    if (!rows.some((r) => r.id === m.id)) rows.push({ id: m.id, name: m.name, isProfileMajor: false });
-  }
+  // A declared major means "only that" -- no saved pathways mixed in. Saved
+  // pathways are the fallback for a student who hasn't declared one yet.
+  const rows = profile?.major_id
+    ? [{ id: profile.major_id, name: profile.major_name, isProfileMajor: true }]
+    : savedMajors.map((m) => ({ id: m.id, name: m.name, isProfileMajor: false }));
 
   if (rows.length === 0) {
     return (
@@ -503,8 +500,8 @@ function CourseChecklist({ profile, onGoToPathways }) {
           icon="⭐"
           title={
             profile?.level === 'undergraduate'
-              ? "Set your major in Profile, or save a pathway — its courses show up here once you do."
-              : "Save a pathway first — its courses show up here once you do."
+              ? 'Set your major in Profile — its courses show up here once you do.'
+              : 'Save a pathway first — its courses show up here once you do.'
           }
           action={onGoToPathways && <Button onClick={onGoToPathways}>Browse pathways</Button>}
         />
