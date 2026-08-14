@@ -6,6 +6,7 @@ import { Alert, Button, Card, Field, inputClass, Wisps } from '../components/com
 import { useToast } from '../components/common/toast.jsx';
 import { PASSWORD_HINT, passwordIssues } from '../lib/password.js';
 import { readAvatarFile } from '../lib/avatar.js';
+import AvatarCropModal from '../components/common/AvatarCropModal.jsx';
 
 export default function AccountPage() {
   const { user, profile, logout } = useAuth();
@@ -57,13 +58,16 @@ function Detail({ label, value }) {
 }
 
 /**
- * PNG/JPEG only, shown circular (object-fit: cover handles non-square
- * source images without needing an actual crop step) — server/routes/auth.js
- * re-checks type and a 2MB size cap, since the client check is skippable.
+ * PNG/JPEG only, shown circular. Picking a file opens AvatarCropModal so the
+ * user chooses what part of the photo shows before it's ever uploaded,
+ * rather than trusting object-fit: cover to guess the right center.
+ * server/routes/auth.js re-checks type and a 2MB size cap on the way in,
+ * since the client-side check (src/lib/avatar.js) is skippable.
  */
 function AvatarUpload() {
   const { user, uploadAvatar, removeAvatar } = useAuth();
   const inputRef = useRef(null);
+  const [cropSrc, setCropSrc] = useState(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const toast = useToast();
@@ -73,10 +77,19 @@ function AvatarUpload() {
     e.target.value = '';
     if (!file) return;
     setError('');
-    setBusy(true);
     try {
       const dataUri = await readAvatarFile(file);
-      await uploadAvatar(dataUri);
+      setCropSrc(dataUri);
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  async function onCropConfirm(croppedDataUri) {
+    setCropSrc(null);
+    setBusy(true);
+    try {
+      await uploadAvatar(croppedDataUri);
       toast.show('Profile picture updated.', { kind: 'success' });
     } catch (err) {
       setError(err.message);
@@ -131,6 +144,10 @@ function AvatarUpload() {
           <span className="text-xs text-gray-500">PNG or JPG, up to 2MB.</span>
         </div>
       </div>
+
+      {cropSrc && (
+        <AvatarCropModal src={cropSrc} onCancel={() => setCropSrc(null)} onConfirm={onCropConfirm} />
+      )}
     </Card>
   );
 }
