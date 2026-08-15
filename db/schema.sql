@@ -124,6 +124,16 @@ ALTER TABLE career_profiles ADD COLUMN IF NOT EXISTS cv TEXT;
 ALTER TABLE career_profiles ADD COLUMN IF NOT EXISTS cv_filename TEXT;
 ALTER TABLE career_profiles ADD COLUMN IF NOT EXISTS cv_uploaded_at TIMESTAMPTZ;
 
+-- Certificates/Projects/Experience are each a small list of structured
+-- entries (a few short fields apiece) rather than one flat value, so they're
+-- JSONB arrays instead of more columns -- no separate table + FK needed for
+-- something this simple, and the whole list is always read/written together
+-- from the Profile tab. `career_goals` (declared with the original table
+-- above) already covers "Career interests" and needed no new column.
+ALTER TABLE career_profiles ADD COLUMN IF NOT EXISTS certificates JSONB NOT NULL DEFAULT '[]';
+ALTER TABLE career_profiles ADD COLUMN IF NOT EXISTS projects JSONB NOT NULL DEFAULT '[]';
+ALTER TABLE career_profiles ADD COLUMN IF NOT EXISTS experience JSONB NOT NULL DEFAULT '[]';
+
 -- ------------------------------------------------------- reference catalog --
 CREATE TABLE IF NOT EXISTS universities (
   id             SERIAL PRIMARY KEY,

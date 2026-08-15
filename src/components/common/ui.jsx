@@ -174,7 +174,10 @@ const TAB_ICONS = {
   overview: '📊',
   'learning paths': '🎓',
   'training centres': '🏫',
-  'my cv': '📄',
+  'career path': '🪜',
+  'job recommendations': '🎯',
+  applications: '📥',
+  'ai assistant': '🤖',
 };
 
 // "saved pathways" -> "savedPathways", matching the camelCase keys in

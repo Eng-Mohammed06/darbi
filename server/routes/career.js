@@ -6,16 +6,26 @@ const router = Router();
 
 router.use(requireAuth, requireRole('career'));
 
+/** Each entry just needs to be a plain object — the exact shape (title/company/period/... vs name/issuer/year vs title/description/link) is up to the client per list, nothing here depends on it. */
+function isEntryList(v) {
+  return Array.isArray(v) && v.every((e) => e && typeof e === 'object' && !Array.isArray(e));
+}
+
 /**
  * PUT /api/career/me — updates the graduate's editable profile fields, all
  * optional (COALESCE keeps whatever isn't sent), same pattern as
- * server/routes/students.js's PUT /me. `skills` is a full replace, not a
- * merge, since the My CV tab's form always submits the complete list.
+ * server/routes/students.js's PUT /me. Array fields (skills, careerGoals,
+ * certificates, projects, experience) are each a full replace, not a merge
+ * — the Profile tab always submits a section's complete list when it saves
+ * that section.
  */
 router.put(
   '/me',
   asyncRoute(async (req, res) => {
-    const { name, currentTitle, yearsExperience, major, university, yearGraduated, skills } = req.body ?? {};
+    const {
+      name, currentTitle, yearsExperience, major, university, yearGraduated,
+      skills, careerGoals, certificates, projects, experience,
+    } = req.body ?? {};
 
     if (yearsExperience != null && (Number.isNaN(Number(yearsExperience)) || yearsExperience < 0)) {
       return res.status(400).json({ error: 'bad_years_experience' });
@@ -23,6 +33,11 @@ router.put(
     const thisYear = new Date().getFullYear();
     if (yearGraduated != null && (Number.isNaN(Number(yearGraduated)) || yearGraduated < 1950 || yearGraduated > thisYear + 10)) {
       return res.status(400).json({ error: 'bad_year_graduated' });
+    }
+    for (const [key, value] of [['certificates', certificates], ['projects', projects], ['experience', experience]]) {
+      if (value != null && !isEntryList(value)) {
+        return res.status(400).json({ error: 'bad_entry_list', field: key });
+      }
     }
 
     const { rows } = await query(
@@ -33,11 +48,19 @@ router.put(
          major             = COALESCE($5, major),
          university        = COALESCE($6, university),
          year_graduated    = COALESCE($7, year_graduated),
-         skills            = COALESCE($8, skills)
+         skills            = COALESCE($8, skills),
+         career_goals      = COALESCE($9, career_goals),
+         certificates      = COALESCE($10, certificates),
+         projects          = COALESCE($11, projects),
+         experience        = COALESCE($12, experience)
        WHERE user_id = $1
        RETURNING *`,
       [req.user.id, name ?? null, currentTitle ?? null, yearsExperience ?? null,
-       major ?? null, university ?? null, yearGraduated ?? null, skills ?? null],
+       major ?? null, university ?? null, yearGraduated ?? null, skills ?? null,
+       careerGoals ?? null,
+       certificates != null ? JSON.stringify(certificates) : null,
+       projects != null ? JSON.stringify(projects) : null,
+       experience != null ? JSON.stringify(experience) : null],
     );
     if (!rows[0]) return res.status(404).json({ error: 'no_profile' });
     res.json(rows[0]);
