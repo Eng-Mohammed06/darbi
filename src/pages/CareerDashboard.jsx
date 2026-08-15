@@ -6,7 +6,7 @@ import { useToast } from '../components/common/toast.jsx';
 import { readCvFile } from '../lib/cv.js';
 import { useLang } from '../i18n/index.jsx';
 
-const TABS = ['ai assistant', 'profile', 'learning paths', 'training centres'];
+const TABS = ['ai assistant', 'profile', 'career path', 'learning paths', 'training centres'];
 
 export default function CareerDashboard() {
   const { profile } = useAuth();
@@ -32,6 +32,7 @@ export default function CareerDashboard() {
     >
       {tab === 'ai assistant' && <AiAssistant profile={profile} seed={assistantSeed} onSeedConsumed={() => setAssistantSeed(null)} />}
       {tab === 'profile' && <Profile />}
+      {tab === 'career path' && <CareerPath onGoToProfile={() => setTab('profile')} />}
       {tab === 'learning paths' && <LearningPaths profile={profile} onAskAssistant={askAssistant} />}
       {tab === 'training centres' && <TrainingCentres />}
     </Shell>
@@ -123,6 +124,96 @@ function LearningPaths({ profile, onAskAssistant }) {
       {!loading && paths.length === 0 && (
         <Card><EmptyState icon="🎓" title={t('career.noLearningPaths')} /></Card>
       )}
+    </>
+  );
+}
+
+/**
+ * Career Path — a personalized progression ladder (POST /api/career/ladder),
+ * generated from the graduate's own major/current role/skills/experience and
+ * cached until that changes. Degrades to a generic template if Claude is
+ * unavailable, same tier-of-degradation approach as Recommendations does for
+ * students (server/lib/claude.js).
+ */
+function CareerPath({ onGoToProfile }) {
+  const { t } = useLang();
+  const l = t('career.ladder');
+  const [ladder, setLadder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null); // { code, message } | null
+
+  function load(refresh) {
+    setBusy(refresh);
+    setLoading(!refresh);
+    setError(null);
+    api(`/career/ladder${refresh ? '?refresh=1' : ''}`, { method: 'POST' })
+      .then(setLadder)
+      .catch((err) => setError({ code: err.code, message: err.message }))
+      .finally(() => {
+        setLoading(false);
+        setBusy(false);
+      });
+  }
+
+  useEffect(load, []);
+
+  if (loading) {
+    return <Card title={l.title}><SkeletonLines lines={6} /></Card>;
+  }
+
+  if (error?.code === 'profile_incomplete') {
+    return (
+      <Card title={l.incompleteTitle} accent={false}>
+        <p className="text-sm text-gray-400 mb-4">{l.incompleteBody}</p>
+        <Button type="button" onClick={onGoToProfile}>{l.goToProfile}</Button>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card title={l.errorTitle} accent={false}>
+        <Alert>{error.message}</Alert>
+        <Button type="button" onClick={() => load(false)}>{l.retry}</Button>
+      </Card>
+    );
+  }
+
+  return (
+    <>
+      <Card title={l.title} accent={false}>
+        <p className="text-sm text-gray-300 mb-2">{ladder.summary}</p>
+        <p className="text-xs text-gray-500 mb-4">{l.cachedNote}</p>
+        {ladder.source === 'fallback' && (
+          <p className="text-xs mb-4" style={{ color: 'var(--darbi-gold)' }}>{l.degradedNote}</p>
+        )}
+        <Button type="button" onClick={() => load(true)} disabled={busy}>
+          {busy ? l.regenerating : l.regenerate}
+        </Button>
+      </Card>
+
+      {ladder.rungs.map((rung, i) => (
+        <div key={rung.title}>
+          <Card accent={false}>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="font-bold text-white">{rung.title}</p>
+                <p className="text-sm text-gray-400 mt-1">{rung.focus}</p>
+              </div>
+              <span
+                className="text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-full shrink-0"
+                style={{ background: 'color-mix(in srgb, var(--darbi-gold) 15%, transparent)', color: 'var(--darbi-gold)' }}
+              >
+                {rung.typical_years}
+              </span>
+            </div>
+          </Card>
+          {i < ladder.rungs.length - 1 && (
+            <div className="flex justify-center py-1 text-gray-500" aria-hidden="true">↓</div>
+          )}
+        </div>
+      ))}
     </>
   );
 }

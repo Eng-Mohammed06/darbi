@@ -1,7 +1,9 @@
 import { Router } from 'express';
+import { createHash } from 'node:crypto';
 import { query } from '../lib/db.js';
 import { requireAuth, requireRole, asyncRoute } from '../lib/auth.js';
 import { chatConfigured, streamCareerReply, loadCareerHistory } from '../lib/careerChat.js';
+import { generateCareerLadder, generateCareerLadderFallback } from '../lib/careerLadder.js';
 
 const router = Router();
 
@@ -112,6 +114,91 @@ router.delete(
     );
     if (!rows[0]) return res.status(404).json({ error: 'no_profile' });
     res.json(rows[0]);
+  }),
+);
+
+/** Cache key: same relevant profile fields -> same ladder, no repeat API spend. */
+const ladderHash = (profile) =>
+  createHash('sha256')
+    .update(
+      JSON.stringify({
+        major: profile.major,
+        current_title: profile.current_title,
+        years_experience: profile.years_experience,
+        skills: [...(profile.skills ?? [])].sort(),
+        certificates: profile.certificates,
+        projects: profile.projects,
+        experience: profile.experience,
+        career_goals: [...(profile.career_goals ?? [])].sort(),
+      }),
+    )
+    .digest('hex');
+
+/**
+ * POST /api/career/ladder — a personalized career progression ladder.
+ * Returns the cached one when the relevant profile fields are unchanged.
+ * ?refresh=1 forces a new call. Same cache/degrade pattern as
+ * server/routes/recommend.js.
+ */
+router.post(
+  '/ladder',
+  asyncRoute(async (req, res) => {
+    const { rows } = await query(`SELECT * FROM career_profiles WHERE user_id = $1`, [req.user.id]);
+    const profile = rows[0];
+    if (!profile) return res.status(404).json({ error: 'no_profile' });
+    if (!profile.major && !profile.current_title) {
+      return res.status(400).json({
+        error: 'profile_incomplete',
+        message: 'Add your major or current role in the Profile tab first.',
+      });
+    }
+
+    const hash = ladderHash(profile);
+
+    if (req.query.refresh !== '1') {
+      const { rows: cached } = await query(
+        `SELECT payload, model, created_at FROM career_ladders
+          WHERE career_user_id = $1 AND profile_hash = $2
+          ORDER BY created_at DESC LIMIT 1`,
+        [req.user.id, hash],
+      );
+      if (cached[0]) {
+        return res.json({ ...cached[0].payload, model: cached[0].model, cached: true });
+      }
+    }
+
+    const { rows: jobsSample } = await query(
+      `SELECT company_name, title, required_majors, required_skills, salary_raw
+         FROM jobs ORDER BY company_name LIMIT 40`,
+    );
+
+    let result;
+    if (chatConfigured) {
+      try {
+        result = await generateCareerLadder({ profile, jobsSample });
+      } catch (err) {
+        console.warn('[career ladder] Claude unavailable, using fallback:', err.message);
+        result = generateCareerLadderFallback({ profile });
+        result.degraded_reason = err.message;
+      }
+    } else {
+      result = generateCareerLadderFallback({ profile });
+      result.degraded_reason = 'chat_not_configured';
+    }
+
+    await query(
+      `INSERT INTO career_ladders (career_user_id, profile_hash, payload, model)
+       VALUES ($1,$2,$3,$4)`,
+      [req.user.id, hash, result.data, result.model],
+    );
+
+    res.json({
+      ...result.data,
+      model: result.model,
+      source: result.source,
+      degraded_reason: result.degraded_reason,
+      cached: false,
+    });
   }),
 );
 

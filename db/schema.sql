@@ -373,6 +373,19 @@ CREATE TABLE IF NOT EXISTS recommendations (
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- The Graduate Portal's Career Path tab (server/lib/careerLadder.js) —
+-- same cache-by-profile-hash pattern as recommendations above, just scoped
+-- to a graduate's major/current role/skills/experience instead of a
+-- student's interests.
+CREATE TABLE IF NOT EXISTS career_ladders (
+  id              SERIAL PRIMARY KEY,
+  career_user_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  profile_hash    TEXT NOT NULL,
+  payload         JSONB NOT NULL,
+  model           TEXT NOT NULL,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 -- The post-signup onboarding questionnaire, plus Claude's structured read on
 -- it. One row per student — re-answering overwrites it. The chat advisor
 -- folds `analysis` into its system prompt so a conversation starts already
