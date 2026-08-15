@@ -4,6 +4,7 @@ import { query } from '../lib/db.js';
 import { requireAuth, requireRole, asyncRoute } from '../lib/auth.js';
 import { chatConfigured, streamCareerReply, loadCareerHistory } from '../lib/careerChat.js';
 import { generateCareerLadder, generateCareerLadderFallback } from '../lib/careerLadder.js';
+import { matchJobs, matchJobsFallback, candidateJobs } from '../lib/jobMatch.js';
 
 const router = Router();
 
@@ -197,6 +198,100 @@ router.post(
 
     res.json({
       ...result.data,
+      model: result.model,
+      source: result.source,
+      degraded_reason: result.degraded_reason,
+      cached: false,
+    });
+  }),
+);
+
+/** Cache key: same relevant profile fields -> same matches, no repeat API spend. */
+const jobMatchHash = (profile) =>
+  createHash('sha256')
+    .update(
+      JSON.stringify({
+        major: profile.major,
+        current_title: profile.current_title,
+        years_experience: profile.years_experience,
+        skills: [...(profile.skills ?? [])].sort(),
+        certificates: profile.certificates,
+        projects: profile.projects,
+        experience: profile.experience,
+      }),
+    )
+    .digest('hex');
+
+/**
+ * POST /api/career/job-matches — the 8-10 best-fitting real job listings for
+ * this graduate, each with a match score and a per-requirement ✅/❌
+ * breakdown. Same cache/degrade pattern as /ladder and
+ * server/routes/recommend.js.
+ */
+router.post(
+  '/job-matches',
+  asyncRoute(async (req, res) => {
+    const { rows } = await query(`SELECT * FROM career_profiles WHERE user_id = $1`, [req.user.id]);
+    const profile = rows[0];
+    if (!profile) return res.status(404).json({ error: 'no_profile' });
+    if (!profile.skills?.length && !profile.major) {
+      return res.status(400).json({
+        error: 'profile_incomplete',
+        message: 'Add your major or a few skills in the Profile tab first.',
+      });
+    }
+
+    const hash = jobMatchHash(profile);
+
+    if (req.query.refresh !== '1') {
+      const { rows: cached } = await query(
+        `SELECT payload, model, created_at FROM job_matches
+          WHERE career_user_id = $1 AND profile_hash = $2
+          ORDER BY created_at DESC LIMIT 1`,
+        [req.user.id, hash],
+      );
+      if (cached[0]) {
+        return res.json({ ...cached[0].payload, model: cached[0].model, cached: true });
+      }
+    }
+
+    const { rows: jobs } = await query(
+      `SELECT id, company_name, title, required_majors, required_skills,
+              salary_raw, salary_is_estimate, location
+         FROM jobs ORDER BY id`,
+    );
+
+    let result;
+    if (chatConfigured) {
+      try {
+        result = await matchJobs({ profile, jobs: candidateJobs(profile, jobs) });
+      } catch (err) {
+        console.warn('[job matches] Claude unavailable, using fallback:', err.message);
+        result = matchJobsFallback({ profile, jobs });
+        result.degraded_reason = err.message;
+      }
+    } else {
+      result = matchJobsFallback({ profile, jobs });
+      result.degraded_reason = 'chat_not_configured';
+    }
+
+    // Claude/the fallback only return job_id + scoring — merge back the
+    // actual listing details so the client needs just this one response.
+    const byId = new Map(jobs.map((j) => [j.id, j]));
+    const matches = result.data.matches
+      .filter((m) => byId.has(m.job_id))
+      .map((m) => ({ ...m, ...byId.get(m.job_id) }));
+
+    const payload = { matches };
+
+    await query(
+      `INSERT INTO job_matches (career_user_id, profile_hash, payload, model)
+       VALUES ($1,$2,$3,$4)`,
+      [req.user.id, hash, payload, result.model],
+    );
+
+    res.json({
+      ...payload,
       model: result.model,
       source: result.source,
       degraded_reason: result.degraded_reason,

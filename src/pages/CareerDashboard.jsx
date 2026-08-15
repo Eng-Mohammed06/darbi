@@ -6,7 +6,7 @@ import { useToast } from '../components/common/toast.jsx';
 import { readCvFile } from '../lib/cv.js';
 import { useLang } from '../i18n/index.jsx';
 
-const TABS = ['ai assistant', 'profile', 'career path', 'learning paths', 'training centres'];
+const TABS = ['ai assistant', 'profile', 'career path', 'job recommendations', 'learning paths', 'training centres'];
 
 export default function CareerDashboard() {
   const { profile, setProfile } = useAuth();
@@ -33,6 +33,7 @@ export default function CareerDashboard() {
       {tab === 'ai assistant' && <AiAssistant profile={profile} seed={assistantSeed} onSeedConsumed={() => setAssistantSeed(null)} />}
       {tab === 'profile' && <Profile />}
       {tab === 'career path' && <CareerPath profile={profile} setProfile={setProfile} onGoToProfile={() => setTab('profile')} />}
+      {tab === 'job recommendations' && <JobMatches onGoToProfile={() => setTab('profile')} />}
       {tab === 'learning paths' && <LearningPaths profile={profile} onAskAssistant={askAssistant} />}
       {tab === 'training centres' && <TrainingCentres />}
     </Shell>
@@ -308,6 +309,105 @@ function GoalForm({ currentGoal, l, onSave }) {
         </Button>
       </form>
     </Card>
+  );
+}
+
+/**
+ * Job Recommendations — the graduate's best-fitting real job listings
+ * (POST /api/career/job-matches), each with a match score and a
+ * per-requirement ✅/❌ breakdown, not just a plain list. Same cache/degrade
+ * pattern as Career Path.
+ */
+function JobMatches({ onGoToProfile }) {
+  const { t } = useLang();
+  const j = t('career.jobMatches');
+  const [matches, setMatches] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null); // { code, message } | null
+  const [degraded, setDegraded] = useState(false);
+
+  function load(refresh) {
+    setBusy(refresh);
+    setLoading(!refresh);
+    setError(null);
+    api(`/career/job-matches${refresh ? '?refresh=1' : ''}`, { method: 'POST' })
+      .then((r) => {
+        setMatches(r.matches);
+        setDegraded(r.source === 'fallback');
+      })
+      .catch((err) => setError({ code: err.code, message: err.message }))
+      .finally(() => {
+        setLoading(false);
+        setBusy(false);
+      });
+  }
+
+  useEffect(load, []);
+
+  if (loading) {
+    return <Card title={j.title}><SkeletonLines lines={6} /></Card>;
+  }
+
+  if (error?.code === 'profile_incomplete') {
+    return (
+      <Card title={j.incompleteTitle} accent={false}>
+        <p className="text-sm text-gray-400 mb-4">{j.incompleteBody}</p>
+        <Button type="button" onClick={onGoToProfile}>{j.goToProfile}</Button>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card title={j.errorTitle} accent={false}>
+        <Alert>{error.message}</Alert>
+        <Button type="button" onClick={() => load(false)}>{j.retry}</Button>
+      </Card>
+    );
+  }
+
+  return (
+    <>
+      <Card title={j.title} accent={false}>
+        {degraded && <p className="text-xs mb-3" style={{ color: 'var(--darbi-gold)' }}>{j.degradedNote}</p>}
+        <Button type="button" onClick={() => load(true)} disabled={busy}>
+          {busy ? j.regenerating : j.regenerate}
+        </Button>
+      </Card>
+
+      {matches.length === 0 && <Card><EmptyState icon="🎯" title={j.empty} /></Card>}
+
+      {matches.map((m) => (
+        <Card key={m.job_id} accent={false}>
+          <div className="flex items-start justify-between gap-4 mb-3">
+            <div className="min-w-0">
+              <p className="font-bold text-white truncate">{m.title}</p>
+              <p className="text-sm text-gray-400">
+                {m.company_name}
+                {m.location && ` · ${m.location}`}
+                {m.salary_raw && ` · ${m.salary_raw}${m.salary_is_estimate ? ` (${j.estimateBadge})` : ''}`}
+              </p>
+            </div>
+            <span
+              className="text-sm font-extrabold px-3 py-1.5 rounded-full shrink-0"
+              style={{ background: 'color-mix(in srgb, var(--darbi-gold) 18%, transparent)', color: 'var(--darbi-gold)' }}
+            >
+              {j.matchLabel(m.match_score)}
+            </span>
+          </div>
+          <p className="text-sm text-gray-300 mb-3">{m.why}</p>
+          <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+            {m.requirements.map((r) => (
+              <span key={r.label} className="text-xs text-gray-300 flex items-center gap-1.5">
+                <span aria-hidden="true">{r.met ? '✅' : '❌'}</span>
+                {r.label}
+              </span>
+            ))}
+          </div>
+        </Card>
+      ))}
+    </>
   );
 }
 
