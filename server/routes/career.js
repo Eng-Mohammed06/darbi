@@ -300,6 +300,96 @@ router.post(
   }),
 );
 
+const APPLICATION_STATUSES = ['applied', 'under_review', 'interview', 'accepted', 'rejected'];
+
+/** GET /api/career/applications — every application this graduate is tracking. */
+router.get(
+  '/applications',
+  asyncRoute(async (req, res) => {
+    const { rows } = await query(
+      `SELECT * FROM career_applications WHERE career_user_id = $1 ORDER BY applied_at DESC`,
+      [req.user.id],
+    );
+    res.json(rows);
+  }),
+);
+
+/**
+ * POST /api/career/applications  { jobId?, companyName, title, status?, notes? }
+ * Either tracks a real listing (jobId set — idempotent, ON CONFLICT just
+ * returns the existing row rather than erroring, since re-clicking "Track"
+ * on the same Job Recommendations match shouldn't create a duplicate) or
+ * logs one manually (jobId omitted, e.g. a role found outside DARBI).
+ */
+router.post(
+  '/applications',
+  asyncRoute(async (req, res) => {
+    const { jobId, companyName, title, status, notes } = req.body ?? {};
+    const companyTrim = String(companyName ?? '').trim();
+    const titleTrim = String(title ?? '').trim();
+    if (!companyTrim || !titleTrim) {
+      return res.status(400).json({ error: 'missing_fields', need: ['companyName', 'title'] });
+    }
+    if (status != null && !APPLICATION_STATUSES.includes(status)) {
+      return res.status(400).json({ error: 'bad_status', allowed: APPLICATION_STATUSES });
+    }
+
+    const { rows } = await query(
+      `INSERT INTO career_applications (career_user_id, job_id, company_name, title, status, notes)
+       VALUES ($1,$2,$3,$4,COALESCE($5,'applied'),$6)
+       ON CONFLICT (career_user_id, job_id) DO NOTHING
+       RETURNING *`,
+      [req.user.id, jobId ?? null, companyTrim, titleTrim, status ?? null, notes ?? null],
+    );
+
+    if (rows[0]) return res.status(201).json(rows[0]);
+
+    // ON CONFLICT hit (jobId was already tracked) — jobId can't be null here,
+    // since NULLs never conflict, so this lookup is unambiguous.
+    const { rows: existing } = await query(
+      `SELECT * FROM career_applications WHERE career_user_id = $1 AND job_id = $2`,
+      [req.user.id, jobId],
+    );
+    res.status(200).json(existing[0]);
+  }),
+);
+
+/** PATCH /api/career/applications/:id  { status?, notes? } */
+router.patch(
+  '/applications/:id',
+  asyncRoute(async (req, res) => {
+    const { status, notes } = req.body ?? {};
+    if (status != null && !APPLICATION_STATUSES.includes(status)) {
+      return res.status(400).json({ error: 'bad_status', allowed: APPLICATION_STATUSES });
+    }
+
+    const { rows } = await query(
+      `UPDATE career_applications SET
+         status     = COALESCE($3, status),
+         notes      = COALESCE($4, notes),
+         updated_at = now()
+       WHERE id = $1 AND career_user_id = $2
+       RETURNING *`,
+      [req.params.id, req.user.id, status ?? null, notes ?? null],
+    );
+    if (!rows[0]) return res.status(404).json({ error: 'not_found' });
+    res.json(rows[0]);
+  }),
+);
+
+/** DELETE /api/career/applications/:id */
+router.delete(
+  '/applications/:id',
+  asyncRoute(async (req, res) => {
+    const { rows } = await query(
+      `DELETE FROM career_applications WHERE id = $1 AND career_user_id = $2 RETURNING id`,
+      [req.params.id, req.user.id],
+    );
+    if (!rows[0]) return res.status(404).json({ error: 'not_found' });
+    res.status(204).end();
+  }),
+);
+
 /** Map an upstream failure to something worth showing a graduate. Mirrors chat.js's version but without the student-only "Recommendations tab" fallback mention. */
 function friendlyError(err) {
   const status = err?.status;

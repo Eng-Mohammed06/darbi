@@ -404,6 +404,32 @@ CREATE TABLE IF NOT EXISTS job_matches (
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- The Graduate Portal's Applications tab — a graduate's own tracker of jobs
+-- they've applied to, separate from job_applications (which is the
+-- student portal's simple "did they click apply" flag, no status pipeline).
+-- job_id is nullable and company_name/title are stored directly so a
+-- graduate can log an application to a role that isn't in DARBI's jobs
+-- table at all, not only ones matched from Job Recommendations.
+-- UNIQUE(career_user_id, job_id) only blocks a second row for the SAME
+-- real listing (Postgres allows unlimited NULLs through a unique
+-- constraint), so tracking a match from Job Recommendations is idempotent
+-- while manually-logged applications never collide with each other.
+CREATE TABLE IF NOT EXISTS career_applications (
+  id              SERIAL PRIMARY KEY,
+  career_user_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  job_id          INTEGER REFERENCES jobs(id) ON DELETE SET NULL,
+  company_name    TEXT NOT NULL,
+  title           TEXT NOT NULL,
+  status          TEXT NOT NULL DEFAULT 'applied'
+                    CHECK (status IN ('applied', 'under_review', 'interview', 'accepted', 'rejected')),
+  notes           TEXT,
+  applied_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (career_user_id, job_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_career_applications_user ON career_applications(career_user_id);
+
 -- The post-signup onboarding questionnaire, plus Claude's structured read on
 -- it. One row per student — re-answering overwrites it. The chat advisor
 -- folds `analysis` into its system prompt so a conversation starts already

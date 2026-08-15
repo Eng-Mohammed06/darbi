@@ -6,7 +6,7 @@ import { useToast } from '../components/common/toast.jsx';
 import { readCvFile } from '../lib/cv.js';
 import { useLang } from '../i18n/index.jsx';
 
-const TABS = ['ai assistant', 'profile', 'career path', 'job recommendations', 'learning paths', 'training centres'];
+const TABS = ['ai assistant', 'profile', 'career path', 'job recommendations', 'applications', 'learning paths', 'training centres'];
 
 export default function CareerDashboard() {
   const { profile, setProfile } = useAuth();
@@ -34,6 +34,7 @@ export default function CareerDashboard() {
       {tab === 'profile' && <Profile />}
       {tab === 'career path' && <CareerPath profile={profile} setProfile={setProfile} onGoToProfile={() => setTab('profile')} />}
       {tab === 'job recommendations' && <JobMatches onGoToProfile={() => setTab('profile')} />}
+      {tab === 'applications' && <Applications />}
       {tab === 'learning paths' && <LearningPaths profile={profile} onAskAssistant={askAssistant} />}
       {tab === 'training centres' && <TrainingCentres />}
     </Shell>
@@ -321,11 +322,13 @@ function GoalForm({ currentGoal, l, onSave }) {
 function JobMatches({ onGoToProfile }) {
   const { t } = useLang();
   const j = t('career.jobMatches');
+  const toast = useToast();
   const [matches, setMatches] = useState(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null); // { code, message } | null
   const [degraded, setDegraded] = useState(false);
+  const [trackedIds, setTrackedIds] = useState(new Set());
 
   function load(refresh) {
     setBusy(refresh);
@@ -344,6 +347,24 @@ function JobMatches({ onGoToProfile }) {
   }
 
   useEffect(load, []);
+  useEffect(() => {
+    api('/career/applications')
+      .then((apps) => setTrackedIds(new Set(apps.filter((a) => a.job_id != null).map((a) => a.job_id))))
+      .catch(() => {});
+  }, []);
+
+  async function track(m) {
+    try {
+      const app = await api('/career/applications', {
+        method: 'POST',
+        body: { jobId: m.job_id, companyName: m.company_name, title: m.title },
+      });
+      setTrackedIds((s) => new Set(s).add(app.job_id));
+      toast.show(j.trackedToast, { kind: 'success' });
+    } catch (err) {
+      toast.show(err.message, { kind: 'error' });
+    }
+  }
 
   if (loading) {
     return <Card title={j.title}><SkeletonLines lines={6} /></Card>;
@@ -397,7 +418,7 @@ function JobMatches({ onGoToProfile }) {
             </span>
           </div>
           <p className="text-sm text-gray-300 mb-3">{m.why}</p>
-          <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+          <div className="flex flex-wrap gap-x-4 gap-y-1.5 mb-3">
             {m.requirements.map((r) => (
               <span key={r.label} className="text-xs text-gray-300 flex items-center gap-1.5">
                 <span aria-hidden="true">{r.met ? '✅' : '❌'}</span>
@@ -405,9 +426,174 @@ function JobMatches({ onGoToProfile }) {
               </span>
             ))}
           </div>
+          {trackedIds.has(m.job_id) ? (
+            <span className="text-xs font-bold" style={{ color: 'var(--darbi-success)' }}>{j.tracked}</span>
+          ) : (
+            <button type="button" onClick={() => track(m)} className="text-xs font-bold" style={{ color: 'var(--darbi-purple)' }}>
+              {j.track}
+            </button>
+          )}
         </Card>
       ))}
     </>
+  );
+}
+
+const STATUS_ORDER = ['applied', 'under_review', 'interview', 'accepted', 'rejected'];
+
+/**
+ * Applications — a graduate's own tracker of jobs they've applied to,
+ * grouped by status. Populated either by "Track application" on a Job
+ * Recommendations match, or logged manually here for a role found outside
+ * DARBI. Status changes and removals save immediately (removal uses the
+ * same optimistic-remove + 5s Undo toast pattern used elsewhere, not a
+ * confirm dialog).
+ */
+function Applications() {
+  const { t } = useLang();
+  const a = t('career.applications');
+  const toast = useToast();
+  const [apps, setApps] = useState(null);
+  const [adding, setAdding] = useState(false);
+
+  useEffect(() => {
+    api('/career/applications').then(setApps).catch(() => setApps([]));
+  }, []);
+
+  async function changeStatus(app, status) {
+    setApps((list) => list.map((x) => (x.id === app.id ? { ...x, status } : x)));
+    try {
+      await api(`/career/applications/${app.id}`, { method: 'PATCH', body: { status } });
+    } catch {
+      // Roll back — the change didn't actually take server-side.
+      setApps((list) => list.map((x) => (x.id === app.id ? { ...x, status: app.status } : x)));
+    }
+  }
+
+  function remove(app) {
+    setApps((list) => list.filter((x) => x.id !== app.id));
+    const timer = setTimeout(() => {
+      api(`/career/applications/${app.id}`, { method: 'DELETE' }).catch(() => {});
+    }, 5000);
+    toast.show(`${app.title} — ${app.company_name}`, {
+      kind: 'info',
+      duration: 5000,
+      action: {
+        label: t('common.undo'),
+        onClick: () => { clearTimeout(timer); setApps((list) => [app, ...list]); },
+      },
+    });
+  }
+
+  async function addApplication(fields) {
+    const created = await api('/career/applications', { method: 'POST', body: fields });
+    setApps((list) => [created, ...list]);
+    setAdding(false);
+  }
+
+  if (apps === null) {
+    return <Card title={a.title}><SkeletonLines lines={6} /></Card>;
+  }
+
+  return (
+    <>
+      <Card title={a.title} accent={false}>
+        <Button type="button" onClick={() => setAdding(true)}>{a.add}</Button>
+      </Card>
+
+      {adding && <AddApplicationForm a={a} onSave={addApplication} onCancel={() => setAdding(false)} />}
+
+      {STATUS_ORDER.map((status) => {
+        const inStatus = apps.filter((x) => x.status === status);
+        if (inStatus.length === 0) return null;
+        return (
+          <Card key={status} title={a.statusLabels[status]} accent={false}>
+            <div className="divide-y divide-[color:var(--darbi-border)]">
+              {inStatus.map((app) => (
+                <div key={app.id} className="py-3 flex items-center justify-between gap-4 flex-wrap">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-white truncate">{app.title}</p>
+                    <p className="text-xs text-gray-500">{app.company_name} · {a.appliedOn(fmtDate(app.applied_at))}</p>
+                    {app.notes && <p className="text-xs text-gray-400 mt-1">{app.notes}</p>}
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <select
+                      className={inputClass}
+                      value={app.status}
+                      onChange={(e) => changeStatus(app, e.target.value)}
+                      style={{ minHeight: 0, padding: '6px 10px', width: 'auto' }}
+                    >
+                      {STATUS_ORDER.map((s) => (
+                        <option key={s} value={s}>{a.statusLabels[s]}</option>
+                      ))}
+                    </select>
+                    <button type="button" onClick={() => remove(app)} className="text-xs text-red-400 hover:text-red-300 font-semibold">
+                      {a.remove}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        );
+      })}
+
+      {apps.length === 0 && !adding && <Card><EmptyState icon="📥" title={a.empty} /></Card>}
+    </>
+  );
+}
+
+function AddApplicationForm({ a, onSave, onCancel }) {
+  const [form, setForm] = useState({ companyName: '', title: '', status: 'applied', notes: '' });
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  async function submit(e) {
+    e.preventDefault();
+    if (!form.companyName.trim() || !form.title.trim()) return;
+    setError('');
+    setBusy(true);
+    try {
+      await onSave(form);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card title={a.addTitle} accent={false}>
+      <form onSubmit={submit}>
+        <Alert>{error}</Alert>
+        <Field label={a.company}>
+          <input
+            className={inputClass}
+            placeholder={a.companyPlaceholder}
+            value={form.companyName}
+            onChange={(e) => setForm({ ...form, companyName: e.target.value })}
+            autoFocus
+          />
+        </Field>
+        <Field label={a.jobTitle}>
+          <input className={inputClass} placeholder={a.jobTitlePlaceholder} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+        </Field>
+        <Field label={a.status}>
+          <select className={inputClass} value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
+            {STATUS_ORDER.map((s) => (
+              <option key={s} value={s}>{a.statusLabels[s]}</option>
+            ))}
+          </select>
+        </Field>
+        <Field label={a.notes}>
+          <input className={inputClass} placeholder={a.notesPlaceholder} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+        </Field>
+        <div className="flex items-center gap-3">
+          <Button type="submit" disabled={busy}>{busy ? a.saving : a.save}</Button>
+          <button type="button" onClick={onCancel} disabled={busy} className="text-xs text-gray-400 hover:text-gray-200">{a.cancel}</button>
+        </div>
+      </form>
+    </Card>
   );
 }
 
