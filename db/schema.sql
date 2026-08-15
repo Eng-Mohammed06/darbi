@@ -350,6 +350,18 @@ CREATE TABLE IF NOT EXISTS chat_messages (
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- The Graduate Portal's own AI Assistant conversation (server/lib/careerChat.js,
+-- server/routes/career.js) -- kept as its own table rather than reusing
+-- chat_messages so the student advisor (server/lib/chat.js) never has to
+-- change to accommodate a second, differently-scoped kind of conversation.
+CREATE TABLE IF NOT EXISTS career_chat_messages (
+  id              SERIAL PRIMARY KEY,
+  career_user_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  role            TEXT NOT NULL CHECK (role IN ('user', 'assistant')),
+  content         TEXT NOT NULL,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 -- Claude responses are cached so a repeat dashboard visit costs nothing and the
 -- demo still works if the API is unreachable mid-presentation.
 CREATE TABLE IF NOT EXISTS recommendations (

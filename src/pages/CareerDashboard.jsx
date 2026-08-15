@@ -1,17 +1,26 @@
 import { useEffect, useRef, useState } from 'react';
-import { api } from '../services/api.js';
+import { api, getToken } from '../services/api.js';
 import { useAuth } from '../services/auth.jsx';
-import { Alert, Button, Card, EmptyState, Field, Shell, SkeletonLines, inputClass } from '../components/common/ui.jsx';
+import { Alert, Button, Card, EmptyState, Field, Shell, Skeleton, SkeletonLines, inputClass } from '../components/common/ui.jsx';
 import { useToast } from '../components/common/toast.jsx';
 import { readCvFile } from '../lib/cv.js';
 import { useLang } from '../i18n/index.jsx';
 
-const TABS = ['overview', 'learning paths', 'training centres', 'profile'];
+const TABS = ['ai assistant', 'profile', 'learning paths', 'training centres'];
 
 export default function CareerDashboard() {
   const { profile } = useAuth();
   const { t } = useLang();
-  const [tab, setTab] = useState('overview');
+  const [tab, setTab] = useState('ai assistant');
+  // Set by "Ask the AI Assistant" in Learning Paths — jumps to the Assistant
+  // tab with the question already typed, instead of making the user retype
+  // what they just picked a field to explore.
+  const [assistantSeed, setAssistantSeed] = useState(null);
+
+  function askAssistant(text) {
+    setAssistantSeed(text);
+    setTab('ai assistant');
+  }
 
   return (
     <Shell
@@ -21,77 +30,308 @@ export default function CareerDashboard() {
       activeTab={tab}
       onTabChange={setTab}
     >
-      {tab === 'overview' && <Overview profile={profile} />}
-      {tab === 'learning paths' && <LearningPaths />}
-      {tab === 'training centres' && <TrainingCentres />}
+      {tab === 'ai assistant' && <AiAssistant profile={profile} seed={assistantSeed} onSeedConsumed={() => setAssistantSeed(null)} />}
       {tab === 'profile' && <Profile />}
+      {tab === 'learning paths' && <LearningPaths profile={profile} onAskAssistant={askAssistant} />}
+      {tab === 'training centres' && <TrainingCentres />}
     </Shell>
-  );
-}
-
-function Overview({ profile }) {
-  const { t } = useLang();
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <Card title={t('career.currentRole')}>
-        <p className="text-2xl font-bold" style={{ color: 'var(--darbi-gold)' }}>
-          {profile?.current_title ?? t('career.notSet')}
-        </p>
-      </Card>
-      <Card title={t('career.experience')}>
-        <p className="text-2xl font-bold" style={{ color: 'var(--darbi-gold)' }}>
-          {profile?.years_experience != null ? t('career.yearsExperience')(profile.years_experience) : '—'}
-        </p>
-      </Card>
-      <Card title={t('career.field')}>
-        <p className="text-2xl font-bold" style={{ color: 'var(--darbi-gold)' }}>
-          {profile?.major ?? t('career.notSet')}
-        </p>
-      </Card>
-    </div>
   );
 }
 
 /**
  * Reads the career_paths table, seeded from career_courses_ENGLISH.xlsx —
  * every Coursera / Udemy link and Jordanian centre the team verified.
+ * Defaults to just the graduate's own field (career_profiles.major) rather
+ * than dumping all 40 paths across every field at once; a field switcher
+ * lets them explore any other field, and picking one that isn't their own
+ * offers to hand the transition question straight to the AI Assistant.
  */
-function LearningPaths() {
+function LearningPaths({ profile, onAskAssistant }) {
   const { t } = useLang();
+  const p = t('career.paths');
   const [paths, setPaths] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedField, setSelectedField] = useState('');
+
   useEffect(() => {
     api('/career/paths', { auth: false }).then(setPaths).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
-  const tracks = [...new Set(paths.map((p) => p.major_name))];
+  const fields = [...new Set(paths.map((p2) => p2.major_name))].sort();
+  const myField = profile?.major
+    ? fields.find((f) => f.toLowerCase() === profile.major.trim().toLowerCase())
+      ?? fields.find((f) => f.toLowerCase().includes(profile.major.trim().toLowerCase()) || profile.major.trim().toLowerCase().includes(f.toLowerCase()))
+      ?? null
+    : null;
+  const activeField = selectedField || myField || '';
+  const exploringOtherField = Boolean(myField) && activeField && activeField !== myField;
+  const shown = activeField ? paths.filter((p2) => p2.major_name === activeField) : [];
 
   return (
     <>
       {loading && <Card><SkeletonLines lines={4} /></Card>}
-      {tracks.map((track) => (
-        <Card key={track} title={track}>
+
+      {!loading && (
+        <Card accent={false}>
+          <Field label={p.exploreLabel}>
+            <select className={inputClass} value={selectedField} onChange={(e) => setSelectedField(e.target.value)}>
+              <option value="">{myField ? p.myFieldOption(myField) : p.pickField}</option>
+              {fields.filter((f) => f !== myField).map((f) => (
+                <option key={f} value={f}>{f}</option>
+              ))}
+            </select>
+          </Field>
+          {!myField && !selectedField && <p className="text-xs text-gray-500 -mt-2">{p.noMajorSet}</p>}
+        </Card>
+      )}
+
+      {!loading && exploringOtherField && (
+        <Card accent={false}>
+          <p className="font-semibold text-white">{p.switchingTitle(activeField)}</p>
+          <p className="text-sm text-gray-400 mt-1 mb-3">{p.switchingBody}</p>
+          <button
+            type="button"
+            onClick={() => onAskAssistant(p.askAssistantSeed(profile?.major, activeField))}
+            className="text-xs font-bold"
+            style={{ color: 'var(--darbi-purple)' }}
+          >
+            {p.askAssistant}
+          </button>
+        </Card>
+      )}
+
+      {!loading && activeField && (
+        <Card key={activeField} title={p.forYourField(activeField)}>
           <div className="divide-y divide-[color:var(--darbi-border)]">
-            {paths.filter((p) => p.major_name === track).map((p) => (
-              <div key={p.id} className="py-3">
-                <p className="font-semibold text-darbi-navy">{p.name}</p>
-                {p.skills && (
-                  <p className="text-sm text-gray-300 mt-1 whitespace-pre-line">{p.skills}</p>
+            {shown.map((path) => (
+              <div key={path.id} className="py-3">
+                <p className="font-semibold text-darbi-navy">{path.name}</p>
+                {path.skills && (
+                  <p className="text-sm text-gray-300 mt-1 whitespace-pre-line">{path.skills}</p>
                 )}
-                {p.jordan_centers && (
+                {path.jordan_centers && (
                   <p className="text-xs text-gray-500 mt-2">
-                    <span className="font-semibold">{t('career.inJordan')}</span>{p.jordan_centers}
+                    <span className="font-semibold">{t('career.inJordan')}</span>{path.jordan_centers}
                   </p>
                 )}
               </div>
             ))}
           </div>
         </Card>
-      ))}
+      )}
+
       {!loading && paths.length === 0 && (
         <Card><EmptyState icon="🎓" title={t('career.noLearningPaths')} /></Card>
       )}
     </>
+  );
+}
+
+/**
+ * AI Assistant — a real Claude conversation grounded in this graduate's own
+ * Profile-tab data (education, skills, certificates, projects, experience)
+ * plus the verified job catalog. Deliberately its own component/table/route
+ * rather than reusing the student advisor (src/components/student/ChatAdvisor.jsx,
+ * server/lib/chat.js) — the two are grounded in different data and shouldn't
+ * risk changing together.
+ */
+function AiAssistant({ profile, seed, onSeedConsumed }) {
+  const { t } = useLang();
+  const c = t('career.chat');
+  const [messages, setMessages] = useState([]);
+  const [draft, setDraft] = useState('');
+  const [streaming, setStreaming] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [configured, setConfigured] = useState(true);
+  const [loadingHistory, setLoadingHistory] = useState(true);
+  const endRef = useRef(null);
+
+  useEffect(() => {
+    api('/career/chat')
+      .then((r) => {
+        setMessages(r.messages);
+        setConfigured(r.configured);
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoadingHistory(false));
+  }, []);
+
+  useEffect(() => {
+    if (seed) {
+      setDraft(seed);
+      onSeedConsumed();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seed]);
+
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [messages, streaming]);
+
+  async function send(text) {
+    const message = (text ?? draft).trim();
+    if (!message || busy) return;
+
+    setDraft('');
+    setError('');
+    setBusy(true);
+    setMessages((m) => [...m, { role: 'user', content: message }]);
+
+    let assembled = '';
+    try {
+      const res = await fetch('/api/career/chat', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', authorization: `Bearer ${getToken()}` },
+        body: JSON.stringify({ message }),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.message ?? body.error ?? `HTTP ${res.status}`);
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const lines = buffer.split('\n');
+        buffer = lines.pop() ?? '';
+
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          const event = JSON.parse(line);
+          if (event.error) throw new Error(event.error);
+          if (event.delta) {
+            assembled += event.delta;
+            setStreaming(assembled);
+          }
+        }
+      }
+
+      setMessages((m) => [...m, { role: 'assistant', content: assembled }]);
+    } catch (err) {
+      setError(err.message);
+      if (assembled) setMessages((m) => [...m, { role: 'assistant', content: assembled }]);
+    } finally {
+      setStreaming('');
+      setBusy(false);
+    }
+  }
+
+  async function reset() {
+    await api('/career/chat', { method: 'DELETE' });
+    setMessages([]);
+    setError('');
+  }
+
+  if (!configured) {
+    return (
+      <Alert kind="warn">
+        {c.notConfiguredPrefix}<code>ANTHROPIC_API_KEY</code>{c.notConfiguredSuffix} {c.notConfiguredFooter}
+      </Alert>
+    );
+  }
+
+  return (
+    <div
+      className="flex flex-col overflow-hidden darbi-section"
+      style={{ height: '32rem', background: 'var(--darbi-surface)', border: '1px solid var(--darbi-border)', borderRadius: 'var(--darbi-radius)' }}
+    >
+      <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: '1px solid var(--darbi-border)' }}>
+        <div>
+          <h2 className="font-bold text-darbi-navy">{c.title}</h2>
+          <p className="text-xs text-gray-500">{c.subtitle}</p>
+        </div>
+        {messages.length > 0 && (
+          <button onClick={reset} className="text-xs text-gray-500 hover:text-gray-300 shrink-0">
+            {c.startOver}
+          </button>
+        )}
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-5 py-4">
+        {loadingHistory && (
+          <div>
+            <div className="flex justify-start mb-3"><Skeleton style={{ height: 40, width: '55%', borderRadius: 16 }} /></div>
+            <div className="flex justify-end mb-3"><Skeleton style={{ height: 40, width: '40%', borderRadius: 16 }} /></div>
+            <div className="flex justify-start mb-3"><Skeleton style={{ height: 40, width: '65%', borderRadius: 16 }} /></div>
+          </div>
+        )}
+
+        {!loadingHistory && messages.length === 0 && !streaming && (
+          <div className="text-center mt-6">
+            <div className="text-4xl mb-3">🤖</div>
+            <p className="text-gray-200 font-medium mb-1">
+              {c.greeting(profile?.name?.split(' ')[0] ?? c.greetingNameFallback)}
+            </p>
+            <p className="text-sm text-gray-500 mb-5">{c.greetingBody}</p>
+            <div className="flex flex-col gap-2 items-center">
+              {c.openers.map((o) => (
+                <button
+                  key={o}
+                  onClick={() => send(o)}
+                  className="text-sm text-left text-gray-200 px-4 py-2 rounded-full border border-white/10 hover:border-[var(--darbi-purple)] hover:bg-white/5 transition max-w-md w-full"
+                >
+                  {o}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {messages.map((m, i) => (
+          <ChatBubble key={i} role={m.role} text={m.content} />
+        ))}
+        {streaming && <ChatBubble role="assistant" text={streaming} />}
+        {busy && !streaming && <ChatBubble role="assistant" text="…" />}
+        <div ref={endRef} />
+      </div>
+
+      {error && (
+        <div className="px-5 pb-2">
+          <Alert>{error}</Alert>
+        </div>
+      )}
+
+      <form
+        onSubmit={(e) => { e.preventDefault(); send(); }}
+        className="px-5 py-3 flex gap-3"
+        style={{ borderTop: '1px solid var(--darbi-border)' }}
+      >
+        <input
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          placeholder={c.inputPlaceholder}
+          disabled={busy}
+          className="darbi-input flex-1"
+        />
+        <Button type="submit" disabled={busy || !draft.trim()}>
+          {busy ? c.sending : c.send}
+        </Button>
+      </form>
+    </div>
+  );
+}
+
+function ChatBubble({ role, text }) {
+  const mine = role === 'user';
+  return (
+    <div className={`mb-3 flex ${mine ? 'justify-end' : 'justify-start'}`}>
+      <div
+        className={`max-w-[80%] px-4 py-2.5 rounded-2xl whitespace-pre-wrap ${
+          mine ? 'text-white rounded-br-sm' : 'bg-white/10 text-gray-100 rounded-bl-sm'
+        }`}
+        style={mine ? { background: 'var(--darbi-gradient)' } : undefined}
+      >
+        {text}
+      </div>
+    </div>
   );
 }
 

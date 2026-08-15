@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { query } from '../lib/db.js';
 import { requireAuth, requireRole, asyncRoute } from '../lib/auth.js';
+import { chatConfigured, streamCareerReply, loadCareerHistory } from '../lib/careerChat.js';
 
 const router = Router();
 
@@ -111,6 +112,107 @@ router.delete(
     );
     if (!rows[0]) return res.status(404).json({ error: 'no_profile' });
     res.json(rows[0]);
+  }),
+);
+
+/** Map an upstream failure to something worth showing a graduate. Mirrors chat.js's version but without the student-only "Recommendations tab" fallback mention. */
+function friendlyError(err) {
+  const status = err?.status;
+  const text = err?.message ?? '';
+
+  if (status === 401 || /authentication_error|API key/i.test(text)) {
+    return 'The assistant is not authenticated. Check ANTHROPIC_API_KEY on the server.';
+  }
+  if (/credit balance is too low|Plans & Billing/i.test(text)) {
+    return 'The assistant is out of API credit. Add credit at console.anthropic.com → Plans & Billing.';
+  }
+  if (status === 429 || /rate_limit/i.test(text)) {
+    return 'The assistant is busy right now. Give it a few seconds and try again.';
+  }
+  if (status === 529 || /overloaded/i.test(text)) {
+    return 'The assistant is temporarily overloaded. Try again in a moment.';
+  }
+  if (err?.message === 'chat_refused') {
+    return 'I can’t help with that one. Try asking about your CV, a cover letter, interview prep, or your career path.';
+  }
+  if (/timeout|ECONNRESET|ENOTFOUND|fetch failed/i.test(text)) {
+    return 'Lost the connection to the assistant. Try again.';
+  }
+  return 'Something went wrong reaching the assistant. Try again.';
+}
+
+/** GET /api/career/chat — replay the conversation after a refresh. */
+router.get(
+  '/chat',
+  asyncRoute(async (req, res) => {
+    res.json({ configured: chatConfigured, messages: await loadCareerHistory(req.user.id) });
+  }),
+);
+
+/** DELETE /api/career/chat — start over. */
+router.delete(
+  '/chat',
+  asyncRoute(async (req, res) => {
+    await query(`DELETE FROM career_chat_messages WHERE career_user_id = $1`, [req.user.id]);
+    res.status(204).end();
+  }),
+);
+
+/**
+ * POST /api/career/chat  { message }
+ * NDJSON stream, same wire format as POST /api/chat (server/routes/chat.js):
+ *   {"delta":"..."} repeated, then {"done":true} or {"error":"..."}.
+ */
+router.post(
+  '/chat',
+  asyncRoute(async (req, res) => {
+    const message = String(req.body?.message ?? '').trim();
+    if (!message) return res.status(400).json({ error: 'empty_message' });
+    if (message.length > 4000) return res.status(400).json({ error: 'message_too_long' });
+
+    if (!chatConfigured) {
+      return res.status(503).json({
+        error: 'chat_not_configured',
+        message: 'The AI assistant needs ANTHROPIC_API_KEY to be set on the server.',
+      });
+    }
+
+    const { rows } = await query(`SELECT * FROM career_profiles WHERE user_id = $1`, [req.user.id]);
+    const profile = rows[0];
+    if (!profile) return res.status(404).json({ error: 'no_profile' });
+
+    // Persist the question before generating, so it survives a failed reply.
+    await query(
+      `INSERT INTO career_chat_messages (career_user_id, role, content) VALUES ($1,'user',$2)`,
+      [req.user.id, message],
+    );
+    const history = await loadCareerHistory(req.user.id);
+
+    res.setHeader('Content-Type', 'application/x-ndjson; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('X-Accel-Buffering', 'no'); // don't let a proxy buffer the stream
+    res.flushHeaders?.();
+
+    let full = '';
+    try {
+      for await (const chunk of streamCareerReply({ profile, history })) {
+        full += chunk;
+        res.write(`${JSON.stringify({ delta: chunk })}\n`);
+      }
+    } catch (err) {
+      console.error('[career chat]', err.message);
+      res.write(`${JSON.stringify({ error: friendlyError(err) })}\n`);
+      return res.end();
+    }
+
+    if (full.trim()) {
+      await query(
+        `INSERT INTO career_chat_messages (career_user_id, role, content) VALUES ($1,'assistant',$2)`,
+        [req.user.id, full],
+      );
+    }
+    res.write(`${JSON.stringify({ done: true })}\n`);
+    res.end();
   }),
 );
 

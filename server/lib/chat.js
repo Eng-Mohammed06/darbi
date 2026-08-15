@@ -1,11 +1,13 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { query } from './db.js';
 
-const MODEL = process.env.ANTHROPIC_MODEL ?? 'claude-opus-5';
+export const MODEL = process.env.ANTHROPIC_MODEL ?? 'claude-opus-5';
 const apiKey = process.env.ANTHROPIC_API_KEY;
 
 export const chatConfigured = Boolean(apiKey && apiKey.startsWith('sk-ant-') && apiKey.length > 24);
-const client = chatConfigured ? new Anthropic({ apiKey }) : null;
+// Exported so server/lib/careerChat.js (the Graduate Portal's AI Assistant)
+// can share the same client/config check rather than re-deriving it.
+export const client = chatConfigured ? new Anthropic({ apiKey }) : null;
 
 /** Keeps latency and cost sane on a long conversation. */
 const HISTORY_LIMIT = 30;
