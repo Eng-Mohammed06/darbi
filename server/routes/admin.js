@@ -62,7 +62,10 @@ router.get(
  * GET /api/admin/users/:id — the detail panel behind clicking a user row.
  * Student-only fields (recommendation count, saved pathways, most-recommended
  * major) are null for company/career/admin accounts, which have no such
- * concept.
+ * concept. Career accounts instead get everything the Graduate Portal lets
+ * them build: their full profile, the latest generated career path, the
+ * latest job match results, every tracked application, and their AI
+ * Assistant activity.
  */
 router.get(
   '/users/:id',
@@ -81,6 +84,40 @@ router.get(
     );
     const user = rows[0];
     if (!user) return res.status(404).json({ error: 'not_found' });
+
+    if (user.role === 'career') {
+      const [profileRes, ladderRes, matchesRes, appsRes, chatRes] = await Promise.all([
+        query(`SELECT * FROM career_profiles WHERE user_id = $1`, [id]),
+        query(
+          `SELECT payload, model, created_at FROM career_ladders
+            WHERE career_user_id = $1 ORDER BY created_at DESC LIMIT 1`,
+          [id],
+        ),
+        query(
+          `SELECT payload, model, created_at FROM job_matches
+            WHERE career_user_id = $1 ORDER BY created_at DESC LIMIT 1`,
+          [id],
+        ),
+        query(`SELECT * FROM career_applications WHERE career_user_id = $1 ORDER BY applied_at DESC`, [id]),
+        query(
+          `SELECT count(*)::int AS n, max(created_at) AS last_at FROM career_chat_messages WHERE career_user_id = $1`,
+          [id],
+        ),
+      ]);
+
+      return res.json({
+        ...user,
+        recommend_count: null,
+        saved_pathways_count: null,
+        top_recommended_major: null,
+        career_profile: profileRes.rows[0] ?? null,
+        career_ladder: ladderRes.rows[0] ?? null,
+        job_matches: matchesRes.rows[0]?.payload?.matches ?? [],
+        applications: appsRes.rows,
+        chat_message_count: chatRes.rows[0].n,
+        chat_last_at: chatRes.rows[0].last_at,
+      });
+    }
 
     if (user.role !== 'student') {
       return res.json({ ...user, recommend_count: null, saved_pathways_count: null, top_recommended_major: null });

@@ -126,66 +126,60 @@ function Users() {
     ? users.filter((u) => [u.name, u.username, u.email].some((v) => v?.toLowerCase().includes(q)))
     : users;
 
+  const sections = USER_SECTIONS.map((sec) => ({ ...sec, users: filtered.filter((u) => u.role === sec.role) }));
+  const other = filtered.filter((u) => !USER_SECTIONS.some((sec) => sec.role === u.role));
+
   return (
-    <Card title={t('admin.users.accountsCount')(users.length)} accent={false}>
-      <input
-        className={`${inputClass} mb-4`}
-        placeholder={t('admin.users.searchPlaceholder')}
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-      {filtered.length === 0 && <EmptyState icon="🔍" title={t('admin.users.noMatching')} />}
-      <div>
-        {filtered.map((u) => (
-          <button
-            type="button"
-            key={u.id}
-            onClick={() => setDetailId(u.id)}
-            className="w-full flex items-center justify-between gap-3 py-3 border-b last:border-0 text-left hover:bg-white/5 transition rounded-lg px-2 -mx-2"
-            style={{ borderColor: 'var(--darbi-border)' }}
-          >
-            <div className="min-w-0">
-              <p className="font-semibold text-white truncate">{u.name || u.username}</p>
-              <p className="text-xs text-gray-500 truncate">
-                {u.email} · @{u.username}
-              </p>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              {!u.email_verified && (
-                <span className="text-xs" title={t('admin.users.emailNotVerified')} aria-label={t('admin.users.emailNotVerified')}>
-                  ✉️
-                </span>
-              )}
-              {u.is_admin && (
-                <span
-                  className="text-xs font-bold uppercase tracking-wide px-2 py-1 rounded-full"
-                  style={{ background: 'color-mix(in srgb, var(--darbi-success) 15%, transparent)', color: 'var(--darbi-success)' }}
-                >
-                  {t('admin.users.detail.adminBadge')}
-                </span>
-              )}
+    <>
+      <Card title={t('admin.users.accountsCount')(users.length)} accent={false}>
+        <input
+          className={inputClass}
+          placeholder={t('admin.users.searchPlaceholder')}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </Card>
+
+      {filtered.length === 0 && (
+        <Card><EmptyState icon="🔍" title={t('admin.users.noMatching')} /></Card>
+      )}
+
+      {sections.map((sec) => (
+        sec.users.length > 0 && (
+          <Card key={sec.role} accent={false}>
+            <div className="flex items-center gap-2.5 mb-4">
               <span
-                className="text-xs font-bold uppercase tracking-wide px-2 py-1 rounded-full"
-                style={{
-                  background: `color-mix(in srgb, ${ROLE_COLOR[u.role] ?? 'var(--darbi-text-muted)'} 13%, transparent)`,
-                  color: ROLE_COLOR[u.role] ?? 'var(--darbi-text-muted)',
-                }}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-base shrink-0"
+                style={{ background: `color-mix(in srgb, ${ROLE_COLOR[sec.role]} 15%, transparent)` }}
+                aria-hidden="true"
               >
-                {u.role}
+                {sec.icon}
               </span>
-              <span
-                role="button"
-                tabIndex={0}
-                onClick={(e) => { e.stopPropagation(); remove(u); }}
-                onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); remove(u); } }}
-                className="text-xs text-red-400 hover:text-red-300 font-semibold"
-              >
-                {t('common.delete')}
-              </span>
+              <h2 className="text-lg font-bold text-white">
+                {sec.label(t)} <span className="text-gray-500 font-normal">({sec.users.length})</span>
+              </h2>
             </div>
-          </button>
-        ))}
-      </div>
+            <div>
+              {sec.users.map((u) => (
+                <UserRow key={u.id} u={u} t={t} onSelect={() => setDetailId(u.id)} onRemove={() => remove(u)} />
+              ))}
+            </div>
+          </Card>
+        )
+      ))}
+
+      {other.length > 0 && (
+        <Card accent={false}>
+          <h2 className="text-lg font-bold text-white mb-4">
+            {t('admin.users.otherSection')} <span className="text-gray-500 font-normal">({other.length})</span>
+          </h2>
+          <div>
+            {other.map((u) => (
+              <UserRow key={u.id} u={u} t={t} onSelect={() => setDetailId(u.id)} onRemove={() => remove(u)} />
+            ))}
+          </div>
+        </Card>
+      )}
 
       {detailId != null && (
         <UserDetailModal
@@ -195,7 +189,55 @@ function Users() {
           onAdminAccessChanged={onAdminAccessChanged}
         />
       )}
-    </Card>
+    </>
+  );
+}
+
+const USER_SECTIONS = [
+  { role: 'student', icon: '🎓', label: (t) => t('admin.users.sections.students') },
+  { role: 'career', icon: '📈', label: (t) => t('admin.users.sections.graduates') },
+  { role: 'company', icon: '🏢', label: (t) => t('admin.users.sections.companies') },
+];
+
+function UserRow({ u, t, onSelect, onRemove }) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className="w-full flex items-center justify-between gap-3 py-3 border-b last:border-0 text-left hover:bg-white/5 transition rounded-lg px-2 -mx-2"
+      style={{ borderColor: 'var(--darbi-border)' }}
+    >
+      <div className="min-w-0">
+        <p className="font-semibold text-white truncate">{u.name || u.username}</p>
+        <p className="text-xs text-gray-500 truncate">
+          {u.email} · @{u.username}
+        </p>
+      </div>
+      <div className="flex items-center gap-2 shrink-0">
+        {!u.email_verified && (
+          <span className="text-xs" title={t('admin.users.emailNotVerified')} aria-label={t('admin.users.emailNotVerified')}>
+            ✉️
+          </span>
+        )}
+        {u.is_admin && (
+          <span
+            className="text-xs font-bold uppercase tracking-wide px-2 py-1 rounded-full"
+            style={{ background: 'color-mix(in srgb, var(--darbi-success) 15%, transparent)', color: 'var(--darbi-success)' }}
+          >
+            {t('admin.users.detail.adminBadge')}
+          </span>
+        )}
+        <span
+          role="button"
+          tabIndex={0}
+          onClick={(e) => { e.stopPropagation(); onRemove(); }}
+          onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); onRemove(); } }}
+          className="text-xs text-red-400 hover:text-red-300 font-semibold"
+        >
+          {t('common.delete')}
+        </span>
+      </div>
+    </button>
   );
 }
 
@@ -209,9 +251,11 @@ function fmtDateTime(iso) {
 /**
  * The panel behind clicking a user row — GET /api/admin/users/:id, plus the
  * grant/revoke admin-access control. Student-only fields (recommendations,
- * saved pathways, most-recommended major) show "not applicable" for other
- * roles rather than being hidden, so the panel's shape doesn't jump around
- * role to role.
+ * saved pathways, most-recommended major) show "not applicable" for
+ * company/admin accounts rather than being hidden, so the panel's shape
+ * doesn't jump around role to role. Career accounts are the one exception —
+ * those three rows are hidden and replaced by CareerActivity below, which
+ * has real data to show instead of three "not applicable"s.
  *
  * Viewing a user's photo full-size is restricted to the pure-admin owner
  * account (`me.role === 'admin'`) — accounts with dual-role admin access
@@ -262,7 +306,7 @@ function UserDetailModal({ userId, onClose, canRevokeSelf, onAdminAccessChanged 
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md p-6"
+        className="w-full max-w-xl p-6 max-h-[85vh] overflow-y-auto"
         style={{ background: 'var(--darbi-surface-solid)', border: '1px solid var(--darbi-border)', borderRadius: 'var(--darbi-radius)' }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -303,25 +347,31 @@ function UserDetailModal({ userId, onClose, canRevokeSelf, onAdminAccessChanged 
               <Row label={dt.joined} value={fmtDateTime(detail.created_at)} />
               <Row label={dt.lastLogin} value={fmtDateTime(detail.last_login_at) ?? dt.never} />
               <Row label={dt.emailVerified} value={detail.email_verified ? dt.yes : dt.no} />
-              <Row
-                label={dt.recommendCount}
-                value={detail.recommend_count != null ? detail.recommend_count : dt.notApplicable}
-              />
-              <Row
-                label={dt.savedPathwaysCount}
-                value={detail.saved_pathways_count != null ? detail.saved_pathways_count : dt.notApplicable}
-              />
-              <Row
-                label={dt.topMajor}
-                value={
-                  detail.role !== 'student'
-                    ? dt.notApplicable
-                    : detail.top_recommended_major
-                      ? dt.topMajorValue(detail.top_recommended_major.name, detail.top_recommended_major.count)
-                      : dt.none
-                }
-              />
+              {detail.role !== 'career' && (
+                <>
+                  <Row
+                    label={dt.recommendCount}
+                    value={detail.recommend_count != null ? detail.recommend_count : dt.notApplicable}
+                  />
+                  <Row
+                    label={dt.savedPathwaysCount}
+                    value={detail.saved_pathways_count != null ? detail.saved_pathways_count : dt.notApplicable}
+                  />
+                  <Row
+                    label={dt.topMajor}
+                    value={
+                      detail.role !== 'student'
+                        ? dt.notApplicable
+                        : detail.top_recommended_major
+                          ? dt.topMajorValue(detail.top_recommended_major.name, detail.top_recommended_major.count)
+                          : dt.none
+                    }
+                  />
+                </>
+              )}
             </dl>
+
+            {detail.role === 'career' && <CareerActivity detail={detail} dt={dt} />}
 
             {detail.role !== 'admin' && (
               <div className="mb-2">
@@ -353,6 +403,134 @@ function Row({ label, value }) {
     <div className="flex justify-between gap-4">
       <dt className="text-gray-500">{label}</dt>
       <dd className="text-white font-medium text-right">{value}</dd>
+    </div>
+  );
+}
+
+/**
+ * Everything a graduate can build in the Graduate Portal, surfaced for the
+ * admin: their profile, the latest AI-generated career path, the latest job
+ * match results, every application they're tracking, and their AI Assistant
+ * activity. All read-only here — editing a graduate's own data stays on
+ * their own dashboard, this is visibility, not a second way to change it.
+ */
+function CareerActivity({ detail, dt }) {
+  const { t } = useLang();
+  const p = detail.career_profile;
+  const ladder = detail.career_ladder;
+  const matches = detail.job_matches ?? [];
+  const apps = detail.applications ?? [];
+  const statusLabels = t('career.applications.statusLabels');
+
+  return (
+    <div className="mb-5">
+      <DetailSection title={dt.sectionProfile}>
+        <dl className="text-sm space-y-2 mb-3">
+          <Row label={dt.currentRole} value={p?.current_title || dt.notSet} />
+          <Row label={dt.yearsExperience} value={p?.years_experience ?? dt.notSet} />
+          <Row label={dt.education} value={[p?.major, p?.university].filter(Boolean).join(' — ') || dt.notSet} />
+          <Row label={dt.certificates} value={p?.certificates?.length ?? 0} />
+          <Row label={dt.projects} value={p?.projects?.length ?? 0} />
+          <Row label={dt.workExperience} value={p?.experience?.length ?? 0} />
+          <Row
+            label={dt.cv}
+            value={
+              p?.cv ? (
+                <a href={p.cv} target="_blank" rel="noopener noreferrer" className="underline" style={{ color: 'var(--darbi-purple)' }}>
+                  {dt.viewCv}
+                </a>
+              ) : (
+                dt.notUploaded
+              )
+            }
+          />
+        </dl>
+        <TagList label={dt.skills} values={p?.skills} />
+        <TagList label={dt.careerInterests} values={p?.career_goals} />
+      </DetailSection>
+
+      <DetailSection title={dt.sectionCareerPath}>
+        {ladder ? (
+          <>
+            <p className="text-xs text-gray-500 mb-2">{dt.generatedOn(fmtDateTime(ladder.created_at))}</p>
+            <ul className="text-sm text-gray-200 space-y-1">
+              {ladder.payload.rungs.map((r) => (
+                <li key={r.title}>
+                  {r.title} <span className="text-gray-500">· {r.typical_years}</span>
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : (
+          <p className="text-sm text-gray-500 italic">{dt.notGeneratedYet}</p>
+        )}
+      </DetailSection>
+
+      <DetailSection title={dt.sectionJobMatches}>
+        {matches.length > 0 ? (
+          <ul className="text-sm text-gray-200 space-y-1.5">
+            {matches.map((m) => (
+              <li key={m.job_id} className="flex justify-between gap-3">
+                <span className="truncate">{m.title} — {m.company_name}</span>
+                <span className="shrink-0 font-semibold" style={{ color: 'var(--darbi-gold)' }}>{m.match_score}%</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-gray-500 italic">{dt.notGeneratedYet}</p>
+        )}
+      </DetailSection>
+
+      <DetailSection title={dt.sectionApplications(apps.length)}>
+        {apps.length > 0 ? (
+          <ul className="text-sm text-gray-200 space-y-1.5">
+            {apps.map((a) => (
+              <li key={a.id} className="flex justify-between gap-3">
+                <span className="truncate">{a.title} — {a.company_name}</span>
+                <span className="shrink-0 text-xs text-gray-500">{statusLabels[a.status]}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-gray-500 italic">{dt.none}</p>
+        )}
+      </DetailSection>
+
+      <DetailSection title={dt.sectionAssistant} last>
+        <dl className="text-sm space-y-2">
+          <Row label={dt.messagesSent} value={detail.chat_message_count} />
+          <Row label={dt.lastActive} value={fmtDateTime(detail.chat_last_at) ?? dt.never} />
+        </dl>
+      </DetailSection>
+    </div>
+  );
+}
+
+function DetailSection({ title, children, last = false }) {
+  return (
+    <div className={last ? 'mb-4' : 'mb-4 pb-4 border-b'} style={last ? undefined : { borderColor: 'var(--darbi-border)' }}>
+      <h3 className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-2">{title}</h3>
+      {children}
+    </div>
+  );
+}
+
+function TagList({ label, values }) {
+  if (!values?.length) return null;
+  return (
+    <div className="mt-2">
+      <span className="block text-xs text-gray-500 mb-1">{label}</span>
+      <div className="flex flex-wrap gap-1.5">
+        {values.map((v) => (
+          <span
+            key={v}
+            className="text-xs px-2 py-0.5 rounded-full"
+            style={{ background: 'color-mix(in srgb, var(--darbi-purple) 15%, transparent)', color: 'var(--darbi-purple)' }}
+          >
+            {v}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
