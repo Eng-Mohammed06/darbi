@@ -402,7 +402,27 @@ ${themeBlocks}
   color: var(--ink-2); font-size: 13.5px; font-weight: 500; transition: background .15s, color .15s;
 }
 .hp-landing .hp-nav a:hover { background: var(--surface); color: var(--ink); }
-@media (max-width: 720px) { .hp-landing .hp-nav { display: none; } }
+
+/* Below 720px there's no room for brand + 3 nav links + the theme/lang
+   controls on one line — instead of hiding the nav (which left phone
+   visitors with no way to reach a portal at all), drop it to its own
+   full-width row: brand + controls stay on row one, the three portal
+   links spread evenly across row two with bordered, thumb-sized targets. */
+@media (max-width: 720px) {
+  .hp-landing .hp-topbar .hp-row { flex-wrap: wrap; row-gap: 10px; }
+  .hp-landing .hp-nav {
+    order: 10;
+    flex-basis: 100%;
+    gap: 8px;
+    margin-inline-start: 0;
+  }
+  .hp-landing .hp-nav a {
+    flex: 1;
+    text-align: center;
+    padding-block: 12px;
+    border: 1px solid var(--rule);
+  }
+}
 
 .hp-landing .hp-eyebrow {
   font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
