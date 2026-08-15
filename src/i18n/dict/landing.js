@@ -25,6 +25,7 @@ export default {
     sourcesLabel: 'Sources for this answer',
     loading: 'loading…',
     themeLabel: 'Theme',
+    joinTitle: 'Join Us!',
   },
   ar: {
     navStudent: 'طالب',
@@ -52,5 +53,6 @@ export default {
     sourcesLabel: 'مصادر هذه الإجابة',
     loading: 'جارٍ التحميل…',
     themeLabel: 'المظهر',
+    joinTitle: 'انضم إلينا!',
   },
 };

@@ -239,6 +239,15 @@ export default function LandingPage() {
           ))}
         </section>
 
+        <Reveal as="section" className="hp-join hp-shell">
+          <h2 className="hp-join-title">{t('landing.joinTitle')}</h2>
+          <div className="hp-join-buttons">
+            <Link to="/portal/student" className="hp-join-btn">{t('auth.roleStudent')}</Link>
+            <Link to="/portal/career" className="hp-join-btn">{t('auth.roleGraduate')}</Link>
+            <Link to="/portal/company" className="hp-join-btn">{t('auth.roleCompany')}</Link>
+          </div>
+        </Reveal>
+
         {stats && (
           <Reveal as="p" className="hp-stats-bar hp-shell hp-mono">
             <span className="hp-stat"><span className="hp-stat-icon">{ICONS.book}</span><CountUp to={stats.majors} /> {statsLabels.majors}</span>
@@ -603,6 +612,21 @@ ${themeBlocks}
   display: grid; place-items: center;
 }
 .hp-landing .hp-feature-icon svg { inline-size: 20px; block-size: 20px; }
+
+/* ---------- Join Us CTA ---------- */
+.hp-landing .hp-join { padding-block: 8px 48px; text-align: center; }
+.hp-landing .hp-join-title { margin: 0 0 22px; font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+.hp-landing .hp-join-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+.hp-landing .hp-join-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-inline-size: 160px; padding: 14px 30px; border-radius: var(--r-md);
+  background: var(--trust); color: var(--on-ink); font-weight: 600; font-size: 15px;
+  text-decoration: none; transition: transform .15s ease, box-shadow .15s ease;
+}
+.hp-landing .hp-join-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px -12px var(--trust); }
+@media (max-width: 560px) {
+  .hp-landing .hp-join-buttons { flex-direction: column; align-items: stretch; }
+}
 
 /* ---------- Stats bar ---------- */
 .hp-landing .hp-stats-bar {
