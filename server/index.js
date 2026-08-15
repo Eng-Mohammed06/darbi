@@ -144,7 +144,7 @@ app.get('/api/jobs', async (req, res, next) => {
 // Career reference data — public, seeded from career_courses_ENGLISH.xlsx.
 app.get('/api/career/paths', async (_req, res, next) => {
   try {
-    const { rows } = await pool.query(`SELECT * FROM career_paths ORDER BY track, title`);
+    const { rows } = await pool.query(`SELECT * FROM career_paths ORDER BY major_name, name`);
     res.json(rows);
   } catch (err) {
     next(err);

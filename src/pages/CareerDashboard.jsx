@@ -64,7 +64,7 @@ function LearningPaths() {
     api('/career/paths', { auth: false }).then(setPaths).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
-  const tracks = [...new Set(paths.map((p) => p.track))];
+  const tracks = [...new Set(paths.map((p) => p.major_name))];
 
   return (
     <>
@@ -72,9 +72,9 @@ function LearningPaths() {
       {tracks.map((track) => (
         <Card key={track} title={track}>
           <div className="divide-y divide-[color:var(--darbi-border)]">
-            {paths.filter((p) => p.track === track).map((p) => (
+            {paths.filter((p) => p.major_name === track).map((p) => (
               <div key={p.id} className="py-3">
-                <p className="font-semibold text-darbi-navy">{p.title}</p>
+                <p className="font-semibold text-darbi-navy">{p.name}</p>
                 {p.skills && (
                   <p className="text-sm text-gray-300 mt-1 whitespace-pre-line">{p.skills}</p>
                 )}
