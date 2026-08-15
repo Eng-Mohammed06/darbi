@@ -31,6 +31,11 @@ export default {
       askAssistantSeed: (from, to) => `I'm currently in ${from ?? 'my current field'} and thinking about moving into ${to}. What should I do to get there, and what's a realistic path?`,
       save: 'Save',
       saved: 'Saved ✓',
+      showSavedOnly: (n) => `Show only saved (${n})`,
+      showingSaved: 'Show all',
+      savedTitle: (n) => `Saved (${n})`,
+      noSavedPaths: "You haven't saved any learning paths yet.",
+      noSavedCentres: "You haven't saved any training centres yet.",
     },
     ladder: {
       title: 'Career Path',
@@ -203,6 +208,11 @@ export default {
       askAssistantSeed: (from, to) => `أنا حاليًا في ${from ?? 'مجالي الحالي'} وأفكّر في الانتقال إلى ${to}. ماذا يجب أن أفعل للوصول إلى هناك، وما هو المسار الواقعي؟`,
       save: 'حفظ',
       saved: 'تم الحفظ ✓',
+      showSavedOnly: (n) => `عرض المحفوظ فقط (${n})`,
+      showingSaved: 'عرض الكل',
+      savedTitle: (n) => `المحفوظ (${n})`,
+      noSavedPaths: 'لم تحفظ أي مسار تعلّم بعد.',
+      noSavedCentres: 'لم تحفظ أي مركز تدريب بعد.',
     },
     ladder: {
       title: 'المسار المهني',

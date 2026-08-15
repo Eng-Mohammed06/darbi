@@ -57,6 +57,7 @@ function LearningPaths({ profile, onAskAssistant }) {
   const [loading, setLoading] = useState(true);
   const [selectedField, setSelectedField] = useState('');
   const [savedIds, setSavedIds] = useState(new Set());
+  const [showSavedOnly, setShowSavedOnly] = useState(false);
 
   useEffect(() => {
     api('/career/paths', { auth: false }).then(setPaths).catch(() => {}).finally(() => setLoading(false));
@@ -94,6 +95,7 @@ function LearningPaths({ profile, onAskAssistant }) {
   const activeField = selectedField || myField || '';
   const exploringOtherField = Boolean(myField) && activeField && activeField !== myField;
   const shown = activeField ? paths.filter((p2) => p2.major_name === activeField) : [];
+  const savedPaths = paths.filter((p2) => savedIds.has(p2.id));
 
   return (
     <>
@@ -101,19 +103,34 @@ function LearningPaths({ profile, onAskAssistant }) {
 
       {!loading && (
         <Card accent={false}>
-          <Field label={p.exploreLabel}>
-            <select className={inputClass} value={selectedField} onChange={(e) => setSelectedField(e.target.value)}>
-              <option value="">{myField ? p.myFieldOption(myField) : p.pickField}</option>
-              {fields.filter((f) => f !== myField).map((f) => (
-                <option key={f} value={f}>{f}</option>
-              ))}
-            </select>
-          </Field>
-          {!myField && !selectedField && <p className="text-xs text-gray-500 -mt-2">{p.noMajorSet}</p>}
+          <div className="flex items-center justify-between gap-3 mb-1">
+            <Field label={p.exploreLabel}>
+              <select
+                className={inputClass}
+                value={selectedField}
+                onChange={(e) => setSelectedField(e.target.value)}
+                disabled={showSavedOnly}
+              >
+                <option value="">{myField ? p.myFieldOption(myField) : p.pickField}</option>
+                {fields.filter((f) => f !== myField).map((f) => (
+                  <option key={f} value={f}>{f}</option>
+                ))}
+              </select>
+            </Field>
+          </div>
+          {!myField && !selectedField && !showSavedOnly && <p className="text-xs text-gray-500 -mt-2 mb-3">{p.noMajorSet}</p>}
+          <button
+            type="button"
+            onClick={() => setShowSavedOnly((s) => !s)}
+            className="text-xs font-bold"
+            style={{ color: showSavedOnly ? 'var(--darbi-gold)' : 'var(--darbi-purple)' }}
+          >
+            {showSavedOnly ? p.showingSaved : p.showSavedOnly(savedIds.size)}
+          </button>
         </Card>
       )}
 
-      {!loading && exploringOtherField && (
+      {!loading && !showSavedOnly && exploringOtherField && (
         <Card accent={false}>
           <p className="font-semibold text-white">{p.switchingTitle(activeField)}</p>
           <p className="text-sm text-gray-400 mt-1 mb-3">{p.switchingBody}</p>
@@ -128,31 +145,25 @@ function LearningPaths({ profile, onAskAssistant }) {
         </Card>
       )}
 
-      {!loading && activeField && (
+      {!loading && showSavedOnly && (
+        <Card title={p.savedTitle(savedPaths.length)}>
+          {savedPaths.length === 0 ? (
+            <p className="text-sm text-gray-500 italic">{p.noSavedPaths}</p>
+          ) : (
+            <div className="divide-y divide-[color:var(--darbi-border)]">
+              {savedPaths.map((path) => (
+                <PathRow key={path.id} path={path} p={p} t={t} saved onToggle={() => toggleSaved(path.id)} showField />
+              ))}
+            </div>
+          )}
+        </Card>
+      )}
+
+      {!loading && !showSavedOnly && activeField && (
         <Card key={activeField} title={p.forYourField(activeField)}>
           <div className="divide-y divide-[color:var(--darbi-border)]">
             {shown.map((path) => (
-              <div key={path.id} className="py-3">
-                <div className="flex items-start justify-between gap-4">
-                  <p className="font-semibold text-darbi-navy">{path.name}</p>
-                  <button
-                    type="button"
-                    onClick={() => toggleSaved(path.id)}
-                    className="text-xs font-bold shrink-0"
-                    style={{ color: savedIds.has(path.id) ? 'var(--darbi-gold)' : 'var(--darbi-purple)' }}
-                  >
-                    {savedIds.has(path.id) ? p.saved : p.save}
-                  </button>
-                </div>
-                {path.skills && (
-                  <p className="text-sm text-gray-300 mt-1 whitespace-pre-line">{path.skills}</p>
-                )}
-                {path.jordan_centers && (
-                  <p className="text-xs text-gray-500 mt-2">
-                    <span className="font-semibold">{t('career.inJordan')}</span>{path.jordan_centers}
-                  </p>
-                )}
-              </div>
+              <PathRow key={path.id} path={path} p={p} t={t} saved={savedIds.has(path.id)} onToggle={() => toggleSaved(path.id)} />
             ))}
           </div>
         </Card>
@@ -162,6 +173,33 @@ function LearningPaths({ profile, onAskAssistant }) {
         <Card><EmptyState icon="🎓" title={t('career.noLearningPaths')} /></Card>
       )}
     </>
+  );
+}
+
+function PathRow({ path, p, t, saved, onToggle, showField = false }) {
+  return (
+    <div className="py-3">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="font-semibold text-darbi-navy">{path.name}</p>
+          {showField && <p className="text-xs text-gray-500">{path.major_name}</p>}
+        </div>
+        <button
+          type="button"
+          onClick={onToggle}
+          className="text-xs font-bold shrink-0"
+          style={{ color: saved ? 'var(--darbi-gold)' : 'var(--darbi-purple)' }}
+        >
+          {saved ? p.saved : p.save}
+        </button>
+      </div>
+      {path.skills && <p className="text-sm text-gray-300 mt-1 whitespace-pre-line">{path.skills}</p>}
+      {path.jordan_centers && (
+        <p className="text-xs text-gray-500 mt-2">
+          <span className="font-semibold">{t('career.inJordan')}</span>{path.jordan_centers}
+        </p>
+      )}
+    </div>
   );
 }
 
@@ -922,6 +960,7 @@ function TrainingCentres() {
   const [centres, setCentres] = useState([]);
   const [loading, setLoading] = useState(true);
   const [savedIds, setSavedIds] = useState(new Set());
+  const [showSavedOnly, setShowSavedOnly] = useState(false);
 
   useEffect(() => {
     api('/career/centres', { auth: false }).then(setCentres).catch(() => {}).finally(() => setLoading(false));
@@ -949,44 +988,61 @@ function TrainingCentres() {
     }
   }
 
+  const shown = showSavedOnly ? centres.filter((c) => savedIds.has(c.id)) : centres;
+
   return (
-    <Card title={loading ? t('career.loadingCentres') : t('career.centresCount')(centres.length)}>
-      {loading && <SkeletonLines lines={5} />}
-      {!loading && centres.length === 0 && (
-        <EmptyState icon="🏫" title={t('career.noCentres')} />
-      )}
-      <div className="divide-y divide-[color:var(--darbi-border)]">
-        {centres.map((c) => (
-          <div key={c.id} className="py-3">
-            <div className="flex items-start justify-between gap-4">
-              <p className="font-semibold text-darbi-navy">{c.name}</p>
-              <button
-                type="button"
-                onClick={() => toggleSaved(c.id)}
-                className="text-xs font-bold shrink-0"
-                style={{ color: savedIds.has(c.id) ? 'var(--darbi-gold)' : 'var(--darbi-purple)' }}
-              >
-                {savedIds.has(c.id) ? p.saved : p.save}
-              </button>
+    <>
+      <Card title={loading ? t('career.loadingCentres') : t('career.centresCount')(centres.length)}>
+        {!loading && (
+          <button
+            type="button"
+            onClick={() => setShowSavedOnly((s) => !s)}
+            className="text-xs font-bold"
+            style={{ color: showSavedOnly ? 'var(--darbi-gold)' : 'var(--darbi-purple)' }}
+          >
+            {showSavedOnly ? p.showingSaved : p.showSavedOnly(savedIds.size)}
+          </button>
+        )}
+      </Card>
+
+      <Card>
+        {loading && <SkeletonLines lines={5} />}
+        {!loading && shown.length === 0 && (
+          <EmptyState icon="🏫" title={showSavedOnly ? p.noSavedCentres : t('career.noCentres')} />
+        )}
+        <div className="divide-y divide-[color:var(--darbi-border)]">
+          {shown.map((c) => (
+            <div key={c.id} className="py-3">
+              <div className="flex items-start justify-between gap-4">
+                <p className="font-semibold text-darbi-navy">{c.name}</p>
+                <button
+                  type="button"
+                  onClick={() => toggleSaved(c.id)}
+                  className="text-xs font-bold shrink-0"
+                  style={{ color: savedIds.has(c.id) ? 'var(--darbi-gold)' : 'var(--darbi-purple)' }}
+                >
+                  {savedIds.has(c.id) ? p.saved : p.save}
+                </button>
+              </div>
+              <p className="text-sm text-gray-300">{c.field}{c.specialty && ` · ${c.specialty}`}</p>
+              {c.location && <p className="text-xs text-gray-500 mt-1">{c.location}</p>}
+              {c.notes && <p className="text-sm text-gray-500 mt-1">{c.notes}</p>}
+              {c.website && (
+                <a
+                  href={c.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs underline mt-1 inline-block"
+                  style={{ color: 'var(--darbi-purple)' }}
+                >
+                  {c.website}
+                </a>
+              )}
             </div>
-            <p className="text-sm text-gray-300">{c.field}{c.specialty && ` · ${c.specialty}`}</p>
-            {c.location && <p className="text-xs text-gray-500 mt-1">{c.location}</p>}
-            {c.notes && <p className="text-sm text-gray-500 mt-1">{c.notes}</p>}
-            {c.website && (
-              <a
-                href={c.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs underline mt-1 inline-block"
-                style={{ color: 'var(--darbi-purple)' }}
-              >
-                {c.website}
-              </a>
-            )}
-          </div>
-        ))}
-      </div>
-    </Card>
+          ))}
+        </div>
+      </Card>
+    </>
   );
 }
 
