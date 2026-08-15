@@ -593,9 +593,20 @@ function Applications() {
     return <Card title={a.title}><SkeletonLines lines={6} /></Card>;
   }
 
+  const breakdown = STATUS_ORDER
+    .map((s) => ({ s, n: apps.filter((x) => x.status === s).length }))
+    .filter(({ n }) => n > 0)
+    .map(({ s, n }) => `${n} ${a.statusLabels[s]}`)
+    .join(', ');
+
   return (
     <>
-      <Card title={a.title} accent={false} />
+      <Card title={a.title} accent={false}>
+        <p className="text-sm text-gray-400">{a.subtitle}</p>
+        {apps.length > 0 && (
+          <p className="text-xs text-gray-500 mt-1.5">{a.summaryCount(apps.length)} · {breakdown}</p>
+        )}
+      </Card>
 
       {STATUS_ORDER.map((status) => {
         const inStatus = apps.filter((x) => x.status === status);

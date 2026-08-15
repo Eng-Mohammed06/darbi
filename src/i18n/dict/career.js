@@ -73,6 +73,8 @@ export default {
     },
     applications: {
       title: 'Applications',
+      subtitle: "Every job you've applied to, tracked from first contact through offer.",
+      summaryCount: (n) => `${n} tracked`,
       loading: 'Loading your applications…',
       remove: 'Remove',
       appliedOn: (date) => `Applied ${date}`,
@@ -241,6 +243,8 @@ export default {
     },
     applications: {
       title: 'طلبات التقديم',
+      subtitle: 'كل وظيفة تقدّمت لها، مُتابَعة من أول تواصل وحتى العرض.',
+      summaryCount: (n) => `${n} قيد المتابعة`,
       loading: 'جارٍ تحميل طلبات تقديمك…',
       remove: 'إزالة',
       appliedOn: (date) => `تم التقديم ${date}`,
