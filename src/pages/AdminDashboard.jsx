@@ -85,6 +85,7 @@ function Users() {
   const [users, setUsers] = useState(null);
   const [search, setSearch] = useState('');
   const [detailId, setDetailId] = useState(null);
+  const [activeSection, setActiveSection] = useState('student');
   const toast = useToast();
 
   useEffect(() => {
@@ -126,8 +127,16 @@ function Users() {
     ? users.filter((u) => [u.name, u.username, u.email].some((v) => v?.toLowerCase().includes(q)))
     : users;
 
-  const sections = USER_SECTIONS.map((sec) => ({ ...sec, users: filtered.filter((u) => u.role === sec.role) }));
-  const other = filtered.filter((u) => !USER_SECTIONS.some((sec) => sec.role === u.role));
+  const allSections = [
+    ...USER_SECTIONS.map((sec) => ({ ...sec, users: filtered.filter((u) => u.role === sec.role) })),
+    {
+      role: 'other',
+      icon: '🛡️',
+      label: (lt) => lt('admin.users.otherSection'),
+      users: filtered.filter((u) => !USER_SECTIONS.some((sec) => sec.role === u.role)),
+    },
+  ];
+  const current = allSections.find((sec) => sec.role === activeSection) ?? allSections[0];
 
   return (
     <>
@@ -140,41 +149,35 @@ function Users() {
         />
       </Card>
 
-      {filtered.length === 0 && (
-        <Card><EmptyState icon="🔍" title={t('admin.users.noMatching')} /></Card>
-      )}
-
-      {sections.map((sec) => (
-        sec.users.length > 0 && (
-          <Card key={sec.role} accent={false}>
-            <div className="flex items-center gap-2.5 mb-4">
-              <span
-                className="w-8 h-8 rounded-full flex items-center justify-center text-base shrink-0"
-                style={{ background: `color-mix(in srgb, ${ROLE_COLOR[sec.role]} 15%, transparent)` }}
-                aria-hidden="true"
+      <Card accent={false}>
+        <div className="flex flex-wrap gap-2">
+          {allSections.filter((sec) => sec.users.length > 0).map((sec) => {
+            const color = ROLE_COLOR[sec.role] ?? ROLE_COLOR.admin;
+            return (
+              <button
+                key={sec.role}
+                type="button"
+                onClick={() => setActiveSection(sec.role)}
+                className="text-sm px-4 py-2 rounded-full font-bold transition flex items-center gap-1.5"
+                style={
+                  activeSection === sec.role
+                    ? { background: color, color: '#fff' }
+                    : { border: `1px solid color-mix(in srgb, ${color} 40%, transparent)`, color }
+                }
               >
-                {sec.icon}
-              </span>
-              <h2 className="text-lg font-bold text-white">
-                {sec.label(t)} <span className="text-gray-500 font-normal">({sec.users.length})</span>
-              </h2>
-            </div>
-            <div>
-              {sec.users.map((u) => (
-                <UserRow key={u.id} u={u} t={t} onSelect={() => setDetailId(u.id)} onRemove={() => remove(u)} />
-              ))}
-            </div>
-          </Card>
-        )
-      ))}
+                <span aria-hidden="true">{sec.icon}</span> {sec.label(t)} ({sec.users.length})
+              </button>
+            );
+          })}
+        </div>
+      </Card>
 
-      {other.length > 0 && (
+      {current.users.length === 0 ? (
+        <Card><EmptyState icon="🔍" title={t('admin.users.noMatching')} /></Card>
+      ) : (
         <Card accent={false}>
-          <h2 className="text-lg font-bold text-white mb-4">
-            {t('admin.users.otherSection')} <span className="text-gray-500 font-normal">({other.length})</span>
-          </h2>
           <div>
-            {other.map((u) => (
+            {current.users.map((u) => (
               <UserRow key={u.id} u={u} t={t} onSelect={() => setDetailId(u.id)} onRemove={() => remove(u)} />
             ))}
           </div>
