@@ -42,7 +42,17 @@ about and what skills matter most there.
 Ground the ladder in their ACTUAL major and any current role/experience they
 have -- do not propose an unrelated field. If they have real experience or
 skills listed, factor that into where they currently sit on the ladder and
-what the summary advises. Write the summary directly to the graduate.`;
+what the summary advises.
+
+If the profile includes a target_role (set from the Career Path tab's "Set
+a Goal" sub-tab), that is a destination THEY chose, not a suggestion to
+second-guess: the final rung must be that exact role, and every rung before
+it should be a realistic, connected step toward it -- even if that means
+bridging across from their current field, or skipping the generic
+senior/lead default entirely. Say in the summary how their current
+background does or doesn't already put them on that path, and what closes
+the gap. If target_role is absent, build the generic progression described
+above instead. Write the summary directly to the graduate.`;
 
 /**
  * Ask Claude for a personalized career ladder.
@@ -93,11 +103,15 @@ const MAJOR_ROLE = {
  * — same tier-of-degradation approach as server/lib/claude.js's
  * recommendMajorsFallback. A generic 4-rung template anchored on the
  * graduate's current title (or a role inferred from their major), rather
- * than one personalized to their actual background.
+ * than one personalized to their actual background. When a target_role is
+ * set (the "Set a Goal" sub-tab), the ladder ends there instead of a
+ * generic "Lead" rung — this fallback can't re-derive a real bridging path
+ * the way Claude does, but it can at least point at the stated destination.
  */
 export function generateCareerLadderFallback({ profile }) {
   const base = profile.current_title?.trim() || MAJOR_ROLE[profile.major] || profile.major || 'Engineer';
   const role = base.replace(/^(junior|senior|lead|principal|associate|staff)\s+/i, '').trim() || base;
+  const goal = profile.target_role?.trim() || null;
 
   const rungs = [
     {
@@ -115,19 +129,27 @@ export function generateCareerLadderFallback({ profile }) {
       typical_years: '5-8 years',
       focus: "Leading complex projects, setting technical direction, and reviewing others' work.",
     },
-    {
-      title: `${role} Lead`,
-      typical_years: '8+ years',
-      focus: 'Leading a team, shaping strategy, and balancing technical and people responsibilities.',
-    },
+    goal
+      ? {
+          title: goal,
+          typical_years: '8+ years',
+          focus: `Your stated goal. Getting here from ${role} typically means building the specific skills and track record ${goal} calls for, on top of what you have now.`,
+        }
+      : {
+          title: `${role} Lead`,
+          typical_years: '8+ years',
+          focus: 'Leading a team, shaping strategy, and balancing technical and people responsibilities.',
+        },
   ];
 
   return {
     data: {
       rungs,
-      summary:
-        `A general progression for ${role} roles. AI-personalized guidance is unavailable right now, ` +
-        'so this is a generic ladder rather than one tailored to your specific background.',
+      summary: goal
+        ? `A general progression from ${role} toward your stated goal of ${goal}. AI-personalized guidance ` +
+          'is unavailable right now, so this is a generic bridge rather than a path tailored to your actual background.'
+        : `A general progression for ${role} roles. AI-personalized guidance is unavailable right now, ` +
+          'so this is a generic ladder rather than one tailored to your specific background.',
     },
     model: 'rule-based-fallback',
     source: 'fallback',

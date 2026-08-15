@@ -134,6 +134,12 @@ ALTER TABLE career_profiles ADD COLUMN IF NOT EXISTS certificates JSONB NOT NULL
 ALTER TABLE career_profiles ADD COLUMN IF NOT EXISTS projects JSONB NOT NULL DEFAULT '[]';
 ALTER TABLE career_profiles ADD COLUMN IF NOT EXISTS experience JSONB NOT NULL DEFAULT '[]';
 
+-- The Career Path tab's "Set a Goal" sub-tab: a graduate's own stated target
+-- role, distinct from career_goals (a loose list of interest areas). When
+-- set, server/lib/careerLadder.js builds the ladder toward this specific
+-- destination instead of a generic senior/lead progression.
+ALTER TABLE career_profiles ADD COLUMN IF NOT EXISTS target_role TEXT;
+
 -- ------------------------------------------------------- reference catalog --
 CREATE TABLE IF NOT EXISTS universities (
   id             SERIAL PRIMARY KEY,

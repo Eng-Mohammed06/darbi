@@ -27,7 +27,7 @@ router.put(
   asyncRoute(async (req, res) => {
     const {
       name, currentTitle, yearsExperience, major, university, yearGraduated,
-      skills, careerGoals, certificates, projects, experience,
+      skills, careerGoals, certificates, projects, experience, targetRole,
     } = req.body ?? {};
 
     if (yearsExperience != null && (Number.isNaN(Number(yearsExperience)) || yearsExperience < 0)) {
@@ -55,7 +55,8 @@ router.put(
          career_goals      = COALESCE($9, career_goals),
          certificates      = COALESCE($10, certificates),
          projects          = COALESCE($11, projects),
-         experience        = COALESCE($12, experience)
+         experience        = COALESCE($12, experience),
+         target_role       = COALESCE($13, target_role)
        WHERE user_id = $1
        RETURNING *`,
       [req.user.id, name ?? null, currentTitle ?? null, yearsExperience ?? null,
@@ -63,7 +64,8 @@ router.put(
        careerGoals ?? null,
        certificates != null ? JSON.stringify(certificates) : null,
        projects != null ? JSON.stringify(projects) : null,
-       experience != null ? JSON.stringify(experience) : null],
+       experience != null ? JSON.stringify(experience) : null,
+       targetRole ?? null],
     );
     if (!rows[0]) return res.status(404).json({ error: 'no_profile' });
     res.json(rows[0]);
@@ -130,6 +132,7 @@ const ladderHash = (profile) =>
         projects: profile.projects,
         experience: profile.experience,
         career_goals: [...(profile.career_goals ?? [])].sort(),
+        target_role: profile.target_role,
       }),
     )
     .digest('hex');

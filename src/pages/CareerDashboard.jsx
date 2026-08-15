@@ -9,7 +9,7 @@ import { useLang } from '../i18n/index.jsx';
 const TABS = ['ai assistant', 'profile', 'career path', 'learning paths', 'training centres'];
 
 export default function CareerDashboard() {
-  const { profile } = useAuth();
+  const { profile, setProfile } = useAuth();
   const { t } = useLang();
   const [tab, setTab] = useState('ai assistant');
   // Set by "Ask the AI Assistant" in Learning Paths — jumps to the Assistant
@@ -32,7 +32,7 @@ export default function CareerDashboard() {
     >
       {tab === 'ai assistant' && <AiAssistant profile={profile} seed={assistantSeed} onSeedConsumed={() => setAssistantSeed(null)} />}
       {tab === 'profile' && <Profile />}
-      {tab === 'career path' && <CareerPath onGoToProfile={() => setTab('profile')} />}
+      {tab === 'career path' && <CareerPath profile={profile} setProfile={setProfile} onGoToProfile={() => setTab('profile')} />}
       {tab === 'learning paths' && <LearningPaths profile={profile} onAskAssistant={askAssistant} />}
       {tab === 'training centres' && <TrainingCentres />}
     </Shell>
@@ -135,9 +135,10 @@ function LearningPaths({ profile, onAskAssistant }) {
  * unavailable, same tier-of-degradation approach as Recommendations does for
  * students (server/lib/claude.js).
  */
-function CareerPath({ onGoToProfile }) {
+function CareerPath({ profile, setProfile, onGoToProfile }) {
   const { t } = useLang();
   const l = t('career.ladder');
+  const [subTab, setSubTab] = useState('suggested');
   const [ladder, setLadder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -158,31 +159,85 @@ function CareerPath({ onGoToProfile }) {
 
   useEffect(load, []);
 
+  async function saveGoal(targetRole) {
+    const updated = await api('/career/me', { method: 'PUT', body: { targetRole } });
+    setProfile(updated);
+    setSubTab('suggested');
+    load(true);
+  }
+
+  const subTabs = (
+    <div className="flex gap-2 mb-4">
+      {['suggested', 'goal'].map((id) => (
+        <button
+          key={id}
+          type="button"
+          onClick={() => setSubTab(id)}
+          className={`text-xs px-3.5 py-1.5 rounded-full font-bold transition ${
+            subTab === id ? 'text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'
+          }`}
+          style={subTab === id ? { background: 'var(--darbi-gradient)' } : { border: '1px solid color-mix(in srgb, var(--darbi-navy) 15%, transparent)' }}
+        >
+          {id === 'suggested' ? l.suggestedTabLabel : l.goalTabLabel}
+        </button>
+      ))}
+    </div>
+  );
+
+  if (subTab === 'goal') {
+    return (
+      <>
+        {subTabs}
+        <GoalForm currentGoal={profile?.target_role} l={l} onSave={saveGoal} />
+      </>
+    );
+  }
+
   if (loading) {
-    return <Card title={l.title}><SkeletonLines lines={6} /></Card>;
+    return (
+      <>
+        {subTabs}
+        <Card title={l.title}><SkeletonLines lines={6} /></Card>
+      </>
+    );
   }
 
   if (error?.code === 'profile_incomplete') {
     return (
-      <Card title={l.incompleteTitle} accent={false}>
-        <p className="text-sm text-gray-400 mb-4">{l.incompleteBody}</p>
-        <Button type="button" onClick={onGoToProfile}>{l.goToProfile}</Button>
-      </Card>
+      <>
+        {subTabs}
+        <Card title={l.incompleteTitle} accent={false}>
+          <p className="text-sm text-gray-400 mb-4">{l.incompleteBody}</p>
+          <Button type="button" onClick={onGoToProfile}>{l.goToProfile}</Button>
+        </Card>
+      </>
     );
   }
 
   if (error) {
     return (
-      <Card title={l.errorTitle} accent={false}>
-        <Alert>{error.message}</Alert>
-        <Button type="button" onClick={() => load(false)}>{l.retry}</Button>
-      </Card>
+      <>
+        {subTabs}
+        <Card title={l.errorTitle} accent={false}>
+          <Alert>{error.message}</Alert>
+          <Button type="button" onClick={() => load(false)}>{l.retry}</Button>
+        </Card>
+      </>
     );
   }
 
   return (
     <>
+      {subTabs}
       <Card title={l.title} accent={false}>
+        {profile?.target_role && (
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <p className="text-xs font-bold" style={{ color: 'var(--darbi-gold)' }}>{l.currentGoalPrefix(profile.target_role)}</p>
+            <button type="button" onClick={() => setSubTab('goal')} className="text-xs font-bold shrink-0" style={{ color: 'var(--darbi-purple)' }}>
+              {l.changeGoal}
+            </button>
+          </div>
+        )}
         <p className="text-sm text-gray-300 mb-2">{ladder.summary}</p>
         <p className="text-xs text-gray-500 mb-4">{l.cachedNote}</p>
         {ladder.source === 'fallback' && (
@@ -215,6 +270,44 @@ function CareerPath({ onGoToProfile }) {
         </div>
       ))}
     </>
+  );
+}
+
+/** The Career Path tab's "Set a Goal" sub-tab — a graduate's own stated target role. */
+function GoalForm({ currentGoal, l, onSave }) {
+  const [draft, setDraft] = useState(currentGoal ?? '');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const toast = useToast();
+
+  async function submit(e) {
+    e.preventDefault();
+    const targetRole = draft.trim();
+    if (!targetRole) return;
+    setError('');
+    setBusy(true);
+    try {
+      await onSave(targetRole);
+      toast.show(l.goalSavedToast, { kind: 'success' });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card title={l.goalTabLabel} accent={false}>
+      <form onSubmit={submit}>
+        <Alert>{error}</Alert>
+        <Field label={l.goalFieldLabel} hint={l.goalHint}>
+          <input className={inputClass} placeholder={l.goalPlaceholder} value={draft} onChange={(e) => setDraft(e.target.value)} autoFocus />
+        </Field>
+        <Button type="submit" disabled={busy || !draft.trim()}>
+          {busy ? l.goalSaving : l.goalSave}
+        </Button>
+      </form>
+    </Card>
   );
 }
 
