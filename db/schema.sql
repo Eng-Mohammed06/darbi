@@ -113,6 +113,17 @@ CREATE TABLE IF NOT EXISTS career_profiles (
   career_goals      TEXT[] NOT NULL DEFAULT '{}'
 );
 
+-- "My CV" tab (src/pages/CareerDashboard.jsx): a few more profile fields
+-- a graduate can fill in after signup, plus the actual CV file. Stored as a
+-- data: URI directly in the row, same rationale as users.avatar -- no
+-- object store configured for this deploy, and server/routes/career.js caps
+-- the decoded size.
+ALTER TABLE career_profiles ADD COLUMN IF NOT EXISTS university TEXT;
+ALTER TABLE career_profiles ADD COLUMN IF NOT EXISTS year_graduated INTEGER;
+ALTER TABLE career_profiles ADD COLUMN IF NOT EXISTS cv TEXT;
+ALTER TABLE career_profiles ADD COLUMN IF NOT EXISTS cv_filename TEXT;
+ALTER TABLE career_profiles ADD COLUMN IF NOT EXISTS cv_uploaded_at TIMESTAMPTZ;
+
 -- ------------------------------------------------------- reference catalog --
 CREATE TABLE IF NOT EXISTS universities (
   id             SERIAL PRIMARY KEY,

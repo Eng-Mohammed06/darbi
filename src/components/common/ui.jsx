@@ -174,6 +174,7 @@ const TAB_ICONS = {
   overview: '📊',
   'learning paths': '🎓',
   'training centres': '🏫',
+  'my cv': '📄',
 };
 
 // "saved pathways" -> "savedPathways", matching the camelCase keys in
