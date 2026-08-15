@@ -6,7 +6,7 @@ import { useToast } from '../components/common/toast.jsx';
 import { readCvFile } from '../lib/cv.js';
 import { useLang } from '../i18n/index.jsx';
 
-const TABS = ['ai assistant', 'profile', 'career path', 'job recommendations', 'applications', 'learning paths', 'training centres'];
+const TABS = ['ai assistant', 'profile', 'career path', 'jobs', 'job recommendations', 'applications', 'learning paths', 'training centres'];
 
 export default function CareerDashboard() {
   const { profile, setProfile } = useAuth();
@@ -33,6 +33,7 @@ export default function CareerDashboard() {
       {tab === 'ai assistant' && <AiAssistant profile={profile} seed={assistantSeed} onSeedConsumed={() => setAssistantSeed(null)} />}
       {tab === 'profile' && <Profile />}
       {tab === 'career path' && <CareerPath profile={profile} setProfile={setProfile} onGoToProfile={() => setTab('profile')} />}
+      {tab === 'jobs' && <Jobs />}
       {tab === 'job recommendations' && <JobMatches onGoToProfile={() => setTab('profile')} />}
       {tab === 'applications' && <Applications />}
       {tab === 'learning paths' && <LearningPaths profile={profile} onAskAssistant={askAssistant} />}
@@ -314,6 +315,108 @@ function GoalForm({ currentGoal, l, onSave }) {
 }
 
 /**
+ * Jobs — the full public jobs catalog (GET /api/jobs, same endpoint the
+ * student/company portals use), browsable and searchable rather than the
+ * curated top 8-10 Job Recommendations shows. Track application here has no
+ * pre-computed score, so the server fills one in automatically (same AI
+ * scoring Job Recommendations uses) the moment a graduate applies.
+ */
+function Jobs() {
+  const { t } = useLang();
+  const jt = t('career.jobsTab');
+  const jm = t('career.jobMatches');
+  const toast = useToast();
+  const [jobs, setJobs] = useState(null);
+  const [search, setSearch] = useState('');
+  const [visible, setVisible] = useState(30);
+  const [trackedIds, setTrackedIds] = useState(new Set());
+  const [trackingId, setTrackingId] = useState(null);
+
+  useEffect(() => {
+    api('/jobs', { auth: false }).then(setJobs).catch(() => setJobs([]));
+  }, []);
+  useEffect(() => {
+    api('/career/applications')
+      .then((apps) => setTrackedIds(new Set(apps.filter((a) => a.job_id != null).map((a) => a.job_id))))
+      .catch(() => {});
+  }, []);
+
+  async function track(job) {
+    setTrackingId(job.id);
+    try {
+      const app = await api('/career/applications', {
+        method: 'POST',
+        body: { jobId: job.id, companyName: job.company_name, title: job.title },
+      });
+      setTrackedIds((s) => new Set(s).add(app.job_id));
+      toast.show(jm.trackedToast, { kind: 'success' });
+    } catch (err) {
+      toast.show(err.message, { kind: 'error' });
+    } finally {
+      setTrackingId(null);
+    }
+  }
+
+  if (jobs === null) {
+    return <Card title={jt.title}><SkeletonLines lines={6} /></Card>;
+  }
+
+  const q = search.trim().toLowerCase();
+  const filtered = q
+    ? jobs.filter((job) =>
+        [job.title, job.company_name, ...(job.required_skills ?? [])].some((v) => v?.toLowerCase().includes(q)),
+      )
+    : jobs;
+  const shown = filtered.slice(0, visible);
+
+  return (
+    <>
+      <Card title={jt.count(filtered.length)} accent={false}>
+        <input
+          className={inputClass}
+          placeholder={jt.searchPlaceholder}
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setVisible(30); }}
+        />
+      </Card>
+
+      {filtered.length === 0 && <Card><EmptyState icon="💼" title={jt.empty} /></Card>}
+
+      {shown.map((job) => (
+        <Card key={job.id} accent={false}>
+          <div className="flex items-start justify-between gap-4 mb-2">
+            <div className="min-w-0">
+              <p className="font-bold text-white truncate">{job.title}</p>
+              <p className="text-sm text-gray-400">
+                {job.company_name}
+                {job.location && ` · ${job.location}`}
+                {job.salary_raw && ` · ${job.salary_raw}${job.salary_is_estimate ? ` (${jm.estimateBadge})` : ''}`}
+              </p>
+            </div>
+          </div>
+          {job.required_skills?.length > 0 && (
+            <p className="text-xs text-gray-500 mb-2">{job.required_skills.join(', ')}</p>
+          )}
+          {trackedIds.has(job.id) ? (
+            <span className="text-xs font-bold" style={{ color: 'var(--darbi-success)' }}>{jm.tracked}</span>
+          ) : (
+            <button type="button" onClick={() => track(job)} disabled={trackingId === job.id} className="text-xs font-bold" style={{ color: 'var(--darbi-purple)' }}>
+              {jm.track}
+            </button>
+          )}
+        </Card>
+      ))}
+
+      {visible < filtered.length && (
+        <div className="flex justify-center">
+          <Button type="button" onClick={() => setVisible((v) => v + 30)}>{jt.showMore}</Button>
+        </div>
+      )}
+    </>
+  );
+}
+
+/**
  * Job Recommendations — the graduate's best-fitting real job listings
  * (POST /api/career/job-matches), each with a match score and a
  * per-requirement ✅/❌ breakdown, not just a plain list. Same cache/degrade
@@ -357,7 +460,9 @@ function JobMatches({ onGoToProfile }) {
     try {
       const app = await api('/career/applications', {
         method: 'POST',
-        body: { jobId: m.job_id, companyName: m.company_name, title: m.title },
+        // Already scored on this screen — send it along so the server
+        // doesn't pay for a second match call to fill in the same thing.
+        body: { jobId: m.job_id, companyName: m.company_name, title: m.title, matchScore: m.match_score, requirements: m.requirements, why: m.why },
       });
       setTrackedIds((s) => new Set(s).add(app.job_id));
       toast.show(j.trackedToast, { kind: 'success' });
@@ -510,27 +615,53 @@ function Applications() {
           <Card key={status} title={a.statusLabels[status]} accent={false}>
             <div className="divide-y divide-[color:var(--darbi-border)]">
               {inStatus.map((app) => (
-                <div key={app.id} className="py-3 flex items-center justify-between gap-4 flex-wrap">
-                  <div className="min-w-0">
-                    <p className="font-semibold text-white truncate">{app.title}</p>
-                    <p className="text-xs text-gray-500">{app.company_name} · {a.appliedOn(fmtDate(app.applied_at))}</p>
-                    {app.notes && <p className="text-xs text-gray-400 mt-1">{app.notes}</p>}
+                <div key={app.id} className="py-3">
+                  <div className="flex items-start justify-between gap-4 flex-wrap mb-2">
+                    <div className="min-w-0">
+                      <p className="font-semibold text-white truncate">{app.title}</p>
+                      <p className="text-xs text-gray-500">
+                        {app.company_name}
+                        {app.location && ` · ${app.location}`}
+                        {app.salary_raw && ` · ${app.salary_raw}`}
+                        {' · '}{a.appliedOn(fmtDate(app.applied_at))}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      {app.match_score != null && (
+                        <span
+                          className="text-xs font-extrabold px-2.5 py-1 rounded-full"
+                          style={{ background: 'color-mix(in srgb, var(--darbi-gold) 18%, transparent)', color: 'var(--darbi-gold)' }}
+                        >
+                          {t('career.jobMatches').matchLabel(app.match_score)}
+                        </span>
+                      )}
+                      <select
+                        className={inputClass}
+                        value={app.status}
+                        onChange={(e) => changeStatus(app, e.target.value)}
+                        style={{ minHeight: 0, padding: '6px 10px', width: 'auto' }}
+                      >
+                        {STATUS_ORDER.map((s) => (
+                          <option key={s} value={s}>{a.statusLabels[s]}</option>
+                        ))}
+                      </select>
+                      <button type="button" onClick={() => remove(app)} className="text-xs text-red-400 hover:text-red-300 font-semibold">
+                        {a.remove}
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <select
-                      className={inputClass}
-                      value={app.status}
-                      onChange={(e) => changeStatus(app, e.target.value)}
-                      style={{ minHeight: 0, padding: '6px 10px', width: 'auto' }}
-                    >
-                      {STATUS_ORDER.map((s) => (
-                        <option key={s} value={s}>{a.statusLabels[s]}</option>
+                  {app.why && <p className="text-sm text-gray-300 mb-2">{app.why}</p>}
+                  {app.requirements?.length > 0 && (
+                    <div className="flex flex-wrap gap-x-4 gap-y-1.5 mb-2">
+                      {app.requirements.map((r) => (
+                        <span key={r.label} className="text-xs text-gray-300 flex items-center gap-1.5">
+                          <span aria-hidden="true">{r.met ? '✅' : '❌'}</span>
+                          {r.label}
+                        </span>
                       ))}
-                    </select>
-                    <button type="button" onClick={() => remove(app)} className="text-xs text-red-400 hover:text-red-300 font-semibold">
-                      {a.remove}
-                    </button>
-                  </div>
+                    </div>
+                  )}
+                  {app.notes && <p className="text-xs text-gray-400">{app.notes}</p>}
                 </div>
               ))}
             </div>

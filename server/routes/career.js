@@ -315,16 +315,29 @@ router.get(
 );
 
 /**
- * POST /api/career/applications  { jobId?, companyName, title, status?, notes? }
+ * POST /api/career/applications
+ *   { jobId?, companyName, title, status?, notes?, matchScore?, requirements?, why? }
  * Either tracks a real listing (jobId set — idempotent, ON CONFLICT just
  * returns the existing row rather than erroring, since re-clicking "Track"
  * on the same Job Recommendations match shouldn't create a duplicate) or
  * logs one manually (jobId omitted, e.g. a role found outside DARBI).
+ *
+ * When jobId is set but matchScore/requirements/why weren't already
+ * supplied (i.e. applying from the Jobs tab, which shows the raw listing
+ * rather than a pre-scored match), this fills them in itself using the same
+ * scoring Job Recommendations uses (server/lib/jobMatch.js), so every
+ * tracked application ends up with the full picture — not just company and
+ * title — regardless of where the graduate applied from. Tracking from a
+ * Job Recommendations card already has this data client-side, so it's
+ * passed straight through instead of paying for a second API call.
  */
 router.post(
   '/applications',
   asyncRoute(async (req, res) => {
-    const { jobId, companyName, title, status, notes } = req.body ?? {};
+    const {
+      jobId, companyName, title, status, notes,
+      matchScore: providedScore, requirements: providedRequirements, why: providedWhy,
+    } = req.body ?? {};
     const companyTrim = String(companyName ?? '').trim();
     const titleTrim = String(title ?? '').trim();
     if (!companyTrim || !titleTrim) {
@@ -334,12 +347,49 @@ router.post(
       return res.status(400).json({ error: 'bad_status', allowed: APPLICATION_STATUSES });
     }
 
+    let matchScore = providedScore ?? null;
+    let requirements = providedRequirements ?? null;
+    let why = providedWhy ?? null;
+    let salaryRaw = null;
+    let location = null;
+
+    if (jobId != null) {
+      const { rows: jobRows } = await query(`SELECT * FROM jobs WHERE id = $1`, [jobId]);
+      const job = jobRows[0];
+      if (job) {
+        salaryRaw = job.salary_raw;
+        location = job.location;
+
+        if (matchScore == null) {
+          const { rows: profileRows } = await query(`SELECT * FROM career_profiles WHERE user_id = $1`, [req.user.id]);
+          const profile = profileRows[0];
+          try {
+            const result = chatConfigured
+              ? await matchJobs({ profile, jobs: [job] })
+              : matchJobsFallback({ profile, jobs: [job] });
+            const m = result.data.matches[0];
+            if (m) {
+              matchScore = m.match_score;
+              requirements = m.requirements;
+              why = m.why;
+            }
+          } catch (err) {
+            // Auto-fill is a nicety, not a gate — still track the application
+            // with just company/title if scoring fails for any reason.
+            console.warn('[applications] auto-fill match failed:', err.message);
+          }
+        }
+      }
+    }
+
     const { rows } = await query(
-      `INSERT INTO career_applications (career_user_id, job_id, company_name, title, status, notes)
-       VALUES ($1,$2,$3,$4,COALESCE($5,'applied'),$6)
+      `INSERT INTO career_applications
+         (career_user_id, job_id, company_name, title, status, notes, match_score, requirements, why, salary_raw, location)
+       VALUES ($1,$2,$3,$4,COALESCE($5,'applied'),$6,$7,$8,$9,$10,$11)
        ON CONFLICT (career_user_id, job_id) DO NOTHING
        RETURNING *`,
-      [req.user.id, jobId ?? null, companyTrim, titleTrim, status ?? null, notes ?? null],
+      [req.user.id, jobId ?? null, companyTrim, titleTrim, status ?? null, notes ?? null,
+       matchScore, requirements != null ? JSON.stringify(requirements) : null, why, salaryRaw, location],
     );
 
     if (rows[0]) return res.status(201).json(rows[0]);

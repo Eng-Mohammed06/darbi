@@ -430,6 +430,17 @@ CREATE TABLE IF NOT EXISTS career_applications (
 
 CREATE INDEX IF NOT EXISTS idx_career_applications_user ON career_applications(career_user_id);
 
+-- Filled in automatically when a graduate applies (server/routes/career.js's
+-- POST /applications), same match-scoring logic Job Recommendations uses
+-- (server/lib/jobMatch.js) — so the Applications tab shows the full picture
+-- for that application (why it's a fit, what's met/missing, pay, location),
+-- not just the company and title.
+ALTER TABLE career_applications ADD COLUMN IF NOT EXISTS match_score INTEGER;
+ALTER TABLE career_applications ADD COLUMN IF NOT EXISTS requirements JSONB;
+ALTER TABLE career_applications ADD COLUMN IF NOT EXISTS why TEXT;
+ALTER TABLE career_applications ADD COLUMN IF NOT EXISTS salary_raw TEXT;
+ALTER TABLE career_applications ADD COLUMN IF NOT EXISTS location TEXT;
+
 -- The post-signup onboarding questionnaire, plus Claude's structured read on
 -- it. One row per student — re-answering overwrites it. The chat advisor
 -- folds `analysis` into its system prompt so a conversation starts already

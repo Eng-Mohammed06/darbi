@@ -11,6 +11,14 @@ export default {
     loadingCentres: 'Loading training centres…',
     centresCount: (count) => `${count} accredited centre(s) in Jordan`,
     noCentres: 'No training centres loaded yet.',
+    jobsTab: {
+      title: 'Jobs',
+      searchPlaceholder: 'Search by title, company, or skill…',
+      loading: 'Loading job listings…',
+      empty: 'No job listings match your search.',
+      count: (n) => `${n} job listing(s)`,
+      showMore: 'Show more',
+    },
     paths: {
       forYourField: (field) => `For ${field}`,
       pickField: 'Pick a field to see its learning paths.',
@@ -183,6 +191,14 @@ export default {
     loadingCentres: 'جارٍ تحميل مراكز التدريب…',
     centresCount: (count) => `${count} مركز معتمد في الأردن`,
     noCentres: 'لا توجد مراكز تدريب متاحة بعد.',
+    jobsTab: {
+      title: 'الوظائف',
+      searchPlaceholder: 'ابحث بالمسمى الوظيفي أو الشركة أو المهارة…',
+      loading: 'جارٍ تحميل الوظائف…',
+      empty: 'لا توجد وظائف مطابقة لبحثك.',
+      count: (n) => `${n} وظيفة`,
+      showMore: 'عرض المزيد',
+    },
     paths: {
       forYourField: (field) => `لـ ${field}`,
       pickField: 'اختر مجالًا لعرض مسارات التعلّم الخاصة به.',
