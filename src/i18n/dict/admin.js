@@ -43,6 +43,7 @@ export default {
         grantAdmin: 'Grant admin access',
         revokeAdmin: 'Revoke admin access',
         adminBadge: 'Admin access',
+        viewPhoto: 'View photo',
       },
     },
     companies: {
@@ -198,6 +199,7 @@ export default {
         grantAdmin: 'منح صلاحيات الإدارة',
         revokeAdmin: 'سحب صلاحيات الإدارة',
         adminBadge: 'صلاحيات إدارية',
+        viewPhoto: 'عرض الصورة',
       },
     },
     companies: {

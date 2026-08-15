@@ -513,6 +513,31 @@ export function Button({ children, variant = 'gold', ...rest }) {
   );
 }
 
+/**
+ * Full-size photo lightbox — shared by AccountPage's own-avatar "View
+ * photo" and AdminDashboard's user-photo view (see AdminDashboard.jsx's
+ * UserDetailModal, restricted there to the pure-admin owner account).
+ */
+export function PhotoViewModal({ src, onClose }) {
+  const { t } = useLang();
+  return (
+    <div className="fixed inset-0 z-[80] flex items-center justify-center px-4" style={{ background: 'rgba(0,0,0,0.85)' }} onClick={onClose}>
+      <div className="relative max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
+        <img src={src} alt="" className="w-full rounded-2xl" style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }} />
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label={t('common.close')}
+          className="absolute -top-3 -end-3 w-8 h-8 rounded-full flex items-center justify-center text-sm"
+          style={{ background: 'var(--darbi-surface-solid)', border: '2px solid var(--darbi-bg)' }}
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export const Alert = ({ kind = 'error', children }) =>
   children ? (
     <div

@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api.js';
 import { useAuth } from '../services/auth.jsx';
-import { Alert, Button, Card, Field, inputClass, Wisps, PURPLE, GOLD, ThemeLangSwitcher } from '../components/common/ui.jsx';
+import { Alert, Button, Card, Field, inputClass, Wisps, PURPLE, GOLD, ThemeLangSwitcher, PhotoViewModal } from '../components/common/ui.jsx';
 import { useToast } from '../components/common/toast.jsx';
 import { passwordHint, passwordIssues } from '../lib/password.js';
 import { readAvatarFile } from '../lib/avatar.js';
@@ -208,7 +208,7 @@ function AvatarEditor() {
           onClose={() => setMenuOpen(false)}
         />
       )}
-      {viewing && <AvatarViewModal src={user.avatar} onClose={() => setViewing(false)} />}
+      {viewing && <PhotoViewModal src={user.avatar} onClose={() => setViewing(false)} />}
       {cropSrc && (
         <AvatarCropModal src={cropSrc} onCancel={() => setCropSrc(null)} onConfirm={onCropConfirm} />
       )}
@@ -240,27 +240,6 @@ function AvatarActionMenu({ onView, onChange, onRemove, onClose }) {
         <div style={{ borderTop: '1px solid var(--darbi-border)' }} />
         <button type="button" onClick={onClose} className="w-full text-start px-5 py-3.5 text-sm text-gray-400 hover:bg-white/5 transition block">
           {t('account.cancel')}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-/** Full-size photo, shown after "View photo". */
-function AvatarViewModal({ src, onClose }) {
-  const { t } = useLang();
-  return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center px-4" style={{ background: 'rgba(0,0,0,0.85)' }} onClick={onClose}>
-      <div className="relative max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
-        <img src={src} alt="" className="w-full rounded-2xl" style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }} />
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label={t('account.close')}
-          className="absolute -top-3 -end-3 w-8 h-8 rounded-full flex items-center justify-center text-sm"
-          style={{ background: 'var(--darbi-surface-solid)', border: '2px solid var(--darbi-bg)' }}
-        >
-          ✕
         </button>
       </div>
     </div>

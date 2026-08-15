@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../services/api.js';
 import { useAuth } from '../services/auth.jsx';
-import { Alert, Button, Card, EmptyState, Field, Shell, SkeletonLines, inputClass } from '../components/common/ui.jsx';
+import { Alert, Button, Card, EmptyState, Field, Shell, SkeletonLines, inputClass, PhotoViewModal } from '../components/common/ui.jsx';
 import { useToast } from '../components/common/toast.jsx';
 import { useLang } from '../i18n/index.jsx';
 
@@ -212,12 +212,22 @@ function fmtDateTime(iso) {
  * saved pathways, most-recommended major) show "not applicable" for other
  * roles rather than being hidden, so the panel's shape doesn't jump around
  * role to role.
+ *
+ * Viewing a user's photo full-size is restricted to the pure-admin owner
+ * account (`me.role === 'admin'`) — accounts with dual-role admin access
+ * granted from this same Users tab (`is_admin`, role still
+ * student/company/career) can see the small thumbnail here like anyone
+ * else, but cannot open it full-size. The owner asked for this split
+ * explicitly, distinct from every other admin capability in this file,
+ * which any admin-access account shares equally.
  */
 function UserDetailModal({ userId, onClose, canRevokeSelf, onAdminAccessChanged }) {
   const { t } = useLang();
+  const { user: me } = useAuth();
   const toast = useToast();
   const [detail, setDetail] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [viewing, setViewing] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -261,16 +271,28 @@ function UserDetailModal({ userId, onClose, canRevokeSelf, onAdminAccessChanged 
         ) : (
           <>
             <div className="flex items-center gap-4 mb-5">
-              <div
-                className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center text-xl font-bold text-white shrink-0"
-                style={{ background: 'var(--darbi-gradient)' }}
-              >
-                {detail.avatar ? (
+              {me?.role === 'admin' && detail.avatar ? (
+                <button
+                  type="button"
+                  onClick={() => setViewing(true)}
+                  aria-label={dt.viewPhoto}
+                  className="w-14 h-14 rounded-full overflow-hidden shrink-0"
+                  style={{ background: 'var(--darbi-gradient)' }}
+                >
                   <img src={detail.avatar} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <span aria-hidden="true">{(detail.name || detail.username || '?')[0].toUpperCase()}</span>
-                )}
-              </div>
+                </button>
+              ) : (
+                <div
+                  className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center text-xl font-bold text-white shrink-0"
+                  style={{ background: 'var(--darbi-gradient)' }}
+                >
+                  {detail.avatar ? (
+                    <img src={detail.avatar} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <span aria-hidden="true">{(detail.name || detail.username || '?')[0].toUpperCase()}</span>
+                  )}
+                </div>
+              )}
               <div className="min-w-0">
                 <h2 className="text-lg font-bold text-white truncate">{detail.name || detail.username}</h2>
                 <p className="text-xs text-gray-500 truncate">{detail.email} · @{detail.username}</p>
@@ -317,6 +339,8 @@ function UserDetailModal({ userId, onClose, canRevokeSelf, onAdminAccessChanged 
             <button type="button" onClick={onClose} className="w-full text-xs text-gray-400 hover:text-gray-200 py-2">
               {dt.close}
             </button>
+
+            {viewing && <PhotoViewModal src={detail.avatar} onClose={() => setViewing(false)} />}
           </>
         )}
       </div>
