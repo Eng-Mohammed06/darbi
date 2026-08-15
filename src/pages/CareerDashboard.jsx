@@ -56,10 +56,34 @@ function LearningPaths({ profile, onAskAssistant }) {
   const [paths, setPaths] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedField, setSelectedField] = useState('');
+  const [savedIds, setSavedIds] = useState(new Set());
 
   useEffect(() => {
     api('/career/paths', { auth: false }).then(setPaths).catch(() => {}).finally(() => setLoading(false));
   }, []);
+  useEffect(() => {
+    api('/career/saved-paths').then((ids) => setSavedIds(new Set(ids))).catch(() => {});
+  }, []);
+
+  async function toggleSaved(pathId) {
+    const wasSaved = savedIds.has(pathId);
+    setSavedIds((s) => {
+      const next = new Set(s);
+      wasSaved ? next.delete(pathId) : next.add(pathId);
+      return next;
+    });
+    try {
+      if (wasSaved) await api(`/career/saved-paths/${pathId}`, { method: 'DELETE' });
+      else await api('/career/saved-paths', { method: 'POST', body: { careerPathId: pathId } });
+    } catch {
+      // Roll back — the change didn't actually take server-side.
+      setSavedIds((s) => {
+        const next = new Set(s);
+        wasSaved ? next.add(pathId) : next.delete(pathId);
+        return next;
+      });
+    }
+  }
 
   const fields = [...new Set(paths.map((p2) => p2.major_name))].sort();
   const myField = profile?.major
@@ -109,7 +133,17 @@ function LearningPaths({ profile, onAskAssistant }) {
           <div className="divide-y divide-[color:var(--darbi-border)]">
             {shown.map((path) => (
               <div key={path.id} className="py-3">
-                <p className="font-semibold text-darbi-navy">{path.name}</p>
+                <div className="flex items-start justify-between gap-4">
+                  <p className="font-semibold text-darbi-navy">{path.name}</p>
+                  <button
+                    type="button"
+                    onClick={() => toggleSaved(path.id)}
+                    className="text-xs font-bold shrink-0"
+                    style={{ color: savedIds.has(path.id) ? 'var(--darbi-gold)' : 'var(--darbi-purple)' }}
+                  >
+                    {savedIds.has(path.id) ? p.saved : p.save}
+                  </button>
+                </div>
                 {path.skills && (
                   <p className="text-sm text-gray-300 mt-1 whitespace-pre-line">{path.skills}</p>
                 )}
@@ -884,11 +918,36 @@ function ChatBubble({ role, text }) {
 
 function TrainingCentres() {
   const { t } = useLang();
+  const p = t('career.paths');
   const [centres, setCentres] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [savedIds, setSavedIds] = useState(new Set());
+
   useEffect(() => {
     api('/career/centres', { auth: false }).then(setCentres).catch(() => {}).finally(() => setLoading(false));
   }, []);
+  useEffect(() => {
+    api('/career/saved-centres').then((ids) => setSavedIds(new Set(ids))).catch(() => {});
+  }, []);
+
+  async function toggleSaved(centreId) {
+    const wasSaved = savedIds.has(centreId);
+    setSavedIds((s) => {
+      const next = new Set(s);
+      wasSaved ? next.delete(centreId) : next.add(centreId);
+      return next;
+    });
+    try {
+      if (wasSaved) await api(`/career/saved-centres/${centreId}`, { method: 'DELETE' });
+      else await api('/career/saved-centres', { method: 'POST', body: { trainingCentreId: centreId } });
+    } catch {
+      setSavedIds((s) => {
+        const next = new Set(s);
+        wasSaved ? next.add(centreId) : next.delete(centreId);
+        return next;
+      });
+    }
+  }
 
   return (
     <Card title={loading ? t('career.loadingCentres') : t('career.centresCount')(centres.length)}>
@@ -899,10 +958,31 @@ function TrainingCentres() {
       <div className="divide-y divide-[color:var(--darbi-border)]">
         {centres.map((c) => (
           <div key={c.id} className="py-3">
-            <p className="font-semibold text-darbi-navy">{c.name}</p>
-            <p className="text-sm text-gray-300">{c.field}{c.study_type && ` · ${c.study_type}`}</p>
-            {c.details && <p className="text-sm text-gray-500 mt-1">{c.details}</p>}
-            {c.contact && <p className="text-xs text-gray-400 mt-1">{c.contact}</p>}
+            <div className="flex items-start justify-between gap-4">
+              <p className="font-semibold text-darbi-navy">{c.name}</p>
+              <button
+                type="button"
+                onClick={() => toggleSaved(c.id)}
+                className="text-xs font-bold shrink-0"
+                style={{ color: savedIds.has(c.id) ? 'var(--darbi-gold)' : 'var(--darbi-purple)' }}
+              >
+                {savedIds.has(c.id) ? p.saved : p.save}
+              </button>
+            </div>
+            <p className="text-sm text-gray-300">{c.field}{c.specialty && ` · ${c.specialty}`}</p>
+            {c.location && <p className="text-xs text-gray-500 mt-1">{c.location}</p>}
+            {c.notes && <p className="text-sm text-gray-500 mt-1">{c.notes}</p>}
+            {c.website && (
+              <a
+                href={c.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs underline mt-1 inline-block"
+                style={{ color: 'var(--darbi-purple)' }}
+              >
+                {c.website}
+              </a>
+            )}
           </div>
         ))}
       </div>

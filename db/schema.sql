@@ -441,6 +441,24 @@ ALTER TABLE career_applications ADD COLUMN IF NOT EXISTS why TEXT;
 ALTER TABLE career_applications ADD COLUMN IF NOT EXISTS salary_raw TEXT;
 ALTER TABLE career_applications ADD COLUMN IF NOT EXISTS location TEXT;
 
+-- Bookmarks for the Learning Paths and Training Centres tabs -- both were
+-- read-only browsing views with nothing for a graduate to save until now.
+CREATE TABLE IF NOT EXISTS career_saved_paths (
+  id              SERIAL PRIMARY KEY,
+  career_user_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  career_path_id  INTEGER NOT NULL REFERENCES career_paths(id) ON DELETE CASCADE,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (career_user_id, career_path_id)
+);
+
+CREATE TABLE IF NOT EXISTS career_saved_centres (
+  id                  SERIAL PRIMARY KEY,
+  career_user_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  training_centre_id  INTEGER NOT NULL REFERENCES training_centers(id) ON DELETE CASCADE,
+  created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (career_user_id, training_centre_id)
+);
+
 -- The post-signup onboarding questionnaire, plus Claude's structured read on
 -- it. One row per student — re-answering overwrites it. The chat advisor
 -- folds `analysis` into its system prompt so a conversation starts already

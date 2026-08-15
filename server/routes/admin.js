@@ -86,7 +86,7 @@ router.get(
     if (!user) return res.status(404).json({ error: 'not_found' });
 
     if (user.role === 'career') {
-      const [profileRes, ladderRes, matchesRes, appsRes, chatRes] = await Promise.all([
+      const [profileRes, ladderRes, matchesRes, appsRes, chatRes, savedPathsRes, savedCentresRes] = await Promise.all([
         query(`SELECT * FROM career_profiles WHERE user_id = $1`, [id]),
         query(
           `SELECT payload, model, created_at FROM career_ladders
@@ -103,6 +103,18 @@ router.get(
           `SELECT count(*)::int AS n, max(created_at) AS last_at FROM career_chat_messages WHERE career_user_id = $1`,
           [id],
         ),
+        query(
+          `SELECT cp.name, cp.major_name FROM career_saved_paths sp
+             JOIN career_paths cp ON cp.id = sp.career_path_id
+            WHERE sp.career_user_id = $1 ORDER BY sp.created_at DESC`,
+          [id],
+        ),
+        query(
+          `SELECT tc.name, tc.field FROM career_saved_centres sc
+             JOIN training_centers tc ON tc.id = sc.training_centre_id
+            WHERE sc.career_user_id = $1 ORDER BY sc.created_at DESC`,
+          [id],
+        ),
       ]);
 
       return res.json({
@@ -116,6 +128,8 @@ router.get(
         applications: appsRes.rows,
         chat_message_count: chatRes.rows[0].n,
         chat_last_at: chatRes.rows[0].last_at,
+        saved_paths: savedPathsRes.rows,
+        saved_centres: savedCentresRes.rows,
       });
     }
 

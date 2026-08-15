@@ -445,6 +445,94 @@ router.delete(
   }),
 );
 
+/** GET /api/career/saved-paths — the career_path ids this graduate has saved. */
+router.get(
+  '/saved-paths',
+  asyncRoute(async (req, res) => {
+    const { rows } = await query(
+      `SELECT career_path_id FROM career_saved_paths WHERE career_user_id = $1`,
+      [req.user.id],
+    );
+    res.json(rows.map((r) => r.career_path_id));
+  }),
+);
+
+/** POST /api/career/saved-paths  { careerPathId } — idempotent, re-saving an already-saved path is a no-op. */
+router.post(
+  '/saved-paths',
+  asyncRoute(async (req, res) => {
+    const { careerPathId } = req.body ?? {};
+    if (!careerPathId) return res.status(400).json({ error: 'missing_fields', need: ['careerPathId'] });
+    try {
+      await query(
+        `INSERT INTO career_saved_paths (career_user_id, career_path_id) VALUES ($1,$2)
+         ON CONFLICT (career_user_id, career_path_id) DO NOTHING`,
+        [req.user.id, careerPathId],
+      );
+      res.status(201).json({ careerPathId });
+    } catch (err) {
+      if (err.code === '23503') return res.status(404).json({ error: 'unknown_career_path' });
+      throw err;
+    }
+  }),
+);
+
+/** DELETE /api/career/saved-paths/:careerPathId */
+router.delete(
+  '/saved-paths/:careerPathId',
+  asyncRoute(async (req, res) => {
+    await query(
+      `DELETE FROM career_saved_paths WHERE career_user_id = $1 AND career_path_id = $2`,
+      [req.user.id, req.params.careerPathId],
+    );
+    res.status(204).end();
+  }),
+);
+
+/** GET /api/career/saved-centres — the training_centre ids this graduate has saved. */
+router.get(
+  '/saved-centres',
+  asyncRoute(async (req, res) => {
+    const { rows } = await query(
+      `SELECT training_centre_id FROM career_saved_centres WHERE career_user_id = $1`,
+      [req.user.id],
+    );
+    res.json(rows.map((r) => r.training_centre_id));
+  }),
+);
+
+/** POST /api/career/saved-centres  { trainingCentreId } — idempotent. */
+router.post(
+  '/saved-centres',
+  asyncRoute(async (req, res) => {
+    const { trainingCentreId } = req.body ?? {};
+    if (!trainingCentreId) return res.status(400).json({ error: 'missing_fields', need: ['trainingCentreId'] });
+    try {
+      await query(
+        `INSERT INTO career_saved_centres (career_user_id, training_centre_id) VALUES ($1,$2)
+         ON CONFLICT (career_user_id, training_centre_id) DO NOTHING`,
+        [req.user.id, trainingCentreId],
+      );
+      res.status(201).json({ trainingCentreId });
+    } catch (err) {
+      if (err.code === '23503') return res.status(404).json({ error: 'unknown_training_centre' });
+      throw err;
+    }
+  }),
+);
+
+/** DELETE /api/career/saved-centres/:trainingCentreId */
+router.delete(
+  '/saved-centres/:trainingCentreId',
+  asyncRoute(async (req, res) => {
+    await query(
+      `DELETE FROM career_saved_centres WHERE career_user_id = $1 AND training_centre_id = $2`,
+      [req.user.id, req.params.trainingCentreId],
+    );
+    res.status(204).end();
+  }),
+);
+
 /** Map an upstream failure to something worth showing a graduate. Mirrors chat.js's version but without the student-only "Recommendations tab" fallback mention. */
 function friendlyError(err) {
   const status = err?.status;

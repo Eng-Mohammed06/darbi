@@ -29,6 +29,8 @@ export default {
       switchingBody: 'Ask the AI Assistant for a personalized plan on what to learn and how to get there.',
       askAssistant: 'Ask the AI Assistant',
       askAssistantSeed: (from, to) => `I'm currently in ${from ?? 'my current field'} and thinking about moving into ${to}. What should I do to get there, and what's a realistic path?`,
+      save: 'Save',
+      saved: 'Saved ✓',
     },
     ladder: {
       title: 'Career Path',
@@ -199,6 +201,8 @@ export default {
       switchingBody: 'اسأل المساعد الذكي للحصول على خطة مخصصة لما يجب تعلّمه وكيفية الوصول إلى هناك.',
       askAssistant: 'اسأل المساعد الذكي',
       askAssistantSeed: (from, to) => `أنا حاليًا في ${from ?? 'مجالي الحالي'} وأفكّر في الانتقال إلى ${to}. ماذا يجب أن أفعل للوصول إلى هناك، وما هو المسار الواقعي؟`,
+      save: 'حفظ',
+      saved: 'تم الحفظ ✓',
     },
     ladder: {
       title: 'المسار المهني',

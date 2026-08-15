@@ -496,6 +496,30 @@ function CareerActivity({ detail, dt }) {
         )}
       </DetailSection>
 
+      <DetailSection title={dt.sectionSavedPaths((detail.saved_paths ?? []).length)}>
+        {detail.saved_paths?.length > 0 ? (
+          <ul className="text-sm text-gray-200 space-y-1">
+            {detail.saved_paths.map((sp) => (
+              <li key={sp.name}>{sp.name} <span className="text-gray-500">· {sp.major_name}</span></li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-gray-500 italic">{dt.none}</p>
+        )}
+      </DetailSection>
+
+      <DetailSection title={dt.sectionSavedCentres((detail.saved_centres ?? []).length)}>
+        {detail.saved_centres?.length > 0 ? (
+          <ul className="text-sm text-gray-200 space-y-1">
+            {detail.saved_centres.map((sc) => (
+              <li key={sc.name}>{sc.name} <span className="text-gray-500">· {sc.field}</span></li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-gray-500 italic">{dt.none}</p>
+        )}
+      </DetailSection>
+
       <DetailSection title={dt.sectionAssistant} last>
         <dl className="text-sm space-y-2">
           <Row label={dt.messagesSent} value={detail.chat_message_count} />
