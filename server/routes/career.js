@@ -363,20 +363,25 @@ router.post(
         if (matchScore == null) {
           const { rows: profileRows } = await query(`SELECT * FROM career_profiles WHERE user_id = $1`, [req.user.id]);
           const profile = profileRows[0];
-          try {
-            const result = chatConfigured
-              ? await matchJobs({ profile, jobs: [job] })
-              : matchJobsFallback({ profile, jobs: [job] });
-            const m = result.data.matches[0];
-            if (m) {
-              matchScore = m.match_score;
-              requirements = m.requirements;
-              why = m.why;
+          let result;
+          if (chatConfigured) {
+            try {
+              result = await matchJobs({ profile, jobs: [job] });
+            } catch (err) {
+              // Same tiered fallback as /job-matches and /ladder — a bad or
+              // out-of-credit key must not mean the application gets tracked
+              // with no context, only that the context is rule-based instead.
+              console.warn('[applications] Claude unavailable, using fallback:', err.message);
+              result = matchJobsFallback({ profile, jobs: [job] });
             }
-          } catch (err) {
-            // Auto-fill is a nicety, not a gate — still track the application
-            // with just company/title if scoring fails for any reason.
-            console.warn('[applications] auto-fill match failed:', err.message);
+          } else {
+            result = matchJobsFallback({ profile, jobs: [job] });
+          }
+          const m = result.data.matches[0];
+          if (m) {
+            matchScore = m.match_score;
+            requirements = m.requirements;
+            why = m.why;
           }
         }
       }
