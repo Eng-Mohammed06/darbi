@@ -12,35 +12,6 @@ const router = Router();
 // from spreadsheets instead, and why this panel is the exception.
 router.use(requireAuth, requireAdmin);
 
-/**
- * POST /api/admin/me/become-dual-role — ONE-TIME, TEMPORARY. Converts the
- * caller's own pure role='admin' account into a dual-role account
- * (role='student', is_admin=true), reusing its existing orphaned `students`
- * row rather than creating one — this account was a student before it was
- * converted to admin, and that row is still there, just unused. Only
- * touches the caller's own account (req.user.id), and refuses if there's
- * no existing students row to reuse, since a dual-role student account
- * with no profile would break the dashboard. Remove this route once used —
- * see the commit that added it.
- */
-router.post(
-  '/me/become-dual-role',
-  asyncRoute(async (req, res) => {
-    const { rows: userRows } = await query(`SELECT role FROM users WHERE id = $1`, [req.user.id]);
-    if (userRows[0]?.role !== 'admin') return res.status(400).json({ error: 'not_pure_admin' });
-
-    const { rows: studentRows } = await query(`SELECT user_id FROM students WHERE user_id = $1`, [req.user.id]);
-    if (!studentRows[0]) return res.status(400).json({ error: 'no_student_profile_to_reuse' });
-
-    const { rows } = await query(
-      `UPDATE users SET role = 'student', is_admin = true, updated_at = now() WHERE id = $1
-       RETURNING id, email, username, role, is_admin`,
-      [req.user.id],
-    );
-    res.json(rows[0]);
-  }),
-);
-
 /** GET /api/admin/stats — counts across the whole platform. */
 router.get(
   '/stats',
