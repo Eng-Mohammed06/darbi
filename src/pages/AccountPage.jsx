@@ -246,7 +246,7 @@ function AvatarActionMenu({ onView, onChange, onRemove, onClose }) {
   );
 }
 
-const NAME_ENDPOINT = { student: '/students/me', company: '/companies/me', career: '/career/me' };
+const NAME_ENDPOINT = { student: '/students/me', company: '/companies/me', career: '/career/me', admin: '/auth/name' };
 
 function ProfileTab() {
   const { user, profile, setProfile, setUser } = useAuth();
@@ -268,9 +268,7 @@ function ProfileTab() {
 
   return (
     <Card accent={false}>
-      {user?.role !== 'admin' && (
-        <EditableRow label={t('account.name')} value={profile?.name} onSave={saveName} successMessage={t('account.nameChanged')} />
-      )}
+      <EditableRow label={t('account.name')} value={profile?.name} onSave={saveName} successMessage={t('account.nameChanged')} />
       <EditableRow label={t('account.username')} value={user?.username} onSave={saveUsername} successMessage={t('account.usernameChanged')} />
       <div className="py-4">
         <span className="block text-xs font-bold uppercase tracking-wide text-gray-500 mb-1">{t('account.email')}</span>

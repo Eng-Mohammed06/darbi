@@ -30,7 +30,11 @@ async function sendBestEffort(to, { subject, html }) {
 
 /** Loads the role-specific profile that hangs off a user row. */
 async function loadProfile(userId, role) {
-  if (role === 'admin') return null; // no profile table — nothing to load
+  if (role === 'admin') {
+    // No admin_profiles table -- the display name lives directly on users.
+    const { rows } = await query(`SELECT name FROM users WHERE id = $1`, [userId]);
+    return rows[0] ?? null;
+  }
   if (role === 'student') {
     // Joined with major/university names — an undergraduate's declared
     // major (server/routes/students.js) needs its display name everywhere
@@ -358,6 +362,32 @@ router.put(
       }
       throw err;
     }
+  }),
+);
+
+/**
+ * PUT /api/auth/name  { name }
+ * Admin-only -- student/company/career accounts edit their name through
+ * their own profile PUT (/students/me etc.), which carries the rest of
+ * their profile too. Admin has no profile table, so its display name lives
+ * directly on users.name instead (see loadProfile above).
+ */
+router.put(
+  '/name',
+  requireAuth,
+  asyncRoute(async (req, res) => {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'wrong_role', need: ['admin'] });
+    }
+    const normalized = String(req.body?.name ?? '').trim();
+    if (!normalized) {
+      return res.status(400).json({ error: 'missing_fields', need: ['name'] });
+    }
+    const { rows } = await query(
+      `UPDATE users SET name = $1, updated_at = now() WHERE id = $2 RETURNING name`,
+      [normalized, req.user.id],
+    );
+    res.json(rows[0]);
   }),
 );
 

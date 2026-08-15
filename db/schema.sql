@@ -67,6 +67,12 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN NOT NULL DEFAULT fal
 -- login; NULL until a user's first login after this column existed.
 ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMPTZ;
 
+-- Display name for the pure-admin account only. Every other role stores its
+-- name on its own profile table (students.name, companies.name,
+-- career_profiles.name) -- admin has no such table, so its name lives
+-- directly here instead (server/routes/auth.js's loadProfile/PUT /auth/name).
+ALTER TABLE users ADD COLUMN IF NOT EXISTS name TEXT;
+
 CREATE TABLE IF NOT EXISTS students (
   user_id       INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
   name          TEXT NOT NULL,
