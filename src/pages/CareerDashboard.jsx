@@ -504,6 +504,7 @@ function JobMatches({ onGoToProfile }) {
   const [error, setError] = useState(null); // { code, message } | null
   const [degraded, setDegraded] = useState(false);
   const [trackedIds, setTrackedIds] = useState(new Set());
+  const [showTrackedOnly, setShowTrackedOnly] = useState(false);
 
   function load(refresh) {
     setBusy(refresh);
@@ -565,18 +566,32 @@ function JobMatches({ onGoToProfile }) {
     );
   }
 
+  const shownMatches = showTrackedOnly ? matches.filter((m) => trackedIds.has(m.job_id)) : matches;
+
   return (
     <>
       <Card title={j.title} accent={false}>
         {degraded && <p className="text-xs mb-3" style={{ color: 'var(--darbi-gold)' }}>{j.degradedNote}</p>}
-        <Button type="button" onClick={() => load(true)} disabled={busy}>
-          {busy ? j.regenerating : j.regenerate}
-        </Button>
+        <div className="flex items-center gap-4">
+          <Button type="button" onClick={() => load(true)} disabled={busy}>
+            {busy ? j.regenerating : j.regenerate}
+          </Button>
+          <button
+            type="button"
+            onClick={() => setShowTrackedOnly((s) => !s)}
+            className="text-xs font-bold"
+            style={{ color: showTrackedOnly ? 'var(--darbi-success)' : 'var(--darbi-purple)' }}
+          >
+            {showTrackedOnly ? j.showingTracked : j.showTrackedOnly(trackedIds.size)}
+          </button>
+        </div>
       </Card>
 
-      {matches.length === 0 && <Card><EmptyState icon="🎯" title={j.empty} /></Card>}
+      {shownMatches.length === 0 && (
+        <Card><EmptyState icon="🎯" title={showTrackedOnly ? j.noTracked : j.empty} /></Card>
+      )}
 
-      {matches.map((m) => (
+      {shownMatches.map((m) => (
         <Card key={m.job_id} accent={false}>
           <div className="flex items-start justify-between gap-4 mb-3">
             <div className="min-w-0">
@@ -631,6 +646,7 @@ function Applications() {
   const a = t('career.applications');
   const toast = useToast();
   const [apps, setApps] = useState(null);
+  const [statusFilter, setStatusFilter] = useState(null); // null = all statuses
 
   useEffect(() => {
     api('/career/applications').then(setApps).catch(() => setApps([]));
@@ -665,10 +681,10 @@ function Applications() {
     return <Card title={a.title}><SkeletonLines lines={6} /></Card>;
   }
 
+  const counts = Object.fromEntries(STATUS_ORDER.map((s) => [s, apps.filter((x) => x.status === s).length]));
   const breakdown = STATUS_ORDER
-    .map((s) => ({ s, n: apps.filter((x) => x.status === s).length }))
-    .filter(({ n }) => n > 0)
-    .map(({ s, n }) => `${n} ${a.statusLabels[s]}`)
+    .filter((s) => counts[s] > 0)
+    .map((s) => `${counts[s]} ${a.statusLabels[s]}`)
     .join(', ');
 
   return (
@@ -676,11 +692,34 @@ function Applications() {
       <Card title={a.title} accent={false}>
         <p className="text-sm text-gray-400">{a.subtitle}</p>
         {apps.length > 0 && (
-          <p className="text-xs text-gray-500 mt-1.5">{a.summaryCount(apps.length)} · {breakdown}</p>
+          <>
+            <p className="text-xs text-gray-500 mt-1.5 mb-3">{a.summaryCount(apps.length)} · {breakdown}</p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setStatusFilter(null)}
+                className="text-xs px-3 py-1.5 rounded-full font-bold transition"
+                style={statusFilter === null ? { background: 'var(--darbi-gradient)', color: '#fff' } : { border: '1px solid color-mix(in srgb, var(--darbi-navy) 15%, transparent)', color: 'var(--darbi-text-muted)' }}
+              >
+                {a.allStatuses(apps.length)}
+              </button>
+              {STATUS_ORDER.filter((s) => counts[s] > 0).map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setStatusFilter(s)}
+                  className="text-xs px-3 py-1.5 rounded-full font-bold transition"
+                  style={statusFilter === s ? { background: 'var(--darbi-gradient)', color: '#fff' } : { border: '1px solid color-mix(in srgb, var(--darbi-navy) 15%, transparent)', color: 'var(--darbi-text-muted)' }}
+                >
+                  {a.statusLabels[s]} ({counts[s]})
+                </button>
+              ))}
+            </div>
+          </>
         )}
       </Card>
 
-      {STATUS_ORDER.map((status) => {
+      {STATUS_ORDER.filter((s) => statusFilter === null || s === statusFilter).map((status) => {
         const inStatus = apps.filter((x) => x.status === status);
         if (inStatus.length === 0) return null;
         return (
@@ -742,6 +781,9 @@ function Applications() {
       })}
 
       {apps.length === 0 && <Card><EmptyState icon="📥" title={a.empty} /></Card>}
+      {apps.length > 0 && statusFilter != null && counts[statusFilter] === 0 && (
+        <Card><EmptyState icon="📥" title={a.empty} /></Card>
+      )}
     </>
   );
 }
