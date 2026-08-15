@@ -268,7 +268,9 @@ function ProfileTab() {
 
   return (
     <Card accent={false}>
-      <EditableRow label={t('account.name')} value={profile?.name} onSave={saveName} successMessage={t('account.nameChanged')} />
+      {user?.role !== 'admin' && (
+        <EditableRow label={t('account.name')} value={profile?.name} onSave={saveName} successMessage={t('account.nameChanged')} />
+      )}
       <EditableRow label={t('account.username')} value={user?.username} onSave={saveUsername} successMessage={t('account.usernameChanged')} />
       <div className="py-4">
         <span className="block text-xs font-bold uppercase tracking-wide text-gray-500 mb-1">{t('account.email')}</span>
