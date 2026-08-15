@@ -139,6 +139,14 @@ const ICONS = {
 };
 const FEATURE_ICON_KEYS = ['shield', 'chat', 'network'];
 
+// Each "Join Us" card: which role-label key (auth.role*) and which
+// description key (landing.*) it pairs with, and which portal it links to.
+const JOIN_CARDS = [
+  { roleKey: 'Student', descKey: 'joinStudentDesc', href: '/portal/student' },
+  { roleKey: 'Graduate', descKey: 'joinGraduateDesc', href: '/portal/career' },
+  { roleKey: 'Company', descKey: 'joinCompanyDesc', href: '/portal/company' },
+];
+
 export default function LandingPage() {
   const [stats, setStats] = useState(null);
   const [specimen, setSpecimen] = useState(null);
@@ -239,14 +247,18 @@ export default function LandingPage() {
           ))}
         </section>
 
-        <Reveal as="section" className="hp-join hp-shell">
+        <section className="hp-join hp-shell">
           <h2 className="hp-join-title">{t('landing.joinTitle')}</h2>
-          <div className="hp-join-buttons">
-            <Link to="/portal/student" className="hp-join-btn">{t('auth.roleStudent')}</Link>
-            <Link to="/portal/career" className="hp-join-btn">{t('auth.roleGraduate')}</Link>
-            <Link to="/portal/company" className="hp-join-btn">{t('auth.roleCompany')}</Link>
+          <div className="hp-join-cards">
+            {JOIN_CARDS.map((c, i) => (
+              <Reveal key={c.roleKey} className="hp-join-card" delay={i * 100}>
+                <strong>{t(`auth.role${c.roleKey}`)}</strong>
+                <p className="hp-small hp-muted">{t(`landing.${c.descKey}`)}</p>
+                <Link to={c.href} className="hp-join-btn">{t('landing.joinCta')}</Link>
+              </Reveal>
+            ))}
           </div>
-        </Reveal>
+        </section>
 
         {stats && (
           <Reveal as="p" className="hp-stats-bar hp-shell hp-mono">
@@ -614,19 +626,27 @@ ${themeBlocks}
 .hp-landing .hp-feature-icon svg { inline-size: 20px; block-size: 20px; }
 
 /* ---------- Join Us CTA ---------- */
-.hp-landing .hp-join { padding-block: 8px 48px; text-align: center; }
+.hp-landing .hp-join { padding-block: 8px 56px; text-align: center; }
 .hp-landing .hp-join-title { margin: 0 0 22px; font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
-.hp-landing .hp-join-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+.hp-landing .hp-join-cards {
+  display: grid; gap: 18px; text-align: start;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+.hp-landing .hp-join-card {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 12px;
+  background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r-lg);
+  padding: 22px 22px 24px;
+}
+.hp-landing .hp-join-card strong { font-size: 16px; }
+.hp-landing .hp-join-card p { margin: 0; flex: 1; }
 .hp-landing .hp-join-btn {
+  align-self: flex-start;
   display: inline-flex; align-items: center; justify-content: center;
-  min-inline-size: 160px; padding: 14px 30px; border-radius: var(--r-md);
-  background: var(--trust); color: var(--on-ink); font-weight: 600; font-size: 15px;
+  padding: 10px 22px; border-radius: var(--r-md);
+  background: var(--trust); color: var(--on-ink); font-weight: 600; font-size: 14px;
   text-decoration: none; transition: transform .15s ease, box-shadow .15s ease;
 }
 .hp-landing .hp-join-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px -12px var(--trust); }
-@media (max-width: 560px) {
-  .hp-landing .hp-join-buttons { flex-direction: column; align-items: stretch; }
-}
 
 /* ---------- Stats bar ---------- */
 .hp-landing .hp-stats-bar {

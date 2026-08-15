@@ -26,6 +26,10 @@ export default {
     loading: 'loading…',
     themeLabel: 'Theme',
     joinTitle: 'Join Us!',
+    joinStudentDesc: 'For high schoolers and undergrads figuring out what to study. Tell Darbi what you enjoy and it matches you to majors, courses, salaries, and jobs — all backed by real Jordanian data.',
+    joinGraduateDesc: 'For graduates and working professionals plotting their next move. Get AI mentorship, a skills-gap assessment, and networking to help you grow.',
+    joinCompanyDesc: 'For employers hiring engineering talent. Post jobs and filter students by major, GPA, and skills to find the right fit fast.',
+    joinCta: 'Get started',
   },
   ar: {
     navStudent: 'طالب',
@@ -54,5 +58,9 @@ export default {
     loading: 'جارٍ التحميل…',
     themeLabel: 'المظهر',
     joinTitle: 'انضم إلينا!',
+    joinStudentDesc: 'لطلاب الثانوية والجامعة الذين يحددون ما سيدرسونه. أخبر دربي بما تحب، وهو يقترح عليك التخصصات والمقررات والرواتب والوظائف المناسبة — استنادًا إلى بيانات أردنية حقيقية.',
+    joinGraduateDesc: 'للخريجين والمهنيين العاملين الذين يخططون لخطوتهم القادمة. احصل على إرشاد مهني بالذكاء الاصطناعي، وتقييم للفجوات في مهاراتك، وفرص للتواصل تساعدك على التطور.',
+    joinCompanyDesc: 'لأصحاب العمل الباحثين عن كفاءات هندسية. انشر الوظائف وصفِّ الطلاب حسب التخصص والمعدل والمهارات لإيجاد الشخص المناسب بسرعة.',
+    joinCta: 'ابدأ الآن',
   },
 };
