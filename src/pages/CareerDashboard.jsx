@@ -559,7 +559,6 @@ function Applications() {
   const a = t('career.applications');
   const toast = useToast();
   const [apps, setApps] = useState(null);
-  const [adding, setAdding] = useState(false);
 
   useEffect(() => {
     api('/career/applications').then(setApps).catch(() => setApps([]));
@@ -590,23 +589,13 @@ function Applications() {
     });
   }
 
-  async function addApplication(fields) {
-    const created = await api('/career/applications', { method: 'POST', body: fields });
-    setApps((list) => [created, ...list]);
-    setAdding(false);
-  }
-
   if (apps === null) {
     return <Card title={a.title}><SkeletonLines lines={6} /></Card>;
   }
 
   return (
     <>
-      <Card title={a.title} accent={false}>
-        <Button type="button" onClick={() => setAdding(true)}>{a.add}</Button>
-      </Card>
-
-      {adding && <AddApplicationForm a={a} onSave={addApplication} onCancel={() => setAdding(false)} />}
+      <Card title={a.title} accent={false} />
 
       {STATUS_ORDER.map((status) => {
         const inStatus = apps.filter((x) => x.status === status);
@@ -669,62 +658,8 @@ function Applications() {
         );
       })}
 
-      {apps.length === 0 && !adding && <Card><EmptyState icon="📥" title={a.empty} /></Card>}
+      {apps.length === 0 && <Card><EmptyState icon="📥" title={a.empty} /></Card>}
     </>
-  );
-}
-
-function AddApplicationForm({ a, onSave, onCancel }) {
-  const [form, setForm] = useState({ companyName: '', title: '', status: 'applied', notes: '' });
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-
-  async function submit(e) {
-    e.preventDefault();
-    if (!form.companyName.trim() || !form.title.trim()) return;
-    setError('');
-    setBusy(true);
-    try {
-      await onSave(form);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <Card title={a.addTitle} accent={false}>
-      <form onSubmit={submit}>
-        <Alert>{error}</Alert>
-        <Field label={a.company}>
-          <input
-            className={inputClass}
-            placeholder={a.companyPlaceholder}
-            value={form.companyName}
-            onChange={(e) => setForm({ ...form, companyName: e.target.value })}
-            autoFocus
-          />
-        </Field>
-        <Field label={a.jobTitle}>
-          <input className={inputClass} placeholder={a.jobTitlePlaceholder} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
-        </Field>
-        <Field label={a.status}>
-          <select className={inputClass} value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
-            {STATUS_ORDER.map((s) => (
-              <option key={s} value={s}>{a.statusLabels[s]}</option>
-            ))}
-          </select>
-        </Field>
-        <Field label={a.notes}>
-          <input className={inputClass} placeholder={a.notesPlaceholder} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
-        </Field>
-        <div className="flex items-center gap-3">
-          <Button type="submit" disabled={busy}>{busy ? a.saving : a.save}</Button>
-          <button type="button" onClick={onCancel} disabled={busy} className="text-xs text-gray-400 hover:text-gray-200">{a.cancel}</button>
-        </div>
-      </form>
-    </Card>
   );
 }
 
