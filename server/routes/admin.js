@@ -12,24 +12,6 @@ const router = Router();
 // from spreadsheets instead, and why this panel is the exception.
 router.use(requireAuth, requireAdmin);
 
-/**
- * POST /api/admin/me/revert-to-pure-admin — ONE-TIME, TEMPORARY. Undoes
- * become-dual-role: sets the caller's own account back to role='admin',
- * is_admin=false. Only touches the caller's own account (req.user.id).
- * Remove this route once used — see the commit that added it.
- */
-router.post(
-  '/me/revert-to-pure-admin',
-  asyncRoute(async (req, res) => {
-    const { rows } = await query(
-      `UPDATE users SET role = 'admin', is_admin = false, updated_at = now() WHERE id = $1
-       RETURNING id, email, username, role, is_admin`,
-      [req.user.id],
-    );
-    res.json(rows[0]);
-  }),
-);
-
 /** GET /api/admin/stats — counts across the whole platform. */
 router.get(
   '/stats',
