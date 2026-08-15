@@ -6,45 +6,43 @@ import { useLang } from '../i18n/index.jsx';
 
 /**
  * The public home page — shown to anyone who isn't signed in yet (App.jsx's
- * Home only renders this when there's no user). There wasn't one before:
- * "/" just bounced straight to the student login form.
+ * Home only renders this when there's no user).
  *
- * Deliberately NOT DARBI's usual cyan/orange theme by default. This page
- * recreates the actual look of the design mockup it's built from
- * (HP.html) — the "engineering datasheet" system: IBM Plex Mono for every
- * number, eyebrow labels with a trailing rule, evidence chips with numbered
- * badges. All of it is scoped under .hp-landing (see the <style> block
- * below) so none of it leaks into the rest of the app.
+ * Rebuilt to match Darbi-AI-Homepage-Design-Handoff.html — a single
+ * continuous scroll (Hero → Features → Stats) on a shared ambient-glow
+ * background, sticky header, a light "Darbi Advisor" example card, three
+ * icon feature cards, and scroll-reveal + load-in animations. The handoff
+ * doc specifies one fixed dark palette (near-black + teal); since this app
+ * already carries an 8-theme switcher that applies everywhere (not just
+ * this page — see src/services/theme.jsx), that palette became this exact
+ * "Blueprint Night" theme's values instead of a hardcoded one-off, so the
+ * new layout still works correctly under all 8 themes and the switcher
+ * keeps doing something real. "Classic" (DARBI's original cyan/orange)
+ * stays the site-wide default; switch to Blueprint Night to see the handoff
+ * doc's look exactly.
  *
  * Theme and language are NOT page-local state — both read/write the same
- * global ThemeProvider/LanguageProvider every other page uses (see
- * src/services/theme.jsx and src/i18n/index.jsx), so a change made here is
- * visible everywhere, including after logging in. "Classic" (the eighth
- * theme option) is DARBI's original cyan/orange palette, carried over as an
- * option rather than lost when the other seven were added.
+ * global ThemeProvider/LanguageProvider every other page uses, so a change
+ * made here is visible everywhere, including after logging in.
  *
- * The three portal cards and the "JSYP 2026 · Team Sparks" eyebrow that
- * used to sit here are gone — replaced by three paragraphs actually
- * describing what the product does. Portal entry now lives in the header
- * nav (Student / Employer / Career Boost), so nothing is unreachable.
- *
- * The centerpiece — a real grounded answer typed out live, with its sources
- * attached as tappable-looking chips — mirrors that mockup's landing view,
- * but every number here is fetched from DARBI's actual seeded catalog (GET
- * /api/pathways/:slug, already public) rather than invented.
+ * The advisor card's centerpiece — a real grounded answer typed out live,
+ * with its sources attached as numbered pill tags — pulls from DARBI's
+ * actual seeded catalog (GET /api/pathways/:slug, already public) rather
+ * than invented copy.
  */
 
-// Exact token values from HP.html's seven data-theme blocks, plus DARBI's
-// own original palette carried over as an eighth ("classic") option so it
-// isn't lost now that the switcher applies site-wide.
+// Exact token values for each theme. "blueprint" now matches the handoff
+// doc's spec precisely (bg #0A0A0A, accent #1FBF8F, secondary text
+// #9CA3AF); the other seven keep HP.html's original named palettes, plus
+// DARBI's own original palette carried over as "classic".
 const THEMES = [
   { id: 'classic', en: 'Classic', ar: 'كلاسيكي', vars: {
     ink: '#f8fafc', ink2: '#94a3b8', ink3: '#64748b', paper: '#0f172a', surface: '#1e293b',
     rule: 'rgba(6,182,212,0.25)', rule2: 'rgba(6,182,212,0.15)', trust: '#06b6d4', trustBg: 'rgba(6,182,212,0.15)', caution: '#ff5722', onInk: '#0f172a',
   } },
   { id: 'blueprint', en: 'Blueprint Night', ar: 'مخطط ليلي', vars: {
-    ink: '#e6edf3', ink2: '#9fb0c0', ink3: '#6d8095', paper: '#0e141b', surface: '#17202a',
-    rule: '#27343f', rule2: '#1e2833', trust: '#3fd0a6', trustBg: '#12302b', caution: '#f5b841', onInk: '#0e141b',
+    ink: '#ffffff', ink2: '#9ca3af', ink3: '#6b7280', paper: '#0a0a0a', surface: '#111111',
+    rule: 'rgba(255,255,255,0.08)', rule2: 'rgba(255,255,255,0.15)', trust: '#1fbf8f', trustBg: 'rgba(31,191,143,0.12)', caution: '#e8a33c', onInk: '#0a0a0a',
   } },
   { id: 'limestone', en: 'Limestone & Pine', ar: 'حجر جيري', vars: {
     ink: '#101418', ink2: '#565d66', ink3: '#878e97', paper: '#efece5', surface: '#ffffff',
@@ -97,6 +95,50 @@ const SPECIMEN_SLUGS = [
   'electrical-engineering', 'chemical-engineering', 'biomedical-engineering',
 ];
 
+// One thin-outline icon per feature card / stat, matching the handoff doc's
+// "shield-check / chat-bubble / connected-nodes" set plus a small icon per
+// stat. currentColor so each inherits its container's color per theme.
+const ICONS = {
+  shield: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3z" />
+      <path d="M9 12l2 2 4-4" />
+    </svg>
+  ),
+  chat: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 5h16v11H8l-4 4V5z" />
+    </svg>
+  ),
+  network: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="5" cy="6" r="2.2" />
+      <circle cx="19" cy="6" r="2.2" />
+      <circle cx="12" cy="18" r="2.2" />
+      <path d="M6.8 7.6L11 16.4M17.2 7.6L13 16.4" />
+    </svg>
+  ),
+  book: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 5.5A2.5 2.5 0 016.5 3H20v15H6.5A2.5 2.5 0 004 20.5v-15z" />
+      <path d="M4 20.5A2.5 2.5 0 016.5 18H20" />
+    </svg>
+  ),
+  check: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M8.5 12.5l2.3 2.3 4.7-4.8" />
+    </svg>
+  ),
+  briefcase: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="7" width="18" height="12" rx="2" />
+      <path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2" />
+    </svg>
+  ),
+};
+const FEATURE_ICON_KEYS = ['shield', 'chat', 'network'];
+
 export default function LandingPage() {
   const [stats, setStats] = useState(null);
   const [specimen, setSpecimen] = useState(null);
@@ -139,6 +181,9 @@ export default function LandingPage() {
     <div className="hp-landing" data-theme={theme} dir={dir} lang={lang}>
       <style>{HP_CSS(THEMES)}</style>
 
+      <div className="hp-glow hp-glow-a" aria-hidden="true" />
+      <div className="hp-glow hp-glow-b" aria-hidden="true" />
+
       <header className="hp-topbar">
         <div className="hp-shell hp-row">
           <span className="hp-brand">
@@ -168,41 +213,78 @@ export default function LandingPage() {
         </div>
       </header>
 
-      <main className="hp-shell" style={{ paddingBlock: 34 }}>
-        <div className="hp-grid-2">
-          <section className="hp-stack-l">
-            <div className="hp-stack">
-              <h1>{t('landing.title')}</h1>
-              <p className="hp-muted" style={{ maxWidth: '46ch' }}>{t('landing.sub')}</p>
-            </div>
+      <main className="hp-content">
+        <section className="hp-hero hp-shell">
+          <h1 className="hp-hero-title">{t('landing.title')}</h1>
+          <p className="hp-hero-sub hp-muted">{t('landing.sub')}</p>
 
-            <div className="hp-stack">
-              {pillars.map((p) => (
-                <div key={p.title} className="hp-card">
-                  <strong>{p.title}</strong>
-                  <span className="hp-small hp-muted">{p.body}</span>
-                </div>
-              ))}
-            </div>
-
-            {stats && (
-              <p className="hp-small hp-muted hp-mono">
-                <CountUp to={stats.majors} /> {statsLabels.majors} · <CountUp to={stats.courses} /> {statsLabels.courses} ·{' '}
-                <CountUp to={stats.jobs} /> {statsLabels.jobs} — {statsLabels.trailing}
-              </p>
-            )}
-          </section>
-
-          <section className="hp-card hp-panel-invert">
+          <div className="hp-hero-card hp-panel-invert">
             <span className="hp-eyebrow">{t('landing.panelEyebrow')}</span>
             <div style={{ marginBlockStart: 14 }}>
               <div className="hp-msg-who">{t('landing.msgWho')}</div>
               <Specimen key={lang} data={specimen} lang={lang} t={t} />
             </div>
-          </section>
-        </div>
+          </div>
+        </section>
+
+        <div className="hp-hairline" />
+
+        <section className="hp-features hp-shell">
+          {pillars.map((p, i) => (
+            <Reveal key={p.title} className="hp-feature-card" delay={i * 100}>
+              <div className="hp-feature-icon">{ICONS[FEATURE_ICON_KEYS[i]]}</div>
+              <strong>{p.title}</strong>
+              <p className="hp-small hp-muted">{p.body}</p>
+            </Reveal>
+          ))}
+        </section>
+
+        {stats && (
+          <Reveal as="p" className="hp-stats-bar hp-shell hp-mono">
+            <span className="hp-stat"><span className="hp-stat-icon">{ICONS.book}</span><CountUp to={stats.majors} /> {statsLabels.majors}</span>
+            <span className="hp-dot" aria-hidden="true">·</span>
+            <span className="hp-stat"><span className="hp-stat-icon">{ICONS.check}</span><CountUp to={stats.courses} /> {statsLabels.courses}</span>
+            <span className="hp-dot" aria-hidden="true">·</span>
+            <span className="hp-stat"><span className="hp-stat-icon">{ICONS.briefcase}</span><CountUp to={stats.jobs} /> {statsLabels.jobs}</span>
+            <span className="hp-stats-trailing hp-muted">— {statsLabels.trailing}</span>
+          </Reveal>
+        )}
       </main>
     </div>
+  );
+}
+
+/**
+ * Wraps children in a fade-up transition that plays once, the first time
+ * the element scrolls into view — not on every scroll pass. Used for the
+ * Features cards (staggered via `delay`) and the Stats bar.
+ * prefers-reduced-motion is handled globally (see the CSS block below),
+ * not here.
+ */
+function Reveal({ children, delay = 0, className = '', as: Tag = 'div' }) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.2 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <Tag ref={ref} className={`hp-reveal ${visible ? 'hp-reveal-in' : ''} ${className}`} style={{ transitionDelay: `${delay}ms` }}>
+      {children}
+    </Tag>
   );
 }
 
@@ -341,12 +423,11 @@ function CountUp({ to }) {
 }
 
 /**
- * Scoped recreation of HP.html's stylesheet — "engineering datasheet"
- * design system, ported as CSS custom properties under .hp-landing so
- * nothing here can affect any other page. `data-theme` picks which of the
- * eight token sets (built from the THEMES list above) applies; `dir="rtl"`
- * swaps the whole layout for Arabic using the same logical-property
- * approach HP.html uses, so one stylesheet serves both.
+ * Scoped stylesheet for the landing page, ported as CSS custom properties
+ * under .hp-landing so nothing here can affect any other page. `data-theme`
+ * picks which of the eight token sets (built from the THEMES list above)
+ * applies; `dir="rtl"` swaps the whole layout for Arabic via logical
+ * properties, so one stylesheet serves both.
  */
 function HP_CSS(themes) {
   const themeBlocks = themes
@@ -363,7 +444,9 @@ function HP_CSS(themes) {
 
   return `
 .hp-landing {
-  --r-sm: 3px; --r-md: 8px; --r-lg: 14px;
+  position: relative;
+  overflow: clip;
+  --r-sm: 3px; --r-md: 8px; --r-lg: 14px; --r-xl: 20px;
   --font-ui: "IBM Plex Sans Arabic", "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 
@@ -376,21 +459,28 @@ function HP_CSS(themes) {
 }
 ${themeBlocks}
 
-/* Blueprint gets its namesake: a faint grid on the ground plane. Every
-   other theme keeps a flat background, matching HP.html exactly. */
-.hp-landing[data-theme="blueprint"] {
-  background-image:
-    linear-gradient(var(--rule-2) 1px, transparent 1px),
-    linear-gradient(90deg, var(--rule-2) 1px, transparent 1px);
-  background-size: 28px 28px;
-}
-
 .hp-landing[dir="rtl"] { font-size: clamp(16px, 0.55vw + 14.6px, 17.5px); line-height: 1.72; }
 .hp-landing[dir="rtl"] .hp-arrow { transform: scaleX(-1); }
 
+/* Ambient glow — two large, soft, blurred blobs spanning the whole page
+   (not just the first viewport), continuous behind Hero + Features + Stats
+   rather than reset per section. */
+.hp-landing .hp-glow {
+  position: absolute; inline-size: 640px; block-size: 900px; border-radius: 50%;
+  filter: blur(120px); opacity: 0.22; pointer-events: none; z-index: 0;
+}
+.hp-landing .hp-glow-a { inset-inline-start: -220px; inset-block-start: -80px; background: var(--trust); }
+.hp-landing .hp-glow-b { inset-inline-end: -220px; inset-block-start: 420px; background: var(--caution); }
+.hp-landing .hp-topbar, .hp-landing .hp-content { position: relative; z-index: 1; }
+
 .hp-landing .hp-mono, .hp-landing .hp-num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; unicode-bidi: isolate; }
 .hp-landing .hp-shell { max-inline-size: 1180px; margin-inline: auto; padding-inline: 18px; }
-.hp-landing .hp-topbar { padding: 16px 0; border-block-end: 1px solid var(--rule); }
+.hp-landing .hp-topbar {
+  position: sticky; inset-block-start: 0; z-index: 40; padding: 16px 0;
+  background: color-mix(in srgb, var(--paper) 82%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-block-end: 1px solid var(--rule);
+}
 .hp-landing .hp-brand { display: flex; align-items: center; gap: 9px; font-weight: 650; letter-spacing: -.02em; color: var(--ink); font-size: 16px; }
 .hp-landing .hp-brand-mark {
   inline-size: 26px; block-size: 26px; border-radius: 7px; background: var(--ink); color: var(--trust);
@@ -429,16 +519,11 @@ ${themeBlocks}
   color: var(--ink-3); display: flex; align-items: center; gap: 8px;
 }
 .hp-landing .hp-eyebrow::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
-.hp-landing h1 { margin: 0; font-weight: 600; letter-spacing: -0.015em; line-height: 1.15; font-size: clamp(28px, 3.2vw + 16px, 44px); }
 .hp-landing p { margin: 0 0 12px; }
 .hp-landing .hp-muted { color: var(--ink-2); }
 .hp-landing .hp-small { font-size: 13px; }
-.hp-landing .hp-stack { display: grid; gap: 12px; }
-.hp-landing .hp-stack-l { display: grid; gap: 24px; }
 .hp-landing .hp-row { display: flex; gap: 10px; align-items: center; }
 .hp-landing .hp-spacer { flex: 1; }
-.hp-landing .hp-grid-2 { display: grid; gap: 28px; grid-template-columns: 1fr; align-items: start; }
-@media (min-width: 900px) { .hp-landing .hp-grid-2 { grid-template-columns: 1fr 1fr; } }
 
 .hp-landing .hp-sr-only {
   position: absolute; inline-size: 1px; block-size: 1px; padding: 0; margin: -1px;
@@ -457,12 +542,23 @@ ${themeBlocks}
 }
 .hp-landing .hp-lang-btn:hover { background: var(--surface); }
 
-.hp-landing .hp-card {
-  background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r-lg);
-  padding: 16px 18px; text-decoration: none; color: inherit; display: grid; gap: 6px;
-  transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+/* ---------- Hero ---------- */
+.hp-landing .hp-hero { padding-block: 72px 56px; text-align: center; display: grid; justify-items: center; gap: 18px; }
+.hp-landing .hp-hero-title {
+  margin: 0; font-weight: 700; letter-spacing: -0.02em; line-height: 1.08;
+  font-size: clamp(34px, 6vw + 12px, 68px); max-inline-size: 16ch;
 }
-.hp-landing .hp-card strong { font-size: 15.5px; }
+.hp-landing .hp-hero-sub { max-inline-size: 46ch; font-size: clamp(15px, .4vw + 14px, 17.5px); margin: 0; }
+.hp-landing .hp-hero-card {
+  margin-block-start: 28px; max-inline-size: 750px; inline-size: 100%; text-align: start;
+  border-radius: var(--r-xl); padding: 26px 28px; box-shadow: 0 24px 60px -24px rgba(0,0,0,.5);
+}
+
+@keyframes hp-fade-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+@keyframes hp-card-in { from { opacity: 0; transform: translateY(20px) scale(.97); } to { opacity: 1; transform: none; } }
+.hp-landing .hp-hero-title { animation: hp-fade-up .55s ease-out both; }
+.hp-landing .hp-hero-sub { animation: hp-fade-up .55s ease-out .15s both; }
+.hp-landing .hp-hero-card { animation: hp-card-in .6s ease-out .32s both; }
 
 .hp-landing .hp-panel-invert { background: var(--ink); border-color: var(--ink); color: var(--paper); }
 .hp-landing .hp-panel-invert .hp-eyebrow { color: color-mix(in srgb, var(--paper) 55%, var(--ink)); }
@@ -488,8 +584,44 @@ ${themeBlocks}
 @keyframes hp-chip-in { from { opacity: 0; transform: translateY(6px); } }
 @keyframes hp-blink { 50% { opacity: 0; } }
 
+/* ---------- Hairline between Hero and Features ---------- */
+.hp-landing .hp-hairline { block-size: 1px; background: var(--rule); max-inline-size: 1180px; margin-inline: auto; }
+
+/* ---------- Features ---------- */
+.hp-landing .hp-features {
+  display: grid; gap: 20px; padding-block: 56px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+.hp-landing .hp-feature-card {
+  background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r-lg);
+  padding: 24px 22px; text-align: start;
+}
+.hp-landing .hp-feature-card strong { display: block; font-size: 16.5px; margin-block: 14px 8px; }
+.hp-landing .hp-feature-icon {
+  inline-size: 42px; block-size: 42px; border-radius: 50%;
+  background: var(--trust-bg); color: var(--trust);
+  display: grid; place-items: center;
+}
+.hp-landing .hp-feature-icon svg { inline-size: 20px; block-size: 20px; }
+
+/* ---------- Stats bar ---------- */
+.hp-landing .hp-stats-bar {
+  display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px;
+  padding-block: 8px 64px; margin: 0; color: var(--ink-2); font-size: 13.5px; text-align: center;
+}
+.hp-landing .hp-stat { display: inline-flex; align-items: center; gap: 6px; }
+.hp-landing .hp-stat-icon { display: inline-flex; color: var(--ink-3); }
+.hp-landing .hp-stat-icon svg { inline-size: 15px; block-size: 15px; }
+.hp-landing .hp-dot { color: var(--ink-3); }
+.hp-landing .hp-stats-trailing { margin: 0; }
+
+/* ---------- Scroll-reveal (Features cards, Stats bar) ---------- */
+.hp-landing .hp-reveal { opacity: 0; transform: translateY(18px); transition: opacity .5s ease-out, transform .5s ease-out; }
+.hp-landing .hp-reveal-in { opacity: 1; transform: none; }
+
 @media (prefers-reduced-motion: reduce) {
   .hp-landing *, .hp-landing *::before, .hp-landing *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+  .hp-landing .hp-hero-title, .hp-landing .hp-hero-sub, .hp-landing .hp-hero-card { opacity: 1; transform: none; }
 }
 `;
 }
