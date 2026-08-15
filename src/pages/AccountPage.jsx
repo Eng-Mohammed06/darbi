@@ -99,13 +99,14 @@ function ProfileSummary() {
 }
 
 /**
- * Avatar plus a small corner button to change it — replaces the old
- * always-visible "Upload photo" / "Remove photo" text controls, which took
- * as much visual weight as the picture itself. PNG/JPEG only, shown
- * circular; picking a file opens AvatarCropModal so the user chooses what
- * part of the photo shows before it's ever uploaded. server/routes/auth.js
- * re-checks type and a 2MB size cap on the way in, since the client-side
- * check (src/lib/avatar.js) is skippable.
+ * Avatar as a single click target — clicking a photo that's already set
+ * opens a small action menu (View / Change / Remove) instead of separate
+ * always-visible controls; clicking the empty placeholder (no photo yet)
+ * jumps straight to the file picker, since there's nothing to view or
+ * remove. PNG/JPEG only; picking a file opens AvatarCropModal so the user
+ * chooses what part of the photo shows before it's ever uploaded.
+ * server/routes/auth.js re-checks type and a 2MB size cap on the way in,
+ * since the client-side check (src/lib/avatar.js) is skippable.
  */
 function AvatarEditor() {
   const { user, uploadAvatar, removeAvatar } = useAuth();
@@ -114,7 +115,14 @@ function AvatarEditor() {
   const [cropSrc, setCropSrc] = useState(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [viewing, setViewing] = useState(false);
   const toast = useToast();
+
+  function onAvatarClick() {
+    if (user?.avatar) setMenuOpen(true);
+    else inputRef.current?.click();
+  }
 
   async function onFileChange(e) {
     const file = e.target.files?.[0];
@@ -143,6 +151,7 @@ function AvatarEditor() {
   }
 
   async function onRemove() {
+    setMenuOpen(false);
     setError('');
     setBusy(true);
     try {
@@ -157,7 +166,13 @@ function AvatarEditor() {
 
   return (
     <div className="shrink-0">
-      <div className="relative w-20 h-20">
+      <button
+        type="button"
+        onClick={onAvatarClick}
+        disabled={busy}
+        aria-label={user?.avatar ? t('account.changePhoto') : t('account.uploadPhoto')}
+        className="relative w-20 h-20 rounded-full group"
+      >
         <div
           className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center text-2xl font-bold text-white"
           style={{ background: 'var(--darbi-gradient)' }}
@@ -168,34 +183,86 @@ function AvatarEditor() {
             <span aria-hidden="true">{(user?.username ?? '?')[0].toUpperCase()}</span>
           )}
         </div>
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          disabled={busy}
-          aria-label={user?.avatar ? t('account.changePhoto') : t('account.uploadPhoto')}
-          className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center text-xs transition hover:brightness-110"
-          style={{ background: 'var(--darbi-surface-solid)', border: '2px solid var(--darbi-bg)' }}
+        <span
+          className="absolute inset-0 rounded-full flex items-center justify-center text-lg opacity-0 group-hover:opacity-100 transition"
+          style={{ background: 'rgba(0,0,0,0.45)' }}
+          aria-hidden="true"
         >
           📷
-        </button>
-        <input
-          ref={inputRef}
-          type="file"
-          accept=".png,.jpg,.jpeg,image/png,image/jpeg"
-          className="hidden"
-          onChange={onFileChange}
-        />
-      </div>
-      {user?.avatar && (
-        <button type="button" onClick={onRemove} disabled={busy} className="text-xs text-gray-500 underline mt-1.5 block">
-          {t('account.remove')}
-        </button>
-      )}
+        </span>
+      </button>
+      <input
+        ref={inputRef}
+        type="file"
+        accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+        className="hidden"
+        onChange={onFileChange}
+      />
       {error && <p className="text-xs mt-1.5 max-w-[9rem]" style={{ color: 'var(--darbi-error)' }}>{error}</p>}
 
+      {menuOpen && (
+        <AvatarActionMenu
+          onView={() => { setMenuOpen(false); setViewing(true); }}
+          onChange={() => { setMenuOpen(false); inputRef.current?.click(); }}
+          onRemove={onRemove}
+          onClose={() => setMenuOpen(false)}
+        />
+      )}
+      {viewing && <AvatarViewModal src={user.avatar} onClose={() => setViewing(false)} />}
       {cropSrc && (
         <AvatarCropModal src={cropSrc} onCancel={() => setCropSrc(null)} onConfirm={onCropConfirm} />
       )}
+    </div>
+  );
+}
+
+/** Small action sheet shown when clicking an existing profile photo. */
+function AvatarActionMenu({ onView, onChange, onRemove, onClose }) {
+  const { t } = useLang();
+  return (
+    <div className="fixed inset-0 z-[80] flex items-center justify-center px-4" style={{ background: 'rgba(0,0,0,0.7)' }} onClick={onClose}>
+      <div
+        className="w-full max-w-xs overflow-hidden"
+        style={{ background: 'var(--darbi-surface-solid)', border: '1px solid var(--darbi-border)', borderRadius: 'var(--darbi-radius)', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button type="button" onClick={onView} className="w-full text-start px-5 py-3.5 text-sm text-white hover:bg-white/5 transition block">
+          {t('account.viewPhoto')}
+        </button>
+        <div style={{ borderTop: '1px solid var(--darbi-border)' }} />
+        <button type="button" onClick={onChange} className="w-full text-start px-5 py-3.5 text-sm text-white hover:bg-white/5 transition block">
+          {t('account.changePhoto')}
+        </button>
+        <div style={{ borderTop: '1px solid var(--darbi-border)' }} />
+        <button type="button" onClick={onRemove} className="w-full text-start px-5 py-3.5 text-sm hover:bg-white/5 transition block" style={{ color: 'var(--darbi-error)' }}>
+          {t('account.removePhoto')}
+        </button>
+        <div style={{ borderTop: '1px solid var(--darbi-border)' }} />
+        <button type="button" onClick={onClose} className="w-full text-start px-5 py-3.5 text-sm text-gray-400 hover:bg-white/5 transition block">
+          {t('account.cancel')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/** Full-size photo, shown after "View photo". */
+function AvatarViewModal({ src, onClose }) {
+  const { t } = useLang();
+  return (
+    <div className="fixed inset-0 z-[80] flex items-center justify-center px-4" style={{ background: 'rgba(0,0,0,0.85)' }} onClick={onClose}>
+      <div className="relative max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
+        <img src={src} alt="" className="w-full rounded-2xl" style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }} />
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label={t('account.close')}
+          className="absolute -top-3 -end-3 w-8 h-8 rounded-full flex items-center justify-center text-sm"
+          style={{ background: 'var(--darbi-surface-solid)', border: '2px solid var(--darbi-bg)' }}
+        >
+          ✕
+        </button>
+      </div>
     </div>
   );
 }
