@@ -1,16 +1,41 @@
 import { useEffect, useState } from 'react';
 import { api } from '../services/api.js';
 import { useAuth } from '../services/auth.jsx';
-import { Alert, Button, Card, EmptyState, Field, Shell, Skeleton, inputClass } from '../components/common/ui.jsx';
+import { Alert, Button, Card, EmptyState, Field, Shell, Skeleton, SkeletonLines, inputClass } from '../components/common/ui.jsx';
 import { useToast } from '../components/common/toast.jsx';
 import { useLang } from '../i18n/index.jsx';
 
-const TABS = ['post a job', 'my jobs', 'find students'];
+const TABS = ['overview', 'post a job', 'my jobs', 'find students'];
+
+// Mirrors server/routes/companies.js's APPLICATION_STATUSES — kept in this
+// order everywhere a status appears (the select in My Jobs, the badge in
+// Overview) so the pipeline always reads left-to-right the same way.
+const APPLICATION_STATUSES = ['screening', 'shortlisted', 'interview', 'hired', 'rejected'];
+const STATUS_COLOR = {
+  screening: 'var(--darbi-text-muted)',
+  shortlisted: 'var(--darbi-purple)',
+  interview: 'var(--darbi-gold)',
+  hired: 'var(--darbi-success)',
+  rejected: 'var(--darbi-error)',
+};
+
+function StatusBadge({ status }) {
+  const { t } = useLang();
+  const color = STATUS_COLOR[status] ?? STATUS_COLOR.screening;
+  return (
+    <span
+      className="text-xs font-semibold px-2.5 py-1 rounded-full inline-block whitespace-nowrap"
+      style={{ color, background: `color-mix(in srgb, ${color} 15%, transparent)` }}
+    >
+      {t(`company.status.${status}`)}
+    </span>
+  );
+}
 
 export default function CompanyDashboard() {
   const { profile } = useAuth();
   const { t } = useLang();
-  const [tab, setTab] = useState('post a job');
+  const [tab, setTab] = useState('overview');
 
   return (
     <Shell
@@ -20,10 +45,82 @@ export default function CompanyDashboard() {
       activeTab={tab}
       onTabChange={setTab}
     >
+      {tab === 'overview' && <Overview />}
       {tab === 'post a job' && <PostJob />}
       {tab === 'my jobs' && <MyJobs />}
       {tab === 'find students' && <FindStudents />}
     </Shell>
+  );
+}
+
+/** Five stat tiles + a Recent Applications table — the company's landing
+ * view, same "stat grid + table" shape as AdminDashboard's own Overview tab. */
+function Overview() {
+  const { t } = useLang();
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    api('/companies/me/overview').then(setData).catch(() => {});
+  }, []);
+
+  if (!data) {
+    return (
+      <Card title={t('company.overview.loading')}>
+        <SkeletonLines lines={6} />
+      </Card>
+    );
+  }
+
+  const tiles = [
+    { label: t('company.overview.activeJobs'), value: data.activeJobs },
+    { label: t('company.overview.totalApplications'), value: data.totalApplications },
+    { label: t('company.overview.shortlisted'), value: data.shortlisted },
+    { label: t('company.overview.interviews'), value: data.interviews },
+    { label: t('company.overview.hired'), value: data.hired },
+  ];
+
+  return (
+    <>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+        {tiles.map((c) => (
+          <div key={c.label} className="darbi-box">
+            <p className="text-3xl font-bold" style={{ color: 'var(--darbi-gold)' }}>
+              {c.value}
+            </p>
+            <p className="text-sm text-gray-400 mt-1">{c.label}</p>
+          </div>
+        ))}
+      </div>
+
+      <Card title={t('company.overview.recentApplicationsTitle')} accent={false}>
+        {data.recentApplications.length === 0 ? (
+          <EmptyState icon="📥" title={t('company.overview.emptyTitle')} />
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-xs uppercase tracking-wide text-gray-500" style={{ borderBottom: '1px solid var(--darbi-border)' }}>
+                  <th className="pb-2 pe-4 font-semibold">{t('company.overview.candidateHeader')}</th>
+                  <th className="pb-2 pe-4 font-semibold">{t('company.overview.positionHeader')}</th>
+                  <th className="pb-2 pe-4 font-semibold">{t('company.overview.aiMatchHeader')}</th>
+                  <th className="pb-2 font-semibold">{t('company.overview.statusHeader')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.recentApplications.map((a) => (
+                  <tr key={a.id} style={{ borderBottom: '1px solid var(--darbi-border)' }}>
+                    <td className="py-2.5 pe-4 font-medium text-darbi-navy whitespace-nowrap">{a.candidateName}</td>
+                    <td className="py-2.5 pe-4 text-gray-300">{a.position}</td>
+                    <td className="py-2.5 pe-4 font-semibold" style={{ color: 'var(--darbi-gold)' }}>{a.aiMatch}%</td>
+                    <td className="py-2.5"><StatusBadge status={a.status} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
+    </>
   );
 }
 
@@ -210,6 +307,7 @@ function MyJobs() {
 
 function JobPosting({ job: j, onRemove }) {
   const { t } = useLang();
+  const toast = useToast();
   const [open, setOpen] = useState(false);
   const [applicants, setApplicants] = useState(null);
 
@@ -218,6 +316,19 @@ function JobPosting({ job: j, onRemove }) {
     setOpen(true);
     if (!applicants) {
       api(`/companies/me/jobs/${j.id}/applicants`).then(setApplicants).catch(() => setApplicants([]));
+    }
+  }
+
+  // Optimistic — the dropdown flips immediately, and only rolls back if the
+  // PUT actually fails, same pattern as the job-delete Undo toast above.
+  async function changeStatus(studentUserId, status) {
+    const previous = applicants;
+    setApplicants((list) => list.map((a) => (a.user_id === studentUserId ? { ...a, status } : a)));
+    try {
+      await api(`/companies/me/jobs/${j.id}/applicants/${studentUserId}`, { method: 'PUT', body: { status } });
+    } catch (err) {
+      setApplicants(previous);
+      toast.show(err.message ?? t('company.jobPosting.statusUpdateError'), { kind: 'error' });
     }
   }
 
@@ -250,11 +361,28 @@ function JobPosting({ job: j, onRemove }) {
           {applicants === null && <p className="text-xs text-gray-500">{t('common.loading')}</p>}
           {applicants?.length === 0 && <p className="text-xs text-gray-500">{t('company.jobPosting.noApplicants')}</p>}
           {applicants?.map((s) => (
-            <div key={s.user_id} className="text-sm">
-              <p className="font-medium text-darbi-navy">{s.name}</p>
-              <p className="text-xs text-gray-400">
-                {s.level ?? t('company.jobPosting.levelNotStated')} · GPA {s.gpa ?? '—'} · {s.location ?? t('company.jobPosting.jordan')}
-              </p>
+            <div key={s.user_id} className="text-sm flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-medium text-darbi-navy">{s.name}</p>
+                <p className="text-xs text-gray-400">
+                  {s.level ?? t('company.jobPosting.levelNotStated')} · GPA {s.gpa ?? '—'} · {s.location ?? t('company.jobPosting.jordan')}
+                </p>
+                <p className="text-xs mt-0.5 font-semibold" style={{ color: 'var(--darbi-gold)' }}>
+                  {t('company.jobPosting.aiMatch')(s.ai_match)}
+                </p>
+              </div>
+              <select
+                value={s.status}
+                onChange={(e) => changeStatus(s.user_id, e.target.value)}
+                className="text-xs font-semibold rounded-full px-2.5 py-1 border bg-transparent shrink-0"
+                style={{ borderColor: 'var(--darbi-border)', color: STATUS_COLOR[s.status] ?? STATUS_COLOR.screening }}
+              >
+                {APPLICATION_STATUSES.map((st) => (
+                  <option key={st} value={st} style={{ color: '#000' }}>
+                    {t(`company.status.${st}`)}
+                  </option>
+                ))}
+              </select>
             </div>
           ))}
         </div>

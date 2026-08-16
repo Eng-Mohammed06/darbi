@@ -4,6 +4,27 @@
 export default {
   en: {
     companyFallback: 'Company',
+    overview: {
+      loading: 'Loading overview…',
+      activeJobs: 'Active Jobs',
+      totalApplications: 'Total Applications',
+      shortlisted: 'Shortlisted',
+      interviews: 'Interviews',
+      hired: 'Hired',
+      recentApplicationsTitle: 'Recent Applications',
+      candidateHeader: 'Candidate',
+      positionHeader: 'Position',
+      aiMatchHeader: 'AI Match',
+      statusHeader: 'Status',
+      emptyTitle: 'No applications yet — post a job to start receiving them.',
+    },
+    status: {
+      screening: 'Screening',
+      shortlisted: 'Shortlisted',
+      interview: 'Interview',
+      hired: 'Hired',
+      rejected: 'Rejected',
+    },
     postJob: {
       cardTitle: 'Post a job',
       jobTitleLabel: 'Job title',
@@ -47,6 +68,8 @@ export default {
       noApplicants: 'No applicants yet.',
       levelNotStated: 'Level not stated',
       jordan: 'Jordan',
+      aiMatch: (pct) => `${pct}% AI Match`,
+      statusUpdateError: "Couldn't update status. Try again.",
     },
     findStudents: {
       searching: 'Searching…',
@@ -60,6 +83,27 @@ export default {
   },
   ar: {
     companyFallback: 'الشركة',
+    overview: {
+      loading: 'جارٍ تحميل النظرة العامة…',
+      activeJobs: 'الوظائف النشطة',
+      totalApplications: 'إجمالي المتقدمين',
+      shortlisted: 'القائمة المختصرة',
+      interviews: 'المقابلات',
+      hired: 'تم التوظيف',
+      recentApplicationsTitle: 'أحدث المتقدمين',
+      candidateHeader: 'المرشّح',
+      positionHeader: 'الوظيفة',
+      aiMatchHeader: 'نسبة التطابق',
+      statusHeader: 'الحالة',
+      emptyTitle: 'لا يوجد متقدمون بعد — انشر وظيفة لتبدأ باستقبالهم.',
+    },
+    status: {
+      screening: 'فرز أولي',
+      shortlisted: 'القائمة المختصرة',
+      interview: 'مقابلة',
+      hired: 'تم التوظيف',
+      rejected: 'مرفوض',
+    },
     postJob: {
       cardTitle: 'انشر وظيفة',
       jobTitleLabel: 'المسمى الوظيفي',
@@ -103,6 +147,8 @@ export default {
       noApplicants: 'لا يوجد متقدمون بعد.',
       levelNotStated: 'المستوى غير محدد',
       jordan: 'الأردن',
+      aiMatch: (pct) => `تطابق ${pct}%`,
+      statusUpdateError: 'تعذّر تحديث الحالة. حاول مرة أخرى.',
     },
     findStudents: {
       searching: 'جارٍ البحث…',

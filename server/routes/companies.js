@@ -9,6 +9,56 @@ router.use(requireAuth, requireRole('company'));
 const LOGO_MAX_BYTES = 2 * 1024 * 1024; // 2MB decoded, same cap as user avatars
 const LOGO_DATA_URL = /^data:image\/(png|jpe?g);base64,([A-Za-z0-9+/]+={0,2})$/;
 
+const APPLICATION_STATUSES = ['screening', 'shortlisted', 'interview', 'hired', 'rejected'];
+
+/**
+ * "AI Match" shown on the Overview tab and each applicant row — a
+ * deterministic score (major fit + GPA fit + skills/interest overlap), not
+ * a live model call. Same "three failure tiers" philosophy as the student
+ * side's rule-based recommendation fallback (server/lib/*): a company
+ * scanning applicants shouldn't see the number blink out because of an
+ * Anthropic billing hiccup, and scoring dozens of applicants per request
+ * with a real model call would be slow and expensive for what is, in the
+ * end, a rough triage signal.
+ */
+function computeAiMatch({ required_majors, min_gpa, required_skills, gpa, interests, major_name }) {
+  let score = 0;
+
+  const requiredMajors = (required_majors ?? []).map((m) => m.toLowerCase());
+  const majorName = (major_name ?? '').toLowerCase();
+  const studentInterests = (interests ?? []).map((i) => i.toLowerCase());
+
+  if (requiredMajors.length === 0) {
+    score += 50;
+  } else if (majorName && requiredMajors.some((rm) => rm.includes(majorName) || majorName.includes(rm))) {
+    score += 50;
+  } else if (studentInterests.some((i) => requiredMajors.some((rm) => rm.includes(i) || i.includes(rm)))) {
+    score += 30;
+  }
+
+  if (min_gpa == null) {
+    score += 30;
+  } else if (gpa != null) {
+    const diff = Number(gpa) - Number(min_gpa);
+    if (diff >= 0) score += 30;
+    else if (diff >= -0.3) score += 15;
+  } else {
+    score += 10;
+  }
+
+  const requiredSkills = (required_skills ?? []).map((s) => s.toLowerCase());
+  if (requiredSkills.length === 0) {
+    score += 20;
+  } else {
+    const overlap = requiredSkills.filter((rs) => studentInterests.some((i) => i.includes(rs) || rs.includes(i))).length;
+    score += Math.round(20 * Math.min(1, overlap / requiredSkills.length));
+  }
+
+  // Never a flat 0 or a suspiciously perfect 100 -- this is a triage signal,
+  // not a certified score.
+  return Math.max(5, Math.min(99, Math.round(score)));
+}
+
 /**
  * PUT /api/companies/me  { name?, industry?, description?, website?, location?, logo? }
  * Partial update — only the fields present in the body change. `name` alone
@@ -70,22 +120,103 @@ router.get(
 
 /**
  * GET /api/companies/me/jobs/:id/applicants
- * Same fields FindStudents shows, plus when they applied — no email, same
- * "contact through the platform" rule as browsing the student pool.
+ * Same fields FindStudents shows, plus when they applied, their pipeline
+ * status, and an AI Match score — no email, same "contact through the
+ * platform" rule as browsing the student pool.
  */
 router.get(
   '/me/jobs/:id/applicants',
   asyncRoute(async (req, res) => {
     const { rows } = await query(
-      `SELECT s.user_id, s.name, s.level, s.gpa, s.location, s.interests, a.created_at AS applied_at
+      `SELECT s.user_id, s.name, s.level, s.gpa, s.location, s.interests, m.name AS major_name,
+              a.status, a.created_at AS applied_at,
+              j.required_majors, j.min_gpa, j.required_skills
          FROM job_applications a
          JOIN students s ON s.user_id = a.student_user_id
          JOIN jobs j ON j.id = a.job_id
+         LEFT JOIN majors m ON m.id = s.major_id
         WHERE a.job_id = $1 AND j.company_id = $2
         ORDER BY a.created_at DESC`,
       [req.params.id, req.user.id],
     );
-    res.json(rows);
+    res.json(rows.map(({ required_majors, min_gpa, required_skills, ...rest }) => ({
+      ...rest,
+      ai_match: computeAiMatch({ required_majors, min_gpa, required_skills, gpa: rest.gpa, interests: rest.interests, major_name: rest.major_name }),
+    })));
+  }),
+);
+
+/**
+ * PUT /api/companies/me/jobs/:jobId/applicants/:studentUserId  { status }
+ * Moves an applicant through the pipeline (screening/shortlisted/interview/
+ * hired/rejected) — the dropdown on each applicant row in My Jobs, and what
+ * drives the Shortlisted/Interviews/Hired counts on the Overview tab.
+ */
+router.put(
+  '/me/jobs/:jobId/applicants/:studentUserId',
+  asyncRoute(async (req, res) => {
+    const { status } = req.body ?? {};
+    if (!APPLICATION_STATUSES.includes(status)) {
+      return res.status(400).json({ error: 'bad_status', allowed: APPLICATION_STATUSES });
+    }
+
+    const { rows } = await query(
+      `UPDATE job_applications a SET status = $1
+         FROM jobs j
+        WHERE a.job_id = j.id AND j.company_id = $2
+          AND a.job_id = $3 AND a.student_user_id = $4
+        RETURNING a.id, a.status`,
+      [status, req.user.id, req.params.jobId, req.params.studentUserId],
+    );
+    if (!rows[0]) return res.status(404).json({ error: 'not_found' });
+    res.json(rows[0]);
+  }),
+);
+
+/**
+ * GET /api/companies/me/overview
+ * Powers the Overview tab: five stat tiles (active jobs, total applications,
+ * shortlisted, interviews, hired) plus a Recent Applications table. AI Match
+ * and status mirror what each applicant row shows in My Jobs.
+ */
+router.get(
+  '/me/overview',
+  asyncRoute(async (req, res) => {
+    const [{ rows: jobRows }, { rows: appRows }] = await Promise.all([
+      query(`SELECT count(*)::int AS active_jobs FROM jobs WHERE company_id = $1`, [req.user.id]),
+      query(
+        `SELECT a.id, a.status, a.created_at,
+                j.title AS position, j.required_majors, j.min_gpa, j.required_skills,
+                s.name AS candidate_name, s.gpa, s.interests, m.name AS major_name
+           FROM job_applications a
+           JOIN jobs j ON j.id = a.job_id
+           JOIN students s ON s.user_id = a.student_user_id
+           LEFT JOIN majors m ON m.id = s.major_id
+          WHERE j.company_id = $1
+          ORDER BY a.created_at DESC`,
+        [req.user.id],
+      ),
+    ]);
+
+    const counts = { shortlisted: 0, interview: 0, hired: 0 };
+    for (const a of appRows) {
+      if (a.status in counts) counts[a.status] += 1;
+    }
+
+    res.json({
+      activeJobs: jobRows[0].active_jobs,
+      totalApplications: appRows.length,
+      shortlisted: counts.shortlisted,
+      interviews: counts.interview,
+      hired: counts.hired,
+      recentApplications: appRows.slice(0, 8).map((a) => ({
+        id: a.id,
+        candidateName: a.candidate_name,
+        position: a.position,
+        status: a.status,
+        aiMatch: computeAiMatch(a),
+      })),
+    });
   }),
 );
 

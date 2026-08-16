@@ -356,6 +356,16 @@ CREATE TABLE IF NOT EXISTS job_applications (
 CREATE INDEX IF NOT EXISTS idx_applications_job     ON job_applications(job_id);
 CREATE INDEX IF NOT EXISTS idx_applications_student ON job_applications(student_user_id);
 
+-- The company-side pipeline stage for a student's application, driving the
+-- Company Dashboard's Overview tab (stat tiles + Recent Applications table)
+-- and the status dropdown on each applicant in My Jobs. Distinct from
+-- career_applications.status (the Graduate Portal's own tracker) -- this is
+-- the company's view of the same underlying job_applications row.
+ALTER TABLE job_applications ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'screening';
+ALTER TABLE job_applications DROP CONSTRAINT IF EXISTS job_applications_status_check;
+ALTER TABLE job_applications ADD CONSTRAINT job_applications_status_check
+  CHECK (status IN ('screening', 'shortlisted', 'interview', 'hired', 'rejected'));
+
 -- The advisor conversation. Persisted so a refresh (or a laptop swap between
 -- presenters) doesn't lose the thread mid-demo.
 CREATE TABLE IF NOT EXISTS chat_messages (
