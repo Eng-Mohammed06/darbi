@@ -205,7 +205,7 @@ export default function LandingPage() {
             <Link to="/portal/career">{t('landing.navCareer')}</Link>
           </nav>
           <span className="hp-spacer" />
-          <label className="hp-sr-only" htmlFor="hp-theme-sel">{t('landing.themeLabel')}</label>
+          <label className="hp-theme-label" htmlFor="hp-theme-sel">{t('landing.themeLabel')}</label>
           <select
             id="hp-theme-sel"
             className="hp-theme-sel"
@@ -323,13 +323,13 @@ function Specimen({ data, lang, t }) {
     started.current = true;
     let i = 0;
     const timer = setInterval(() => {
-      i += 2;
+      i += 1;
       setTyped(sentence.slice(0, i));
       if (i >= sentence.length) {
         clearInterval(timer);
         setDone(true);
       }
-    }, 16);
+    }, 40);
     return () => clearInterval(timer);
   }, [sentence]);
 
@@ -551,12 +551,15 @@ ${themeBlocks}
   position: absolute; inline-size: 1px; block-size: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
+.hp-landing .hp-theme-label {
+  font-size: 13px; color: var(--ink-2); white-space: nowrap; margin-inline-end: 8px;
+}
 .hp-landing .hp-theme-sel {
   min-block-size: 38px; padding: 0 10px; font-size: 13px; font-family: var(--font-ui);
   border-radius: var(--r-md); background: transparent; color: var(--ink-2);
   border: 1px solid var(--rule); cursor: pointer;
 }
-@media (max-width: 560px) { .hp-landing .hp-theme-sel { display: none; } }
+@media (max-width: 560px) { .hp-landing .hp-theme-label, .hp-landing .hp-theme-sel { display: none; } }
 .hp-landing .hp-lang-btn {
   appearance: none; border: 1px solid var(--rule); background: transparent; color: var(--ink);
   font: inherit; font-size: 13px; font-weight: 550; padding: 0 14px; min-block-size: 38px;
