@@ -3,8 +3,8 @@ export default {
     navStudent: 'Student',
     navCompany: 'Employer',
     navCareer: 'Career Boost',
-    title: 'Career advice you can check.',
-    sub: 'Every student deserves to see the path before choosing it.',
+    title: 'Every student deserves to see the path before choosing it.',
+    sub: "Darbi grounds every major, salary, and job it names in verified Jordanian data — never a guess. Pick how you're using it.",
     pillars: [
       {
         title: 'Verified Jordanian data',
@@ -35,8 +35,8 @@ export default {
     navStudent: 'طالب',
     navCompany: 'صاحب عمل',
     navCareer: 'تطوير المهارات',
-    title: 'إرشاد مهني يمكنك التحقق منه.',
-    sub: 'يستحق كل طالب رؤية الطريق قبل اختياره.',
+    title: 'يستحق كل طالب رؤية الطريق قبل اختياره.',
+    sub: 'منصة دربي تؤسس كل تخصص وراتب ووظيفة تذكرها على بيانات أردنية موثّقة — لا تخمين أبدًا. اختر طريقة استخدامك.',
     pillars: [
       {
         title: 'بيانات أردنية موثّقة',
