@@ -13,6 +13,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../services/auth.jsx';
 import { useTheme } from '../../services/theme.jsx';
 import { useLang } from '../../i18n/index.jsx';
+import darbiLogoIcon from '../../assets/darbi-logo-icon.png';
 
 // Shared with the pre-login dark-card pages (AuthPage, ResetPasswordPage).
 // These used to be literal hex values, independent of global.css's --darbi-*
@@ -99,6 +100,12 @@ export function DarkCard({ title, subtitle, children }) {
       <div className="flex-1 flex relative z-10">
         <div className="hidden lg:flex lg:w-1/2 relative z-10 flex-col justify-center px-16">
           <div>
+            <img
+              src={darbiLogoIcon}
+              alt=""
+              className="h-20 w-auto mb-5"
+              style={{ filter: `drop-shadow(0 0 24px color-mix(in srgb, ${PURPLE} 55%, transparent))` }}
+            />
             <h1
               className="text-6xl font-extrabold text-white tracking-tight"
               style={{ textShadow: `0 0 50px color-mix(in srgb, ${PURPLE} 60%, transparent)` }}

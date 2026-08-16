@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { api } from '../services/api.js';
 import { useTheme } from '../services/theme.jsx';
 import { useLang } from '../i18n/index.jsx';
+import darbiLogoIcon from '../assets/darbi-logo-icon.png';
 
 /**
  * The public home page — shown to anyone who isn't signed in yet (App.jsx's
@@ -195,7 +196,7 @@ export default function LandingPage() {
       <header className="hp-topbar">
         <div className="hp-shell hp-row">
           <span className="hp-brand">
-            <span className="hp-brand-mark">D</span>
+            <img src={darbiLogoIcon} alt="" className="hp-brand-mark" />
             Darbi
           </span>
           <nav className="hp-nav">
@@ -223,6 +224,7 @@ export default function LandingPage() {
 
       <main className="hp-content">
         <section className="hp-hero hp-shell">
+          <img src={darbiLogoIcon} alt="Darbi" className="hp-hero-mark" />
           <h1 className="hp-hero-title">{t('landing.title')}</h1>
           <p className="hp-hero-sub hp-muted">{t('landing.sub')}</p>
 
@@ -504,8 +506,7 @@ ${themeBlocks}
 }
 .hp-landing .hp-brand { display: flex; align-items: center; gap: 9px; font-weight: 650; letter-spacing: -.02em; color: var(--ink); font-size: 16px; }
 .hp-landing .hp-brand-mark {
-  inline-size: 26px; block-size: 26px; border-radius: 7px; background: var(--ink); color: var(--trust);
-  display: grid; place-items: center; font-family: var(--font-mono); font-size: 15px; font-weight: 700; flex: none;
+  inline-size: 30px; block-size: 30px; object-fit: contain; flex: none;
 }
 .hp-landing .hp-nav { display: flex; gap: 4px; margin-inline-start: 22px; }
 .hp-landing .hp-nav a {
@@ -565,6 +566,7 @@ ${themeBlocks}
 
 /* ---------- Hero ---------- */
 .hp-landing .hp-hero { padding-block: 72px 56px; text-align: center; display: grid; justify-items: center; gap: 18px; }
+.hp-landing .hp-hero-mark { inline-size: 72px; block-size: 72px; object-fit: contain; margin-block-end: -6px; }
 .hp-landing .hp-hero-title {
   margin: 0; font-weight: 700; letter-spacing: -0.02em; line-height: 1.08;
   font-size: clamp(34px, 6vw + 12px, 68px); max-inline-size: 16ch;
@@ -577,6 +579,7 @@ ${themeBlocks}
 
 @keyframes hp-fade-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
 @keyframes hp-card-in { from { opacity: 0; transform: translateY(20px) scale(.97); } to { opacity: 1; transform: none; } }
+.hp-landing .hp-hero-mark { animation: hp-fade-up .55s ease-out both; }
 .hp-landing .hp-hero-title { animation: hp-fade-up .55s ease-out both; }
 .hp-landing .hp-hero-sub { animation: hp-fade-up .55s ease-out .15s both; }
 .hp-landing .hp-hero-card { animation: hp-card-in .6s ease-out .32s both; }
@@ -665,7 +668,7 @@ ${themeBlocks}
 
 @media (prefers-reduced-motion: reduce) {
   .hp-landing *, .hp-landing *::before, .hp-landing *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
-  .hp-landing .hp-hero-title, .hp-landing .hp-hero-sub, .hp-landing .hp-hero-card { opacity: 1; transform: none; }
+  .hp-landing .hp-hero-mark, .hp-landing .hp-hero-title, .hp-landing .hp-hero-sub, .hp-landing .hp-hero-card { opacity: 1; transform: none; }
 }
 `;
 }

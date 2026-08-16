@@ -6,6 +6,7 @@ import { Wisps, DarkField, darkInput, PURPLE, PURPLE_DARK, GOLD, GRADIENT, Theme
 import { passwordHint, passwordIssues } from '../lib/password.js';
 import { useLang } from '../i18n/index.jsx';
 import PasswordStrengthMeter from '../components/common/PasswordStrengthMeter.jsx';
+import darbiLogoIcon from '../assets/darbi-logo-icon.png';
 
 const ROLES = [
   { role: 'student', icon: '🎓' },
@@ -146,6 +147,12 @@ export default function AuthPage() {
       <div className="flex-1 flex relative z-10">
       <div className="hidden lg:flex lg:w-1/2 relative z-10 flex-col justify-center px-16">
         <div>
+          <img
+            src={darbiLogoIcon}
+            alt=""
+            className="h-20 w-auto mb-5"
+            style={{ filter: `drop-shadow(0 0 24px color-mix(in srgb, ${PURPLE} 55%, transparent))` }}
+          />
           <h1
             className="text-6xl font-extrabold text-white tracking-tight"
             style={{ textShadow: `0 0 50px color-mix(in srgb, ${PURPLE} 60%, transparent)` }}
