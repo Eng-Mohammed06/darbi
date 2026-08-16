@@ -5,7 +5,17 @@ import { Alert, Button, Card, EmptyState, Field, Shell, Skeleton, SkeletonLines,
 import { useToast } from '../components/common/toast.jsx';
 import { useLang } from '../i18n/index.jsx';
 
-const TABS = ['overview', 'post a job', 'my jobs', 'find students'];
+const TABS = ['overview', 'jobs', 'find students'];
+
+// The Jobs tab's own mini-tab bar — My Jobs first (what you'd check first
+// on landing), Create a Job second, matching how the two were ordered as
+// separate top-level tabs before they were merged under one Jobs tab.
+// Values match src/i18n/dict/common.js's `tabs` map keys directly (unlike
+// Shell's own tabs, which go through ui.jsx's private tabKey() helper).
+const JOBS_SUBTABS = [
+  { id: 'my jobs', labelKey: 'myJobs' },
+  { id: 'post a job', labelKey: 'postAJob' },
+];
 
 // Display order for My Jobs' filter pills — Active, Draft, Closed, matching
 // how a company actually scans postings (what's live first).
@@ -80,10 +90,44 @@ export default function CompanyDashboard() {
       onTabChange={setTab}
     >
       {tab === 'overview' && <Overview />}
-      {tab === 'post a job' && <PostJob />}
-      {tab === 'my jobs' && <MyJobs />}
+      {tab === 'jobs' && <JobsTab />}
       {tab === 'find students' && <FindStudents />}
     </Shell>
+  );
+}
+
+/** My Jobs and Create a Job, merged under one top-level tab as a pair of
+ * mini-tabs — same pill-switcher visual as My Jobs' own Active/Draft/Closed
+ * filter, one level smaller than Shell's main tab bar so the hierarchy
+ * reads at a glance. */
+function JobsTab() {
+  const { t } = useLang();
+  const [subTab, setSubTab] = useState('my jobs');
+
+  return (
+    <div>
+      <div
+        className="flex rounded-full p-1 mb-6 w-fit mx-auto"
+        style={{ background: 'color-mix(in srgb, var(--darbi-bg) 55%, black 10%)', border: '1px solid var(--darbi-border)' }}
+      >
+        {JOBS_SUBTABS.map(({ id, labelKey }) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setSubTab(id)}
+            className={`px-5 py-2 rounded-full text-sm font-semibold transition ${
+              subTab === id ? 'text-white' : 'text-gray-400 hover:text-gray-200'
+            }`}
+            style={subTab === id ? { background: 'var(--darbi-gradient)' } : undefined}
+          >
+            {t(`common.tabs.${labelKey}`)}
+          </button>
+        ))}
+      </div>
+
+      {subTab === 'my jobs' && <MyJobs />}
+      {subTab === 'post a job' && <PostJob />}
+    </div>
   );
 }
 
