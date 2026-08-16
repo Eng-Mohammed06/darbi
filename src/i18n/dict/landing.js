@@ -4,7 +4,7 @@ export default {
     navCompany: 'Employer',
     navCareer: 'Career Boost',
     title: 'Every student deserves to see the path before choosing it.',
-    sub: "Darbi grounds every major, salary, and job it names in verified Jordanian data — never a guess. Pick how you're using it.",
+    sub: "Darbi is an AI career guide for Jordanian engineering students — helping you explore majors, salaries, and jobs, all grounded in real, verified data.",
     pillars: [
       {
         title: 'Verified Jordanian data',
@@ -36,7 +36,7 @@ export default {
     navCompany: 'صاحب عمل',
     navCareer: 'تطوير المهارات',
     title: 'يستحق كل طالب رؤية الطريق قبل اختياره.',
-    sub: 'منصة دربي تؤسس كل تخصص وراتب ووظيفة تذكرها على بيانات أردنية موثّقة — لا تخمين أبدًا. اختر طريقة استخدامك.',
+    sub: 'دربي مرشد مهني ذكي لطلبة الهندسة في الأردن، يساعدك على استكشاف التخصصات والرواتب والوظائف، استنادًا إلى بيانات حقيقية وموثّقة.',
     pillars: [
       {
         title: 'بيانات أردنية موثّقة',
