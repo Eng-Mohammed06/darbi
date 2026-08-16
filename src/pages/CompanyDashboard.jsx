@@ -28,6 +28,35 @@ const EMPLOYMENT_TYPES = [
   { value: 'Contract', key: 'contract' },
 ];
 
+// Qualitative read on the AI Match % (server/routes/companies.js's
+// computeAiMatch) — shown as "94% — Strong Match" everywhere a match score
+// appears (My Jobs' applicant list, Overview's Recent Applications table),
+// so the number always comes with a plain-language sense of how good it is.
+function matchLabelKey(score) {
+  if (score >= 90) return 'strong';
+  if (score >= 75) return 'good';
+  if (score >= 60) return 'fair';
+  return 'weak';
+}
+const MATCH_LABEL_COLOR = {
+  strong: 'var(--darbi-success)',
+  good: 'var(--darbi-gold)',
+  fair: 'var(--darbi-purple)',
+  weak: 'var(--darbi-text-muted)',
+};
+
+function MatchScore({ score }) {
+  const { t } = useLang();
+  const key = matchLabelKey(score);
+  return (
+    <span className="whitespace-nowrap">
+      <span style={{ color: 'var(--darbi-gold)' }} className="font-semibold">{score}%</span>
+      <span className="text-gray-500"> — </span>
+      <span style={{ color: MATCH_LABEL_COLOR[key] }} className="font-semibold">{t(`company.matchLabel.${key}`)}</span>
+    </span>
+  );
+}
+
 // Mirrors server/routes/companies.js's APPLICATION_STATUSES — kept in this
 // order everywhere a status appears (the select in My Jobs, the badge in
 // Overview) so the pipeline always reads left-to-right the same way.
@@ -189,7 +218,7 @@ function Overview() {
                   <tr key={a.id} style={{ borderBottom: '1px solid var(--darbi-border)' }}>
                     <td className="py-2.5 pe-4 font-medium text-darbi-navy whitespace-nowrap">{a.candidateName}</td>
                     <td className="py-2.5 pe-4 text-gray-300">{a.position}</td>
-                    <td className="py-2.5 pe-4 font-semibold" style={{ color: 'var(--darbi-gold)' }}>{a.aiMatch}%</td>
+                    <td className="py-2.5 pe-4"><MatchScore score={a.aiMatch} /></td>
                     <td className="py-2.5"><StatusBadge status={a.status} /></td>
                   </tr>
                 ))}
@@ -568,8 +597,8 @@ function JobPosting({ job: j, onRemove, onStatusChange }) {
                 <p className="text-xs text-gray-400">
                   {s.level ?? t('company.jobPosting.levelNotStated')} · GPA {s.gpa ?? '—'} · {s.location ?? t('company.jobPosting.jordan')}
                 </p>
-                <p className="text-xs mt-0.5 font-semibold" style={{ color: 'var(--darbi-gold)' }}>
-                  {t('company.jobPosting.aiMatch')(s.ai_match)}
+                <p className="text-xs mt-0.5">
+                  <MatchScore score={s.ai_match} />
                 </p>
               </div>
               <select

@@ -27,6 +27,14 @@ export default {
       hired: 'Hired',
       rejected: 'Rejected',
     },
+    // The qualitative read on an AI Match %, shown as "94% — Strong Match".
+    // Bands: 90+ strong, 75-89 good, 60-74 fair, below that weak.
+    matchLabel: {
+      strong: 'Strong Match',
+      good: 'Good Match',
+      fair: 'Fair Match',
+      weak: 'Weak Match',
+    },
     // A job posting's own lifecycle — distinct from `status` above, which is
     // an applicant's stage in one job's pipeline.
     jobStatus: {
@@ -102,7 +110,6 @@ export default {
       noApplicants: 'No applicants yet.',
       levelNotStated: 'Level not stated',
       jordan: 'Jordan',
-      aiMatch: (pct) => `${pct}% AI Match`,
       statusUpdateError: "Couldn't update status. Try again.",
     },
     findStudents: {
@@ -137,6 +144,12 @@ export default {
       interview: 'مقابلة',
       hired: 'تم التوظيف',
       rejected: 'مرفوض',
+    },
+    matchLabel: {
+      strong: 'تطابق قوي',
+      good: 'تطابق جيد',
+      fair: 'تطابق مقبول',
+      weak: 'تطابق ضعيف',
     },
     jobStatus: {
       draft: 'مسودة',
@@ -211,7 +224,6 @@ export default {
       noApplicants: 'لا يوجد متقدمون بعد.',
       levelNotStated: 'المستوى غير محدد',
       jordan: 'الأردن',
-      aiMatch: (pct) => `تطابق ${pct}%`,
       statusUpdateError: 'تعذّر تحديث الحالة. حاول مرة أخرى.',
     },
     findStudents: {
