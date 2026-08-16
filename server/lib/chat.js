@@ -101,7 +101,7 @@ async function loadCatalog() {
              FROM courses ORDER BY major_name, name`),
     query(`SELECT company_name, title, required_majors, required_skills,
                   salary_raw, salary_is_estimate
-             FROM jobs ORDER BY company_name LIMIT 80`),
+             FROM jobs WHERE status = 'active' ORDER BY company_name LIMIT 80`),
     query(`SELECT role_family, range_raw, source FROM salary_benchmarks ORDER BY role_family`),
   ]);
 

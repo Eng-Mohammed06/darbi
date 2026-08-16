@@ -333,6 +333,25 @@ CREATE TABLE IF NOT EXISTS jobs (
   posted_at          TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Job lifecycle, distinct from `verified` (a data-provenance flag, not a
+-- visibility one -- see server/index.js's GET /jobs, which never filtered
+-- on it). Defaults to 'active' so all 176 seeded listings and any jobs
+-- already posted before this column existed keep showing to students
+-- without a backfill. A company's own "My Jobs" list (server/routes/
+-- companies.js) stays unfiltered by status -- only public-facing reads
+-- (the student job board, chat/recommendation context, pathway demand
+-- stats) filter to 'active'.
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'active';
+ALTER TABLE jobs DROP CONSTRAINT IF EXISTS jobs_status_check;
+ALTER TABLE jobs ADD CONSTRAINT jobs_status_check CHECK (status IN ('draft', 'active', 'closed'));
+
+-- Create a Job's fields beyond the original required_majors/min_gpa/
+-- required_skills/salary/location/description set.
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS responsibilities TEXT;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS years_experience TEXT;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS education TEXT;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS employment_type TEXT;
+
 CREATE TABLE IF NOT EXISTS saved_majors (
   student_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   major_id        INTEGER NOT NULL REFERENCES majors(id) ON DELETE CASCADE,

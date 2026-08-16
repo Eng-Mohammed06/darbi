@@ -64,7 +64,7 @@ router.post(
                       WHERE um.major_id = m.id) AS universities
                FROM majors m ORDER BY m.name`),
       query(`SELECT major_name, name, track, provider FROM courses ORDER BY major_name, name`),
-      query(`SELECT company_name, title, required_majors, required_skills FROM jobs`),
+      query(`SELECT company_name, title, required_majors, required_skills FROM jobs WHERE status = 'active'`),
     ]);
 
     const input = { student, majors, courses, jobs };

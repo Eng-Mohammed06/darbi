@@ -1,6 +1,8 @@
-// Company dashboard — Post a Job (form + live preview), My Jobs (postings
-// grid with an expandable applicant list), and Find Students (talent-pool
-// search). Namespace mirrors CompanyDashboard.jsx's three tab components.
+// Company dashboard — Overview (stat tiles + recent applications), Create a
+// Job (form + live preview), My Jobs (postings grid filtered by
+// draft/active/closed, with an expandable applicant list), and Find
+// Students (talent-pool search). Namespace mirrors CompanyDashboard.jsx's
+// tab components.
 export default {
   en: {
     companyFallback: 'Company',
@@ -25,8 +27,15 @@ export default {
       hired: 'Hired',
       rejected: 'Rejected',
     },
+    // A job posting's own lifecycle — distinct from `status` above, which is
+    // an applicant's stage in one job's pipeline.
+    jobStatus: {
+      draft: 'Draft',
+      active: 'Active',
+      closed: 'Closed',
+    },
     postJob: {
-      cardTitle: 'Post a job',
+      cardTitle: 'Create a job',
       jobTitleLabel: 'Job title',
       majorsLabel: 'Required major(s)',
       majorsHint: 'Comma separated',
@@ -38,11 +47,26 @@ export default {
       skillsLabel: 'Required skills',
       skillsHint: 'Comma separated',
       skillsPlaceholder: 'SQL, React',
+      yearsExperienceLabel: 'Years of experience',
+      yearsExperiencePlaceholder: 'e.g. 2-4 years',
+      educationLabel: 'Education',
+      educationPlaceholder: "e.g. Bachelor's in Computer Engineering",
       locationLabel: 'Location',
       locationPlaceholder: 'Amman',
+      employmentTypeLabel: 'Employment type',
+      employmentTypeOptions: {
+        fullTime: 'Full-time',
+        partTime: 'Part-time',
+        internship: 'Internship',
+        contract: 'Contract',
+      },
       descriptionLabel: 'Description',
-      submit: 'Post job',
+      responsibilitiesLabel: 'Responsibilities',
+      responsibilitiesHint: 'One per line',
+      saveDraftBtn: 'Save as draft',
+      publishBtn: 'Publish',
       posted: (title) => `Posted "${title}".`,
+      drafted: (title) => `Saved "${title}" as a draft.`,
     },
     preview: {
       label: 'Preview — what students will see',
@@ -54,12 +78,22 @@ export default {
       anyMajor: 'Any major',
       minGpaLabel: 'Min GPA:',
       none: 'None',
+      employmentTypeLabel: 'Type:',
+      experienceLabel: 'Experience:',
+      educationLabel: 'Education:',
     },
     myJobs: {
       loading: 'Loading postings…',
-      count: (n) => `${n} active posting${n === 1 ? '' : 's'}`,
-      emptyTitle: 'Nothing posted yet — post your first job to see it here.',
+      count: (n, label) => `${n} ${label.toLowerCase()} posting${n === 1 ? '' : 's'}`,
+      emptyTitle: 'Nothing here yet.',
       deleted: (title) => `Deleted "${title}".`,
+      published: (title) => `Published "${title}".`,
+      closed: (title) => `Closed "${title}".`,
+      reopened: (title) => `Reopened "${title}".`,
+      publish: 'Publish',
+      close: 'Close',
+      reopen: 'Reopen',
+      jobStatusUpdateError: "Couldn't update the posting. Try again.",
     },
     jobPosting: {
       minGpa: (gpa) => `Min GPA ${gpa}`,
@@ -104,8 +138,13 @@ export default {
       hired: 'تم التوظيف',
       rejected: 'مرفوض',
     },
+    jobStatus: {
+      draft: 'مسودة',
+      active: 'نشطة',
+      closed: 'مغلقة',
+    },
     postJob: {
-      cardTitle: 'انشر وظيفة',
+      cardTitle: 'إنشاء وظيفة',
       jobTitleLabel: 'المسمى الوظيفي',
       majorsLabel: 'التخصص (التخصصات) المطلوبة',
       majorsHint: 'مفصولة بفواصل',
@@ -117,11 +156,26 @@ export default {
       skillsLabel: 'المهارات المطلوبة',
       skillsHint: 'مفصولة بفواصل',
       skillsPlaceholder: 'SQL، React',
+      yearsExperienceLabel: 'سنوات الخبرة',
+      yearsExperiencePlaceholder: 'مثال: 2-4 سنوات',
+      educationLabel: 'المؤهل العلمي',
+      educationPlaceholder: 'مثال: بكالوريوس هندسة حاسوب',
       locationLabel: 'الموقع',
       locationPlaceholder: 'عمّان',
+      employmentTypeLabel: 'نوع الدوام',
+      employmentTypeOptions: {
+        fullTime: 'دوام كامل',
+        partTime: 'دوام جزئي',
+        internship: 'تدريب',
+        contract: 'عقد',
+      },
       descriptionLabel: 'الوصف',
-      submit: 'نشر الوظيفة',
+      responsibilitiesLabel: 'المسؤوليات',
+      responsibilitiesHint: 'كل مسؤولية في سطر منفصل',
+      saveDraftBtn: 'حفظ كمسودة',
+      publishBtn: 'نشر',
       posted: (title) => `تم نشر "${title}".`,
+      drafted: (title) => `تم حفظ "${title}" كمسودة.`,
     },
     preview: {
       label: 'معاينة — كما سيراها الطلبة',
@@ -133,12 +187,22 @@ export default {
       anyMajor: 'أي تخصص',
       minGpaLabel: 'الحد الأدنى للمعدل:',
       none: 'لا يوجد',
+      employmentTypeLabel: 'النوع:',
+      experienceLabel: 'الخبرة:',
+      educationLabel: 'المؤهل:',
     },
     myJobs: {
       loading: 'جارٍ تحميل الوظائف المنشورة…',
-      count: (n) => `${n} وظيفة نشطة`,
-      emptyTitle: 'لم يتم نشر أي وظيفة بعد — انشر وظيفتك الأولى لتظهر هنا.',
+      count: (n, label) => `${n} وظيفة ${label}`,
+      emptyTitle: 'لا يوجد شيء هنا بعد.',
       deleted: (title) => `تم حذف "${title}".`,
+      published: (title) => `تم نشر "${title}".`,
+      closed: (title) => `تم إغلاق "${title}".`,
+      reopened: (title) => `تم إعادة فتح "${title}".`,
+      publish: 'نشر',
+      close: 'إغلاق',
+      reopen: 'إعادة فتح',
+      jobStatusUpdateError: 'تعذّر تحديث الوظيفة. حاول مرة أخرى.',
     },
     jobPosting: {
       minGpa: (gpa) => `الحد الأدنى للمعدل ${gpa}`,

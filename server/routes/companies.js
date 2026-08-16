@@ -10,6 +10,7 @@ const LOGO_MAX_BYTES = 2 * 1024 * 1024; // 2MB decoded, same cap as user avatars
 const LOGO_DATA_URL = /^data:image\/(png|jpe?g);base64,([A-Za-z0-9+/]+={0,2})$/;
 
 const APPLICATION_STATUSES = ['screening', 'shortlisted', 'interview', 'hired', 'rejected'];
+const JOB_STATUSES = ['draft', 'active', 'closed'];
 
 /**
  * "AI Match" shown on the Overview tab and each applicant row — a
@@ -183,7 +184,7 @@ router.get(
   '/me/overview',
   asyncRoute(async (req, res) => {
     const [{ rows: jobRows }, { rows: appRows }] = await Promise.all([
-      query(`SELECT count(*)::int AS active_jobs FROM jobs WHERE company_id = $1`, [req.user.id]),
+      query(`SELECT count(*)::int AS active_jobs FROM jobs WHERE company_id = $1 AND status = 'active'`, [req.user.id]),
       query(
         `SELECT a.id, a.status, a.created_at,
                 j.title AS position, j.required_majors, j.min_gpa, j.required_skills,
@@ -220,16 +221,29 @@ router.get(
   }),
 );
 
-/** POST /api/companies/me/jobs — post a job. */
+/**
+ * POST /api/companies/me/jobs — Create a Job's Publish/Save-as-Draft
+ * buttons both hit this, differing only in `status` ('active' or 'draft').
+ * A draft never shows on the student job board or feeds the advisor/
+ * recommendation/pathway surfaces (see server/index.js, server/lib/chat.js,
+ * server/lib/careerChat.js, server/routes/{recommend,career,pathways}.js —
+ * all filter to status = 'active') until it's published.
+ */
 router.post(
   '/me/jobs',
   asyncRoute(async (req, res) => {
-    const { title, requiredMajors, minGpa, salaryRange, requiredSkills, location, description } =
-      req.body ?? {};
+    const {
+      title, requiredMajors, minGpa, salaryRange, requiredSkills, location, description,
+      responsibilities, yearsExperience, education, employmentType, status,
+    } = req.body ?? {};
 
     if (!title) return res.status(400).json({ error: 'missing_title' });
     if (minGpa != null && (Number.isNaN(Number(minGpa)) || minGpa < 0 || minGpa > 4)) {
       return res.status(400).json({ error: 'bad_gpa' });
+    }
+    const jobStatus = status ?? 'active';
+    if (!JOB_STATUSES.includes(jobStatus)) {
+      return res.status(400).json({ error: 'bad_status', allowed: JOB_STATUSES });
     }
 
     const { rows: companyRows } = await query(`SELECT name FROM companies WHERE user_id = $1`, [
@@ -239,13 +253,38 @@ router.post(
 
     const { rows } = await query(
       `INSERT INTO jobs (company_id, company_name, title, required_majors, min_gpa,
-                         salary_raw, required_skills, location, description, verified)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,true)
+                         salary_raw, required_skills, location, description,
+                         responsibilities, years_experience, education, employment_type,
+                         status, verified)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,true)
        RETURNING *`,
       [req.user.id, companyRows[0].name, title, requiredMajors ?? [], minGpa ?? null,
-       salaryRange ?? null, requiredSkills ?? [], location ?? null, description ?? null],
+       salaryRange ?? null, requiredSkills ?? [], location ?? null, description ?? null,
+       responsibilities ?? null, yearsExperience ?? null, education ?? null, employmentType ?? null,
+       jobStatus],
     );
     res.status(201).json(rows[0]);
+  }),
+);
+
+/**
+ * PUT /api/companies/me/jobs/:id/status  { status }
+ * The Publish (draft→active) / Close (active→closed) / Reopen (closed→
+ * active) actions on each posting in My Jobs.
+ */
+router.put(
+  '/me/jobs/:id/status',
+  asyncRoute(async (req, res) => {
+    const { status } = req.body ?? {};
+    if (!JOB_STATUSES.includes(status)) {
+      return res.status(400).json({ error: 'bad_status', allowed: JOB_STATUSES });
+    }
+    const { rows } = await query(
+      `UPDATE jobs SET status = $1 WHERE id = $2 AND company_id = $3 RETURNING *`,
+      [status, req.params.id, req.user.id],
+    );
+    if (!rows[0]) return res.status(404).json({ error: 'not_found' });
+    res.json(rows[0]);
   }),
 );
 

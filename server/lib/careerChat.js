@@ -61,7 +61,7 @@ function profileBlock(profile) {
 async function loadJobsCatalog() {
   const { rows } = await query(
     `SELECT company_name, title, required_majors, required_skills, salary_raw, salary_is_estimate
-       FROM jobs ORDER BY company_name LIMIT 120`,
+       FROM jobs WHERE status = 'active' ORDER BY company_name LIMIT 120`,
   );
   return rows
     .map((j) =>

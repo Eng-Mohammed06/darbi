@@ -254,10 +254,11 @@ router.post(
     const { jobId } = req.body ?? {};
     if (!jobId) return res.status(400).json({ error: 'missing_job_id' });
 
-    const { rows: jobRows } = await query(`SELECT id, company_id FROM jobs WHERE id = $1`, [jobId]);
+    const { rows: jobRows } = await query(`SELECT id, company_id, status FROM jobs WHERE id = $1`, [jobId]);
     const job = jobRows[0];
     if (!job) return res.status(404).json({ error: 'unknown_job' });
     if (!job.company_id) return res.status(409).json({ error: 'no_company_account' });
+    if (job.status !== 'active') return res.status(409).json({ error: 'job_not_active' });
 
     await query(
       `INSERT INTO job_applications (job_id, student_user_id) VALUES ($1,$2)

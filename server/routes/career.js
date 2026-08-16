@@ -173,7 +173,7 @@ router.post(
 
     const { rows: jobsSample } = await query(
       `SELECT company_name, title, required_majors, required_skills, salary_raw
-         FROM jobs ORDER BY company_name LIMIT 40`,
+         FROM jobs WHERE status = 'active' ORDER BY company_name LIMIT 40`,
     );
 
     let result;
@@ -258,7 +258,7 @@ router.post(
     const { rows: jobs } = await query(
       `SELECT id, company_name, title, required_majors, required_skills,
               salary_raw, salary_is_estimate, location
-         FROM jobs ORDER BY id`,
+         FROM jobs WHERE status = 'active' ORDER BY id`,
     );
 
     let result;

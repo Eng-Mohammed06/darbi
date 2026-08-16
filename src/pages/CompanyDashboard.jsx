@@ -7,6 +7,17 @@ import { useLang } from '../i18n/index.jsx';
 
 const TABS = ['overview', 'post a job', 'my jobs', 'find students'];
 
+// Display order for My Jobs' filter pills — Active, Draft, Closed, matching
+// how a company actually scans postings (what's live first).
+const JOB_FILTER_ORDER = ['active', 'draft', 'closed'];
+
+const EMPLOYMENT_TYPES = [
+  { value: 'Full-time', key: 'fullTime' },
+  { value: 'Part-time', key: 'partTime' },
+  { value: 'Internship', key: 'internship' },
+  { value: 'Contract', key: 'contract' },
+];
+
 // Mirrors server/routes/companies.js's APPLICATION_STATUSES — kept in this
 // order everywhere a status appears (the select in My Jobs, the badge in
 // Overview) so the pipeline always reads left-to-right the same way.
@@ -28,6 +39,29 @@ function StatusBadge({ status }) {
       style={{ color, background: `color-mix(in srgb, ${color} 15%, transparent)` }}
     >
       {t(`company.status.${status}`)}
+    </span>
+  );
+}
+
+// A job posting's own lifecycle (My Jobs' Active/Draft/Closed filter) —
+// distinct from APPLICATION_STATUSES above, which is one applicant's stage
+// within a job. Mirrors server/routes/companies.js's JOB_STATUSES.
+const JOB_STATUSES = ['draft', 'active', 'closed'];
+const JOB_STATUS_COLOR = {
+  draft: 'var(--darbi-text-muted)',
+  active: 'var(--darbi-success)',
+  closed: 'var(--darbi-error)',
+};
+
+function JobStatusBadge({ status }) {
+  const { t } = useLang();
+  const color = JOB_STATUS_COLOR[status] ?? JOB_STATUS_COLOR.draft;
+  return (
+    <span
+      className="text-xs font-semibold px-2.5 py-1 rounded-full inline-block whitespace-nowrap shrink-0"
+      style={{ color, background: `color-mix(in srgb, ${color} 15%, transparent)` }}
+    >
+      {t(`company.jobStatus.${status}`)}
     </span>
   );
 }
@@ -134,12 +168,13 @@ function PostJob() {
   const { t } = useLang();
   const [form, setForm] = useState({});
   const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
   const toast = useToast();
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
-  async function submit(e) {
-    e.preventDefault();
+  async function save(status) {
     setError('');
+    setBusy(true);
     try {
       const job = await api('/companies/me/jobs', {
         method: 'POST',
@@ -151,13 +186,26 @@ function PostJob() {
           requiredSkills: (form.skills ?? '').split(',').map((s) => s.trim()).filter(Boolean),
           location: form.location || null,
           description: form.description || null,
+          responsibilities: form.responsibilities || null,
+          yearsExperience: form.yearsExperience || null,
+          education: form.education || null,
+          employmentType: form.employmentType || null,
+          status,
         },
       });
-      toast.show(t('company.postJob.posted')(job.title), { kind: 'success' });
+      const message = status === 'draft' ? t('company.postJob.drafted') : t('company.postJob.posted');
+      toast.show(message(job.title), { kind: 'success' });
       setForm({});
     } catch (err) {
       setError(err.message);
+    } finally {
+      setBusy(false);
     }
+  }
+
+  function submit(e) {
+    e.preventDefault();
+    save('active');
   }
 
   return (
@@ -168,25 +216,52 @@ function PostJob() {
           <Field label={t('company.postJob.jobTitleLabel')}>
             <input className={inputClass} value={form.title ?? ''} onChange={set('title')} required />
           </Field>
-          <Field label={t('company.postJob.majorsLabel')} hint={t('company.postJob.majorsHint')}>
-            <input className={inputClass} placeholder={t('company.postJob.majorsPlaceholder')} value={form.majors ?? ''} onChange={set('majors')} />
+          <Field label={t('company.postJob.descriptionLabel')}>
+            <textarea rows="3" className={inputClass} value={form.description ?? ''} onChange={set('description')} />
           </Field>
-          <Field label={t('company.postJob.minGpaLabel')} hint={t('company.postJob.minGpaHint')}>
-            <input type="number" step="0.01" min="0" max="4" className={inputClass} value={form.minGpa ?? ''} onChange={set('minGpa')} />
-          </Field>
-          <Field label={t('company.postJob.salaryLabel')} hint={t('company.postJob.salaryHint')}>
-            <input className={inputClass} value={form.salary ?? ''} onChange={set('salary')} />
+          <Field label={t('company.postJob.responsibilitiesLabel')} hint={t('company.postJob.responsibilitiesHint')}>
+            <textarea rows="3" className={inputClass} value={form.responsibilities ?? ''} onChange={set('responsibilities')} />
           </Field>
           <Field label={t('company.postJob.skillsLabel')} hint={t('company.postJob.skillsHint')}>
             <input className={inputClass} placeholder={t('company.postJob.skillsPlaceholder')} value={form.skills ?? ''} onChange={set('skills')} />
           </Field>
+          <Field label={t('company.postJob.majorsLabel')} hint={t('company.postJob.majorsHint')}>
+            <input className={inputClass} placeholder={t('company.postJob.majorsPlaceholder')} value={form.majors ?? ''} onChange={set('majors')} />
+          </Field>
+          <Field label={t('company.postJob.yearsExperienceLabel')}>
+            <input className={inputClass} placeholder={t('company.postJob.yearsExperiencePlaceholder')} value={form.yearsExperience ?? ''} onChange={set('yearsExperience')} />
+          </Field>
+          <Field label={t('company.postJob.educationLabel')}>
+            <input className={inputClass} placeholder={t('company.postJob.educationPlaceholder')} value={form.education ?? ''} onChange={set('education')} />
+          </Field>
+          <Field label={t('company.postJob.minGpaLabel')} hint={t('company.postJob.minGpaHint')}>
+            <input type="number" step="0.01" min="0" max="4" className={inputClass} value={form.minGpa ?? ''} onChange={set('minGpa')} />
+          </Field>
           <Field label={t('company.postJob.locationLabel')}>
             <input className={inputClass} placeholder={t('company.postJob.locationPlaceholder')} value={form.location ?? ''} onChange={set('location')} />
           </Field>
-          <Field label={t('company.postJob.descriptionLabel')}>
-            <textarea rows="4" className={inputClass} value={form.description ?? ''} onChange={set('description')} />
+          <Field label={t('company.postJob.employmentTypeLabel')}>
+            <select className={inputClass} value={form.employmentType ?? ''} onChange={set('employmentType')}>
+              <option value="">—</option>
+              {EMPLOYMENT_TYPES.map(({ value, key }) => (
+                <option key={value} value={value}>
+                  {t(`company.postJob.employmentTypeOptions.${key}`)}
+                </option>
+              ))}
+            </select>
           </Field>
-          <Button type="submit">{t('company.postJob.submit')}</Button>
+          <Field label={t('company.postJob.salaryLabel')} hint={t('company.postJob.salaryHint')}>
+            <input className={inputClass} value={form.salary ?? ''} onChange={set('salary')} />
+          </Field>
+
+          <div className="flex items-center gap-3 mt-2">
+            <Button type="button" variant="navy" disabled={busy} onClick={() => save('draft')}>
+              {t('company.postJob.saveDraftBtn')}
+            </Button>
+            <Button type="submit" disabled={busy}>
+              {t('company.postJob.publishBtn')}
+            </Button>
+          </div>
         </form>
       </Card>
 
@@ -226,6 +301,24 @@ function JobPreview({ form }) {
             <dt className="font-bold text-darbi-navy shrink-0">{t('company.preview.minGpaLabel')}</dt>
             <dd className="text-gray-300">{form.minGpa || <span className="text-gray-500 italic">{t('company.preview.none')}</span>}</dd>
           </div>
+          {form.employmentType && (
+            <div className="flex gap-2">
+              <dt className="font-bold text-darbi-navy shrink-0">{t('company.preview.employmentTypeLabel')}</dt>
+              <dd className="text-gray-300">{form.employmentType}</dd>
+            </div>
+          )}
+          {form.yearsExperience && (
+            <div className="flex gap-2">
+              <dt className="font-bold text-darbi-navy shrink-0">{t('company.preview.experienceLabel')}</dt>
+              <dd className="text-gray-300">{form.yearsExperience}</dd>
+            </div>
+          )}
+          {form.education && (
+            <div className="flex gap-2">
+              <dt className="font-bold text-darbi-navy shrink-0">{t('company.preview.educationLabel')}</dt>
+              <dd className="text-gray-300">{form.education}</dd>
+            </div>
+          )}
         </dl>
 
         {skills.length > 0 && (
@@ -238,7 +331,10 @@ function JobPreview({ form }) {
           </div>
         )}
 
-        {form.description && <p className="text-sm text-gray-300">{form.description}</p>}
+        {form.description && <p className="text-sm text-gray-300 mb-3">{form.description}</p>}
+        {form.responsibilities && (
+          <p className="text-sm text-gray-300 whitespace-pre-line">{form.responsibilities}</p>
+        )}
       </article>
     </div>
   );
@@ -250,6 +346,7 @@ function MyJobs() {
   const { t } = useLang();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('active');
   const toast = useToast();
   const load = () => api('/companies/me/jobs').then(setJobs).catch(() => {}).finally(() => setLoading(false));
   useEffect(() => { load(); }, []);
@@ -276,12 +373,36 @@ function MyJobs() {
     });
   }
 
+  function updateJob(updated) {
+    setJobs((js) => js.map((j) => (j.id === updated.id ? { ...j, ...updated } : j)));
+  }
+
+  const filteredJobs = jobs.filter((j) => (j.status ?? 'active') === filter);
+
   return (
     <>
-      <div className="flex items-baseline justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
         <h2 className="text-lg font-bold text-darbi-navy">
-          {loading ? t('company.myJobs.loading') : t('company.myJobs.count')(jobs.length)}
+          {loading ? t('company.myJobs.loading') : t('company.myJobs.count')(filteredJobs.length, t(`company.jobStatus.${filter}`))}
         </h2>
+        <div
+          className="flex rounded-full p-1 shrink-0"
+          style={{ background: 'color-mix(in srgb, var(--darbi-bg) 55%, black 10%)', border: '1px solid var(--darbi-border)' }}
+        >
+          {JOB_FILTER_ORDER.map((f) => (
+            <button
+              key={f}
+              type="button"
+              onClick={() => setFilter(f)}
+              className={`px-4 py-1.5 rounded-full text-xs font-semibold transition ${
+                filter === f ? 'text-white' : 'text-gray-400 hover:text-gray-200'
+              }`}
+              style={filter === f ? { background: 'var(--darbi-gradient)' } : undefined}
+            >
+              {t(`company.jobStatus.${f}`)}
+            </button>
+          ))}
+        </div>
       </div>
 
       {loading && (
@@ -290,32 +411,54 @@ function MyJobs() {
         </div>
       )}
 
-      {!loading && jobs.length === 0 && (
+      {!loading && filteredJobs.length === 0 && (
         <Card>
           <EmptyState icon="📋" title={t('company.myJobs.emptyTitle')} />
         </Card>
       )}
 
       <div className="grid sm:grid-cols-2 gap-4">
-        {jobs.map((j) => (
-          <JobPosting key={j.id} job={j} onRemove={remove} />
+        {filteredJobs.map((j) => (
+          <JobPosting key={j.id} job={j} onRemove={remove} onStatusChange={updateJob} />
         ))}
       </div>
     </>
   );
 }
 
-function JobPosting({ job: j, onRemove }) {
+// Which action moves a posting forward from its current status, and the
+// toast copy for it — draft's next stop is active, active's is closed,
+// closed can only go back to active (no "un-close to draft").
+const NEXT_JOB_STATUS = { draft: 'active', active: 'closed', closed: 'active' };
+const JOB_STATUS_ACTION_LABEL = { draft: 'publish', active: 'close', closed: 'reopen' };
+const JOB_STATUS_TOAST = { draft: 'published', active: 'closed', closed: 'reopened' };
+
+function JobPosting({ job: j, onRemove, onStatusChange }) {
   const { t } = useLang();
   const toast = useToast();
   const [open, setOpen] = useState(false);
   const [applicants, setApplicants] = useState(null);
+  const [statusBusy, setStatusBusy] = useState(false);
 
   async function toggle() {
     if (open) return setOpen(false);
     setOpen(true);
     if (!applicants) {
       api(`/companies/me/jobs/${j.id}/applicants`).then(setApplicants).catch(() => setApplicants([]));
+    }
+  }
+
+  async function advanceStatus() {
+    const nextStatus = NEXT_JOB_STATUS[j.status ?? 'active'];
+    setStatusBusy(true);
+    try {
+      const updated = await api(`/companies/me/jobs/${j.id}/status`, { method: 'PUT', body: { status: nextStatus } });
+      onStatusChange(updated);
+      toast.show(t(`company.myJobs.${JOB_STATUS_TOAST[j.status ?? 'active']}`)(j.title), { kind: 'success' });
+    } catch (err) {
+      toast.show(err.message ?? t('company.myJobs.jobStatusUpdateError'), { kind: 'error' });
+    } finally {
+      setStatusBusy(false);
     }
   }
 
@@ -335,7 +478,10 @@ function JobPosting({ job: j, onRemove }) {
   return (
     <div className="darbi-box flex flex-col">
       <div className="flex justify-between items-start gap-2 mb-2">
-        <p className="font-semibold text-darbi-navy">{j.title}</p>
+        <div className="flex items-center gap-2 min-w-0">
+          <p className="font-semibold text-darbi-navy truncate">{j.title}</p>
+          <JobStatusBadge status={j.status ?? 'active'} />
+        </div>
         <button
           onClick={() => onRemove(j)}
           className="text-xs text-red-400 hover:text-red-300 font-semibold shrink-0 transition"
@@ -352,9 +498,20 @@ function JobPosting({ job: j, onRemove }) {
         {j.salary_raw && t('company.jobPosting.salary')(j.salary_raw)}
       </p>
 
-      <button onClick={toggle} className="text-xs font-semibold mt-3 text-left" style={{ color: 'var(--darbi-purple)' }}>
-        {t('company.jobPosting.applicants')(j.applicant_count)} {open ? '▲' : '▼'}
-      </button>
+      <div className="flex items-center justify-between gap-2 mt-3">
+        <button onClick={toggle} className="text-xs font-semibold text-left" style={{ color: 'var(--darbi-purple)' }}>
+          {t('company.jobPosting.applicants')(j.applicant_count)} {open ? '▲' : '▼'}
+        </button>
+        <button
+          type="button"
+          onClick={advanceStatus}
+          disabled={statusBusy}
+          className="text-xs font-semibold rounded-full px-3 py-1 border transition hover:brightness-110 disabled:opacity-50 shrink-0"
+          style={{ borderColor: 'var(--darbi-border)', color: JOB_STATUS_COLOR[NEXT_JOB_STATUS[j.status ?? 'active']] }}
+        >
+          {t(`company.myJobs.${JOB_STATUS_ACTION_LABEL[j.status ?? 'active']}`)}
+        </button>
+      </div>
 
       {open && (
         <div className="mt-2 pt-2 space-y-2" style={{ borderTop: '1px solid var(--darbi-border)' }}>

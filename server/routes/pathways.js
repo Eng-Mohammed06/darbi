@@ -40,7 +40,7 @@ router.get(
     // Engineering" and similar.
     // canonical_majors is the converter's mapping of the employer's free text
     // onto our major list, so this is an exact match rather than a LIKE guess.
-    const jobFilter = `$1 = ANY(canonical_majors)`;
+    const jobFilter = `$1 = ANY(canonical_majors) AND status = 'active'`;
 
     const [taughtAt, courses, demand, roles, skills, employers] = await Promise.all([
       query(
@@ -88,7 +88,7 @@ router.get(
       ),
     ]);
 
-    const totals = await query(`SELECT count(*)::int AS total FROM jobs`);
+    const totals = await query(`SELECT count(*)::int AS total FROM jobs WHERE status = 'active'`);
 
     // Signed-in student, with a profile on file? Reorder this major's own
     // courses around what they told the onboarding questionnaire — still no

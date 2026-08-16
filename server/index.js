@@ -128,7 +128,8 @@ app.get('/api/jobs', async (req, res, next) => {
     const { major, minGpa } = req.query;
     const { rows } = await pool.query(
       `SELECT * FROM jobs
-        WHERE ($1::text IS NULL OR EXISTS (
+        WHERE status = 'active'
+          AND ($1::text IS NULL OR EXISTS (
                  SELECT 1 FROM unnest(required_majors) rm
                   WHERE rm ILIKE '%' || $1 || '%'))
           AND ($2::numeric IS NULL OR min_gpa IS NULL OR min_gpa <= $2)
