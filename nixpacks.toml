@@ -1,0 +1,11 @@
+# Railway's build stage inherits NODE_ENV=production from the service's
+# runtime variables (kept there for server/lib/auth.js's JWT-secret safety
+# check), but npm treats that as an implicit --omit=dev during `npm ci`,
+# silently dropping build-only packages like vite -- breaking `npm run
+# build` with "vite: not found". This is why builds triggered by `git push`
+# were failing while manual/local-directory deploys (which happened to hit
+# a stale cached install layer) kept succeeding. Force devDependencies in
+# explicitly at install time so the build step always has what it needs,
+# regardless of NODE_ENV.
+[phases.install]
+cmds = ["npm ci --include=dev"]
