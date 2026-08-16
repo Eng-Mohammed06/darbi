@@ -547,11 +547,12 @@ function JobPosting({ job: j, onRemove, onStatusChange }) {
 
   // Optimistic — the dropdown flips immediately, and only rolls back if the
   // PUT actually fails, same pattern as the job-delete Undo toast above.
-  async function changeStatus(studentUserId, status) {
+  async function changeStatus(studentUserId, status, note) {
     const previous = applicants;
-    setApplicants((list) => list.map((a) => (a.user_id === studentUserId ? { ...a, status } : a)));
+    setApplicants((list) => list.map((a) => (a.user_id === studentUserId ? { ...a, status, ...(note != null ? { company_note: note } : {}) } : a)));
     try {
-      await api(`/companies/me/jobs/${j.id}/applicants/${studentUserId}`, { method: 'PUT', body: { status } });
+      await api(`/companies/me/jobs/${j.id}/applicants/${studentUserId}`, { method: 'PUT', body: { status, note } });
+      if (status === 'interview') toast.show(t('company.jobPosting.invited'), { kind: 'success' });
     } catch (err) {
       setApplicants(previous);
       toast.show(err.message ?? t('company.jobPosting.statusUpdateError'), { kind: 'error' });
@@ -601,30 +602,104 @@ function JobPosting({ job: j, onRemove, onStatusChange }) {
           {applicants === null && <p className="text-xs text-gray-500">{t('common.loading')}</p>}
           {applicants?.length === 0 && <p className="text-xs text-gray-500">{t('company.jobPosting.noApplicants')}</p>}
           {applicants?.map((s) => (
-            <div key={s.user_id} className="text-sm flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className="font-medium text-darbi-navy">{s.name}</p>
-                <p className="text-xs text-gray-400">
-                  {s.level ?? t('company.jobPosting.levelNotStated')} · GPA {s.gpa ?? '—'} · {s.location ?? t('company.jobPosting.jordan')}
-                </p>
-                <p className="text-xs mt-0.5">
-                  <MatchScore score={s.ai_match} />
-                </p>
-              </div>
-              <select
-                value={s.status}
-                onChange={(e) => changeStatus(s.user_id, e.target.value)}
-                className="text-xs font-semibold rounded-full px-2.5 py-1 border bg-transparent shrink-0"
-                style={{ borderColor: 'var(--darbi-border)', color: STATUS_COLOR[s.status] ?? STATUS_COLOR.screening }}
-              >
-                {APPLICATION_STATUSES.map((st) => (
-                  <option key={st} value={st} style={{ color: '#000' }}>
-                    {t(`company.status.${st}`)}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <ApplicantRow key={s.user_id} applicant={s} onChangeStatus={(status, note) => changeStatus(s.user_id, status, note)} />
           ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * One applicant in the expanded list. Collapsed, it's the same name/level/
+ * GPA/location/AI-match/status-dropdown row as before. Expanded, it adds
+ * major, interests, and applied date (already returned by the applicants
+ * endpoint, just not previously rendered), plus a short note the company
+ * can attach when moving someone to Interview — the "send an invitation"
+ * action, without building a full messaging inbox.
+ */
+function ApplicantRow({ applicant: s, onChangeStatus }) {
+  const { t } = useLang();
+  const [expanded, setExpanded] = useState(false);
+  const [note, setNote] = useState(s.company_note ?? '');
+  const [busy, setBusy] = useState(false);
+
+  async function invite() {
+    setBusy(true);
+    try {
+      await onChangeStatus('interview', note.trim() || null);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="text-sm py-2" style={{ borderBottom: '1px solid var(--darbi-border)' }}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="font-medium text-darbi-navy">{s.name}</p>
+          <p className="text-xs text-gray-400">
+            {s.level ?? t('company.jobPosting.levelNotStated')} · GPA {s.gpa ?? '—'} · {s.location ?? t('company.jobPosting.jordan')}
+          </p>
+          <p className="text-xs mt-0.5">
+            <MatchScore score={s.ai_match} />
+          </p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <select
+            value={s.status}
+            onChange={(e) => onChangeStatus(e.target.value)}
+            className="text-xs font-semibold rounded-full px-2.5 py-1 border bg-transparent"
+            style={{ borderColor: 'var(--darbi-border)', color: STATUS_COLOR[s.status] ?? STATUS_COLOR.screening }}
+          >
+            {APPLICATION_STATUSES.map((st) => (
+              <option key={st} value={st} style={{ color: '#000' }}>
+                {t(`company.status.${st}`)}
+              </option>
+            ))}
+          </select>
+          <button type="button" onClick={() => setExpanded((v) => !v)} className="text-xs text-gray-500 hover:text-gray-300">
+            {t('company.jobPosting.details')} {expanded ? '▲' : '▼'}
+          </button>
+        </div>
+      </div>
+
+      {expanded && (
+        <div className="mt-2.5 space-y-2.5">
+          <p className="text-xs text-gray-400">
+            <span className="font-semibold text-gray-300">{t('company.jobPosting.majorLabel')}</span>{' '}
+            {s.major_name ?? t('company.jobPosting.majorNotStated')}
+          </p>
+          {s.interests?.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {s.interests.map((i) => (
+                <span
+                  key={i}
+                  className="text-[11px] px-2 py-0.5 rounded-full"
+                  style={{ background: 'color-mix(in srgb, var(--darbi-purple) 12%, transparent)', color: 'var(--darbi-purple)' }}
+                >
+                  {i}
+                </span>
+              ))}
+            </div>
+          )}
+          <p className="text-xs text-gray-500">
+            {t('company.jobPosting.appliedOn')(new Date(s.applied_at).toLocaleDateString())}
+          </p>
+
+          <label className="block">
+            <span className="block text-xs font-semibold text-gray-400 mb-1">{t('company.jobPosting.noteLabel')}</span>
+            <textarea
+              rows="2"
+              className={inputClass}
+              placeholder={t('company.jobPosting.notePlaceholder')}
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+            />
+          </label>
+          <Button type="button" disabled={busy} onClick={invite}>
+            {s.status === 'interview' ? t('company.jobPosting.updateInviteBtn') : t('company.jobPosting.inviteBtn')}
+          </Button>
         </div>
       )}
     </div>

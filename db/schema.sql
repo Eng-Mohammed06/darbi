@@ -385,6 +385,13 @@ ALTER TABLE job_applications DROP CONSTRAINT IF EXISTS job_applications_status_c
 ALTER TABLE job_applications ADD CONSTRAINT job_applications_status_check
   CHECK (status IN ('screening', 'shortlisted', 'interview', 'hired', 'rejected'));
 
+-- A short message a company attaches when moving an applicant's status --
+-- an interview invite ("We'd like to schedule a call, are you free Thursday?")
+-- being the main use. Shown to the student on their Jobs tab alongside the
+-- status; kept as one nullable field rather than a message thread, since a
+-- real inbox is out of scope for what this pipeline needs to do.
+ALTER TABLE job_applications ADD COLUMN IF NOT EXISTS company_note TEXT;
+
 -- The advisor conversation. Persisted so a refresh (or a laptop swap between
 -- presenters) doesn't lose the thread mid-demo.
 CREATE TABLE IF NOT EXISTS chat_messages (

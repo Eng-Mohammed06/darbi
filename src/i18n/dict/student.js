@@ -80,6 +80,11 @@ export default {
       noCourses: 'No courses catalogued for this major yet.',
     },
 
+    myApplications: {
+      title: 'My Applications',
+      interviewInviteLabel: 'Interview invitation',
+    },
+
     jobBoard: {
       loading: 'Loading job listings…',
       count: (n) => `${n} verified job listings`,
@@ -263,6 +268,11 @@ export default {
       checkOffHint: 'ضع علامة على ما أنجزته — أو أخبر المستشار في المحادثة وسيضعها لك.',
       yourMajor: 'تخصصك',
       noCourses: 'لا توجد مقررات مصنّفة لهذا التخصص بعد.',
+    },
+
+    myApplications: {
+      title: 'طلباتي',
+      interviewInviteLabel: 'دعوة مقابلة',
     },
 
     jobBoard: {

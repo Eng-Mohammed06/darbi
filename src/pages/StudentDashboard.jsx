@@ -57,7 +57,12 @@ export default function StudentDashboard() {
       {tab === 'profile' && <ProfileForm profile={profile} onSaved={setProfile} />}
       {tab === 'majors' && <MajorExplorer />}
       {tab === 'courses' && <CourseChecklist profile={profile} onGoToPathways={() => setTab('pathways')} />}
-      {tab === 'jobs' && <JobBoard />}
+      {tab === 'jobs' && (
+        <>
+          <MyApplications />
+          <JobBoard />
+        </>
+      )}
     </Shell>
   );
 }
@@ -577,6 +582,76 @@ function CourseChecklist({ profile, onGoToPathways }) {
         );
       })}
     </>
+  );
+}
+
+// Mirrors CompanyDashboard.jsx's STATUS_COLOR/APPLICATION_STATUSES — kept in
+// sync manually since it's the same small map on both sides of one pipeline.
+const APPLICATION_STATUS_COLOR = {
+  screening: 'var(--darbi-text-muted)',
+  shortlisted: 'var(--darbi-purple)',
+  interview: 'var(--darbi-gold)',
+  hired: 'var(--darbi-success)',
+  rejected: 'var(--darbi-error)',
+};
+
+/**
+ * The student's side of the company pipeline (server/routes/companies.js's
+ * PUT .../applicants/:id) — shows where each application stands, and
+ * surfaces the note a company attaches when moving someone to Interview
+ * (the closest thing DARBI has to an interview invitation, short of a full
+ * messaging inbox). Renders nothing once there are no applications yet, so
+ * a student who hasn't applied anywhere doesn't see an empty section above
+ * the job board.
+ */
+function MyApplications() {
+  const { t } = useLang();
+  const [apps, setApps] = useState(null);
+
+  useEffect(() => {
+    api('/students/me/applications/status').then(setApps).catch(() => setApps([]));
+  }, []);
+
+  if (!apps?.length) return null;
+
+  return (
+    <Card title={t('student.myApplications.title')}>
+      <div className="divide-y divide-[color:var(--darbi-border)]">
+        {apps.map((a) => (
+          <div key={a.job_id} className="py-3">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-semibold text-darbi-navy truncate">{a.title}</p>
+                <p className="text-sm text-gray-400 truncate">{a.company_name}</p>
+              </div>
+              <span
+                className="text-xs font-semibold px-2.5 py-1 rounded-full inline-block whitespace-nowrap shrink-0"
+                style={{
+                  color: APPLICATION_STATUS_COLOR[a.status] ?? APPLICATION_STATUS_COLOR.screening,
+                  background: `color-mix(in srgb, ${APPLICATION_STATUS_COLOR[a.status] ?? APPLICATION_STATUS_COLOR.screening} 15%, transparent)`,
+                }}
+              >
+                {t(`company.status.${a.status}`)}
+              </span>
+            </div>
+            {a.status === 'interview' && a.company_note && (
+              <div
+                className="mt-2 text-sm rounded-lg p-3"
+                style={{
+                  background: 'color-mix(in srgb, var(--darbi-gold) 10%, transparent)',
+                  border: '1px solid color-mix(in srgb, var(--darbi-gold) 30%, transparent)',
+                }}
+              >
+                <p className="font-semibold text-xs uppercase tracking-wide mb-1" style={{ color: 'var(--darbi-gold)' }}>
+                  {t('student.myApplications.interviewInviteLabel')}
+                </p>
+                <p className="text-gray-200">{a.company_note}</p>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </Card>
   );
 }
 

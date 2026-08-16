@@ -122,15 +122,16 @@ router.get(
 /**
  * GET /api/companies/me/jobs/:id/applicants
  * Same fields FindStudents shows, plus when they applied, their pipeline
- * status, and an AI Match score — no email, same "contact through the
- * platform" rule as browsing the student pool.
+ * status, an AI Match score, and any note the company has sent them — no
+ * email, same "contact through the platform" rule as browsing the student
+ * pool.
  */
 router.get(
   '/me/jobs/:id/applicants',
   asyncRoute(async (req, res) => {
     const { rows } = await query(
       `SELECT s.user_id, s.name, s.level, s.gpa, s.location, s.interests, m.name AS major_name,
-              a.status, a.created_at AS applied_at,
+              a.status, a.created_at AS applied_at, a.company_note,
               j.required_majors, j.min_gpa, j.required_skills
          FROM job_applications a
          JOIN students s ON s.user_id = a.student_user_id
@@ -148,26 +149,29 @@ router.get(
 );
 
 /**
- * PUT /api/companies/me/jobs/:jobId/applicants/:studentUserId  { status }
+ * PUT /api/companies/me/jobs/:jobId/applicants/:studentUserId  { status, note? }
  * Moves an applicant through the pipeline (screening/shortlisted/interview/
  * hired/rejected) — the dropdown on each applicant row in My Jobs, and what
- * drives the Shortlisted/Interviews/Hired counts on the Overview tab.
+ * drives the Shortlisted/Interviews/Hired counts on the Overview tab. `note`
+ * is optional free text the student sees on their side (e.g. an interview
+ * invite with a proposed time); omitting it leaves any existing note as-is,
+ * an empty string clears it.
  */
 router.put(
   '/me/jobs/:jobId/applicants/:studentUserId',
   asyncRoute(async (req, res) => {
-    const { status } = req.body ?? {};
+    const { status, note } = req.body ?? {};
     if (!APPLICATION_STATUSES.includes(status)) {
       return res.status(400).json({ error: 'bad_status', allowed: APPLICATION_STATUSES });
     }
 
     const { rows } = await query(
-      `UPDATE job_applications a SET status = $1
+      `UPDATE job_applications a SET status = $1, company_note = COALESCE($5, a.company_note)
          FROM jobs j
         WHERE a.job_id = j.id AND j.company_id = $2
           AND a.job_id = $3 AND a.student_user_id = $4
-        RETURNING a.id, a.status`,
-      [status, req.user.id, req.params.jobId, req.params.studentUserId],
+        RETURNING a.id, a.status, a.company_note`,
+      [status, req.user.id, req.params.jobId, req.params.studentUserId, note ?? null],
     );
     if (!rows[0]) return res.status(404).json({ error: 'not_found' });
     res.json(rows[0]);

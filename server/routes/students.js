@@ -243,6 +243,30 @@ router.get(
 );
 
 /**
+ * GET /api/students/me/applications/status
+ * The same applications as above, but with the job title, company, pipeline
+ * status, and any note the company attached (an interview invite being the
+ * main use) — what the Jobs tab's "My Applications" list renders. A separate
+ * endpoint from GET /me/applications so that lightweight "did I already
+ * apply" check on job cards doesn't pull the extra joins on every load.
+ */
+router.get(
+  '/me/applications/status',
+  asyncRoute(async (req, res) => {
+    const { rows } = await query(
+      `SELECT j.id AS job_id, j.title, j.company_name, j.location,
+              a.status, a.company_note, a.created_at AS applied_at
+         FROM job_applications a
+         JOIN jobs j ON j.id = a.job_id
+        WHERE a.student_user_id = $1
+        ORDER BY a.created_at DESC`,
+      [req.user.id],
+    );
+    res.json(rows);
+  }),
+);
+
+/**
  * POST /api/students/me/applications  { jobId }
  * Refused for jobs with no company_id — those are seeded listings gathered
  * from public sources with no DARBI account behind them, so there is no one
