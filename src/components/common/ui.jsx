@@ -97,6 +97,14 @@ export function DarkCard({ title, subtitle, children }) {
         <ThemeLangSwitcher dark />
       </div>
 
+      {/* The branding panel below is lg-only (hidden on phones/tablets), so
+          without this, mobile visitors would never see the logo at all —
+          this compact row is that panel's mobile stand-in. */}
+      <div className="lg:hidden flex items-center justify-center gap-2.5 pb-4 relative z-10">
+        <img src={darbiLogoIcon} alt="" className="h-8 w-auto" />
+        <span className="text-xl font-extrabold text-white tracking-tight">Darbi</span>
+      </div>
+
       <div className="flex-1 flex relative z-10">
         <div className="hidden lg:flex lg:w-1/2 relative z-10 flex-col justify-center px-16">
           <div>
