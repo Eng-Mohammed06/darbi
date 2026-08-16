@@ -4,7 +4,7 @@ export default {
     navCompany: 'Employer',
     navCareer: 'Career Boost',
     title: 'Career advice you can check.',
-    sub: "Darbi grounds every major, salary, and job it names in verified Jordanian data — never a guess. Pick how you're using it.",
+    sub: 'Every student deserves to see the path before choosing it.',
     pillars: [
       {
         title: 'Verified Jordanian data',
@@ -36,7 +36,7 @@ export default {
     navCompany: 'صاحب عمل',
     navCareer: 'تطوير المهارات',
     title: 'إرشاد مهني يمكنك التحقق منه.',
-    sub: 'منصة دربي تؤسس كل تخصص وراتب ووظيفة تذكرها على بيانات أردنية موثّقة — لا تخمين أبدًا. اختر طريقة استخدامك.',
+    sub: 'يستحق كل طالب رؤية الطريق قبل اختياره.',
     pillars: [
       {
         title: 'بيانات أردنية موثّقة',
