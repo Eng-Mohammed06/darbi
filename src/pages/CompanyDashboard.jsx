@@ -295,15 +295,25 @@ function PostJob() {
           <Field label={t('company.postJob.responsibilitiesLabel')} hint={t('company.postJob.responsibilitiesHint')}>
             <textarea rows="3" className={inputClass} value={form.responsibilities ?? ''} onChange={set('responsibilities')} />
           </Field>
-          <Field label={t('company.postJob.skillsLabel')} hint={t('company.postJob.skillsHint')}>
-            <input className={inputClass} placeholder={t('company.postJob.skillsPlaceholder')} value={form.skills ?? ''} onChange={set('skills')} />
-          </Field>
-          <Field label={t('company.postJob.majorsLabel')} hint={t('company.postJob.majorsHint')}>
-            <input className={inputClass} placeholder={t('company.postJob.majorsPlaceholder')} value={form.majors ?? ''} onChange={set('majors')} />
-          </Field>
-          <Field label={t('company.postJob.yearsExperienceLabel')}>
-            <input className={inputClass} placeholder={t('company.postJob.yearsExperiencePlaceholder')} value={form.yearsExperience ?? ''} onChange={set('yearsExperience')} />
-          </Field>
+          <div className="mb-4">
+            <span className="block text-gray-300 font-bold mb-1.5 text-sm">{t('company.postJob.requirementsLabel')}</span>
+            <div className="space-y-3 p-3 rounded-lg" style={{ border: '1px solid var(--darbi-border)' }}>
+              <label className="block">
+                <span className="block text-xs font-semibold text-gray-400 mb-1">{t('company.postJob.skillsLabel')}</span>
+                <input className={inputClass} placeholder={t('company.postJob.skillsPlaceholder')} value={form.skills ?? ''} onChange={set('skills')} />
+                <span className="block text-xs text-gray-500 mt-1">{t('company.postJob.skillsHint')}</span>
+              </label>
+              <label className="block">
+                <span className="block text-xs font-semibold text-gray-400 mb-1">{t('company.postJob.majorsLabel')}</span>
+                <input className={inputClass} placeholder={t('company.postJob.majorsPlaceholder')} value={form.majors ?? ''} onChange={set('majors')} />
+                <span className="block text-xs text-gray-500 mt-1">{t('company.postJob.majorsHint')}</span>
+              </label>
+              <label className="block">
+                <span className="block text-xs font-semibold text-gray-400 mb-1">{t('company.postJob.yearsExperienceLabel')}</span>
+                <input className={inputClass} placeholder={t('company.postJob.yearsExperiencePlaceholder')} value={form.yearsExperience ?? ''} onChange={set('yearsExperience')} />
+              </label>
+            </div>
+          </div>
           <Field label={t('company.postJob.educationLabel')}>
             <input className={inputClass} placeholder={t('company.postJob.educationPlaceholder')} value={form.education ?? ''} onChange={set('education')} />
           </Field>

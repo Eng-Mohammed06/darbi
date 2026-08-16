@@ -45,6 +45,7 @@ export default {
     postJob: {
       cardTitle: 'Create a job',
       jobTitleLabel: 'Job title',
+      requirementsLabel: 'Requirements',
       majorsLabel: 'Required major(s)',
       majorsHint: 'Comma separated',
       majorsPlaceholder: 'Computer Science, Software Engineering',
@@ -159,6 +160,7 @@ export default {
     postJob: {
       cardTitle: 'إنشاء وظيفة',
       jobTitleLabel: 'المسمى الوظيفي',
+      requirementsLabel: 'المتطلبات',
       majorsLabel: 'التخصص (التخصصات) المطلوبة',
       majorsHint: 'مفصولة بفواصل',
       majorsPlaceholder: 'علوم الحاسوب، هندسة البرمجيات',
