@@ -103,6 +103,16 @@ CREATE TABLE IF NOT EXISTS companies (
   website       TEXT
 );
 
+-- Company profile-completion step, required right after email verification
+-- (CompanyProfileSetupPage.jsx) alongside the pre-existing industry/website.
+-- Nullable here since existing rows predate this step; completeness is
+-- checked in the app (src/App.jsx's Dashboard guard), not by the schema.
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS location TEXT;
+-- Stored as a data: URI, same rationale as users.avatar (server/routes/auth.js) --
+-- no object store configured for this deploy.
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS logo TEXT;
+
 CREATE TABLE IF NOT EXISTS career_profiles (
   user_id           INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
   name              TEXT NOT NULL,

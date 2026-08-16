@@ -6,18 +6,47 @@ const router = Router();
 
 router.use(requireAuth, requireRole('company'));
 
-/** PUT /api/companies/me  { name } — signup no longer collects a company
- * name separately (it defaults to the username), so this is how a company
- * sets a proper display name afterward. */
+const LOGO_MAX_BYTES = 2 * 1024 * 1024; // 2MB decoded, same cap as user avatars
+const LOGO_DATA_URL = /^data:image\/(png|jpe?g);base64,([A-Za-z0-9+/]+={0,2})$/;
+
+/**
+ * PUT /api/companies/me  { name?, industry?, description?, website?, location?, logo? }
+ * Partial update — only the fields present in the body change. `name` alone
+ * is how AccountPage's rename works; industry/description/website/location/
+ * logo together are how CompanyProfileSetupPage completes the mandatory
+ * post-verification profile (the "all fields required" rule is enforced by
+ * that page before it ever calls this — see src/App.jsx's Dashboard guard
+ * for what happens if a company reaches the dashboard without finishing it).
+ */
 router.put(
   '/me',
   asyncRoute(async (req, res) => {
-    const { name } = req.body ?? {};
-    if (!name) return res.status(400).json({ error: 'missing_name' });
+    const { name, industry, description, website, location, logo } = req.body ?? {};
+    if (name !== undefined && !String(name).trim()) {
+      return res.status(400).json({ error: 'missing_name' });
+    }
+    if (logo) {
+      const match = LOGO_DATA_URL.exec(logo);
+      if (!match) return res.status(400).json({ error: 'bad_image', message: 'Upload a .png or .jpg image.' });
+      const bytes = Buffer.from(match[2], 'base64').length;
+      if (bytes > LOGO_MAX_BYTES) {
+        return res.status(400).json({ error: 'image_too_large', message: 'Image must be 2MB or smaller.' });
+      }
+    }
+
+    const fields = { name, industry, description, website, location, logo };
+    const sets = [];
+    const values = [req.user.id];
+    for (const [key, value] of Object.entries(fields)) {
+      if (value === undefined) continue;
+      values.push(typeof value === 'string' ? value.trim() : value);
+      sets.push(`${key} = $${values.length}`);
+    }
+    if (!sets.length) return res.status(400).json({ error: 'missing_fields' });
 
     const { rows } = await query(
-      `UPDATE companies SET name = $2 WHERE user_id = $1 RETURNING *`,
-      [req.user.id, String(name).trim()],
+      `UPDATE companies SET ${sets.join(', ')} WHERE user_id = $1 RETURNING *`,
+      values,
     );
     if (!rows[0]) return res.status(404).json({ error: 'no_profile' });
     res.json(rows[0]);

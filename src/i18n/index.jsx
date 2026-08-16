@@ -9,6 +9,7 @@ import career from './dict/career.js';
 import admin from './dict/admin.js';
 import onboarding from './dict/onboarding.js';
 import profileSetup from './dict/profileSetup.js';
+import companyProfileSetup from './dict/companyProfileSetup.js';
 import resetPassword from './dict/resetPassword.js';
 import verifyEmail from './dict/verifyEmail.js';
 
@@ -36,6 +37,7 @@ const NAMESPACES = {
   admin,
   onboarding,
   profileSetup,
+  companyProfileSetup,
   resetPassword,
   verifyEmail,
 };

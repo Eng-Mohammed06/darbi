@@ -7,6 +7,7 @@ import AuthPage from './pages/AuthPage.jsx';
 import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
 import VerifyEmailPage from './pages/VerifyEmailPage.jsx';
 import ProfileSetupPage from './pages/ProfileSetupPage.jsx';
+import CompanyProfileSetupPage from './pages/CompanyProfileSetupPage.jsx';
 import OnboardingPage from './pages/OnboardingPage.jsx';
 import StudentDashboard from './pages/StudentDashboard.jsx';
 import CompanyDashboard from './pages/CompanyDashboard.jsx';
@@ -22,6 +23,15 @@ const DASHBOARDS = {
   admin: AdminDashboard,
 };
 
+// Industry/description/website/location/logo — CompanyProfileSetupPage's
+// required fields. Checked here too (not just on that page) so a company
+// that verified and then left mid-setup gets sent back to finish it on
+// every later visit, not just right after signup.
+const COMPANY_PROFILE_FIELDS = ['industry', 'description', 'website', 'location', 'logo'];
+function isCompanyProfileComplete(profile) {
+  return COMPANY_PROFILE_FIELDS.every((field) => Boolean(profile?.[field]));
+}
+
 /**
  * One route for all four roles — `users.role` decides what renders. A
  * dual-role account (user.is_admin, role isn't 'admin' — see
@@ -30,12 +40,15 @@ const DASHBOARDS = {
  * header.
  */
 function Dashboard() {
-  const { user, loading, viewMode } = useAuth();
+  const { user, profile, loading, viewMode } = useAuth();
   const { t } = useLang();
   if (loading) return <p className="p-8 text-gray-500">{t('common.loading')}</p>;
   if (!user) return <Navigate to="/" replace />;
 
   const effectiveRole = viewMode === 'admin' && user.is_admin ? 'admin' : user.role;
+  if (effectiveRole === 'company' && !isCompanyProfileComplete(profile)) {
+    return <Navigate to="/company-profile-setup" replace />;
+  }
   const Component = DASHBOARDS[effectiveRole];
   return Component ? <Component /> : <p className="p-8">Unknown role: {user.role}</p>;
 }
@@ -81,6 +94,7 @@ function roleRoute(Page, allowedRoles) {
 
 const VerifyEmail = roleRoute(VerifyEmailPage, ['student', 'company']);
 const ProfileSetup = roleRoute(ProfileSetupPage, ['student']);
+const CompanyProfileSetup = roleRoute(CompanyProfileSetupPage, ['company']);
 const Onboarding = roleRoute(OnboardingPage, ['student']);
 
 export default function App() {
@@ -96,6 +110,7 @@ export default function App() {
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/verify-email" element={<VerifyEmail />} />
                 <Route path="/profile-setup" element={<ProfileSetup />} />
+                <Route path="/company-profile-setup" element={<CompanyProfileSetup />} />
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/account" element={<Account />} />
                 <Route path="/dashboard" element={<Dashboard />} />

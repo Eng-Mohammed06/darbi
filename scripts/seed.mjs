@@ -286,11 +286,17 @@ async function seedDemoAccounts(client) {
 
   const companyId = await upsertUser('company@darbi.jo', 'demo_company', 'company');
   await client.query(
-    `INSERT INTO companies (user_id, name, industry, website)
-     VALUES ($1,$2,$3,$4)
+    `INSERT INTO companies (user_id, name, industry, website, description, location, logo)
+     VALUES ($1,$2,$3,$4,$5,$6,$7)
      ON CONFLICT (user_id) DO UPDATE SET
-       name = EXCLUDED.name, industry = EXCLUDED.industry, website = EXCLUDED.website`,
-    [companyId, 'Demo Tech Co.', 'Software', 'https://example.jo'],
+       name = EXCLUDED.name, industry = EXCLUDED.industry, website = EXCLUDED.website,
+       description = EXCLUDED.description, location = EXCLUDED.location, logo = EXCLUDED.logo`,
+    [companyId, 'Demo Tech Co.', 'Software', 'https://example.jo',
+     'A demo software company used for judging the DARBI platform.', 'Amman, Jordan',
+     // 1x1 transparent PNG — a real logo image would be dropped in for a real
+     // account; this just needs to satisfy the "logo required" completeness
+     // check (src/App.jsx) so the demo account isn't sent to the setup page.
+     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='],
   );
 
   const careerId = await upsertUser('career@darbi.jo', 'demo_career', 'career');

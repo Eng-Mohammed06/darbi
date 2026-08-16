@@ -20,9 +20,11 @@ export default function VerifyEmailPage() {
   const [status, setStatus] = useState('');
   const [busy, setBusy] = useState(false);
 
-  // Students continue into profile-setup/onboarding; other roles (company)
-  // have no further signup steps yet and land straight on their dashboard.
-  const destination = user?.role === 'student' ? '/profile-setup' : '/';
+  // Students continue into profile-setup/onboarding; companies continue into
+  // their own required profile step (industry/description/website/location/
+  // logo). Career has no further signup steps yet and lands on its dashboard.
+  const DESTINATION = { student: '/profile-setup', company: '/company-profile-setup' };
+  const destination = DESTINATION[user?.role] ?? '/';
 
   async function submit(e) {
     e.preventDefault();
