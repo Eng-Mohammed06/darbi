@@ -571,8 +571,8 @@ ${themeBlocks}
 .hp-landing .hp-hero { padding-block: 72px 56px; text-align: center; display: grid; justify-items: center; gap: 18px; }
 .hp-landing .hp-hero-mark { inline-size: 72px; block-size: 72px; object-fit: contain; margin-block-end: -6px; }
 .hp-landing .hp-hero-title {
-  margin: 0; font-weight: 700; letter-spacing: -0.02em; line-height: 1.08;
-  font-size: clamp(34px, 6vw + 12px, 68px); max-inline-size: 16ch;
+  margin: 0; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15;
+  font-size: clamp(26px, 3.4vw + 12px, 46px); max-inline-size: 26ch;
 }
 .hp-landing .hp-hero-sub { max-inline-size: 46ch; font-size: clamp(15px, .4vw + 14px, 17.5px); margin: 0; }
 .hp-landing .hp-hero-card {
