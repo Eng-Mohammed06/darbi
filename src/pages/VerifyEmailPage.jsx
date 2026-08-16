@@ -77,7 +77,7 @@ export default function VerifyEmailPage() {
       <Alert>{error}</Alert>
       {status && <p className="text-sm text-green-400 mb-4">{status}</p>}
 
-      <form onSubmit={submit} className="space-y-4 text-left">
+      <form onSubmit={submit} className="space-y-4 text-start">
         <label className="block">
           <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
             {t('verifyEmail.codeLabel')}

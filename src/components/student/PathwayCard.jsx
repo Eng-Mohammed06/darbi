@@ -213,8 +213,9 @@ export default function PathwayCard({ slug, onSave, onUnsave, saved, onClose }) 
 }
 
 function Stage({ n, title, arrow, children }) {
+  const { dir } = useLang();
   return (
-    <div className="relative p-6 border-b md:border-b-0 md:border-r last:border-r-0 border-[color:var(--darbi-border)]">
+    <div className="relative p-6 border-b md:border-b-0 md:border-e last:border-e-0 border-[color:var(--darbi-border)]">
 
       <div className="flex items-center gap-2 mb-3">
         <span
@@ -229,10 +230,10 @@ function Stage({ n, title, arrow, children }) {
       {/* The arrow that makes it read as a path rather than three columns. */}
       {arrow && (
         <span
-          className="hidden md:flex absolute top-7 -right-3 w-6 h-6 rounded-full items-center justify-center text-xs z-10"
+          className="hidden md:flex absolute top-7 -end-3 w-6 h-6 rounded-full items-center justify-center text-xs z-10"
           style={{ background: 'var(--darbi-gradient)', color: '#fff' }}
         >
-          →
+          {dir === 'rtl' ? '←' : '→'}
         </span>
       )}
     </div>

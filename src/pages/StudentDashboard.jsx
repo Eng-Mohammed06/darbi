@@ -373,13 +373,13 @@ function MajorExplorer() {
       {loading && <SkeletonLines lines={6} />}
       {majors.map((m) => (
         <div key={m.slug} className="border-b last:border-0 border-[color:var(--darbi-border)] py-3">
-          <button onClick={() => toggle(m.slug)} className="w-full text-left flex justify-between items-center">
+          <button onClick={() => toggle(m.slug)} className="w-full text-start flex justify-between items-center">
             <span className="font-semibold text-darbi-navy">{m.name}</span>
             <span className="text-sm text-gray-500">{t('student.majorExplorer.courseCount')(m.course_count)}</span>
           </button>
 
           {open === m.slug && (
-            <div className="mt-3 ml-4 text-sm">
+            <div className="mt-3 ms-4 text-sm">
               <p className="font-semibold text-darbi-navy mb-1.5">{t('student.majorExplorer.whereTaught')}</p>
               {detail.universities.length > 0 ? (
                 <ul className="text-gray-300 space-y-1 mb-4">
@@ -405,7 +405,7 @@ function MajorExplorer() {
 
               <p className="font-semibold text-darbi-navy mb-1.5">{t('student.majorExplorer.courses')}</p>
               {detail.courses.length > 0 ? (
-                <ul className="text-gray-300 space-y-2 list-none pl-0">
+                <ul className="text-gray-300 space-y-2 list-none ps-0">
                   {detail.courses.map((c) => (
                     <li key={c.id} className="flex items-start gap-2">
                       <input
@@ -420,12 +420,12 @@ function MajorExplorer() {
                         {c.provider && <span className="text-gray-500"> — {c.provider}</span>}
                         {c.cost_raw && <span className="text-gray-500"> · {c.cost_raw} JOD</span>}
                         {progress[c.id] === 'in_progress' && (
-                          <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-white/10" style={{ color: 'var(--darbi-purple)' }}>
+                          <span className="ms-2 text-xs px-2 py-0.5 rounded-full bg-white/10" style={{ color: 'var(--darbi-purple)' }}>
                             {t('student.takingNow')}
                           </span>
                         )}
                         {progress[c.id] === 'planned' && (
-                          <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-white/10 text-gray-400">
+                          <span className="ms-2 text-xs px-2 py-0.5 rounded-full bg-white/10 text-gray-400">
                             {t('student.considering')}
                           </span>
                         )}
@@ -542,7 +542,7 @@ function CourseChecklist({ profile, onGoToPathways }) {
             }
           >
             {list.length > 0 ? (
-              <ul className="text-gray-300 space-y-2 list-none pl-0">
+              <ul className="text-gray-300 space-y-2 list-none ps-0">
                 {list.map((c) => (
                   <li key={c.id} className="flex items-start gap-2">
                     <input
@@ -557,12 +557,12 @@ function CourseChecklist({ profile, onGoToPathways }) {
                       {c.provider && <span className="text-gray-500"> — {c.provider}</span>}
                       {c.cost_raw && <span className="text-gray-500"> · {c.cost_raw} JOD</span>}
                       {progress[c.id] === 'in_progress' && (
-                        <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-white/10" style={{ color: 'var(--darbi-purple)' }}>
+                        <span className="ms-2 text-xs px-2 py-0.5 rounded-full bg-white/10" style={{ color: 'var(--darbi-purple)' }}>
                           {t('student.takingNow')}
                         </span>
                       )}
                       {progress[c.id] === 'planned' && (
-                        <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-white/10 text-gray-400">
+                        <span className="ms-2 text-xs px-2 py-0.5 rounded-full bg-white/10 text-gray-400">
                           {t('student.considering')}
                         </span>
                       )}
@@ -636,7 +636,7 @@ function JobBoard() {
       <div className="divide-y divide-[color:var(--darbi-border)]">
         {jobs.slice(0, visible).map((j) => (
           <div key={j.id} className="py-3">
-            <button onClick={() => setOpen(open === j.id ? null : j.id)} className="w-full text-left">
+            <button onClick={() => setOpen(open === j.id ? null : j.id)} className="w-full text-start">
               <p className="font-semibold text-darbi-navy">{j.title}</p>
               <p className="text-sm text-gray-300">{j.company_name}</p>
               <p className="text-sm text-gray-500 mt-1">
@@ -647,7 +647,7 @@ function JobBoard() {
             </button>
 
             {open === j.id && (
-              <div className="mt-3 ml-1 text-sm space-y-1.5">
+              <div className="mt-3 ms-1 text-sm space-y-1.5">
                 <p className="text-gray-300">
                   <span className="font-semibold text-darbi-navy">{t('student.jobBoard.location')}</span>
                   {j.location ?? t('student.jobBoard.notStated')}

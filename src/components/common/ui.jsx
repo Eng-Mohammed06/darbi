@@ -341,7 +341,7 @@ export function Shell({ title, subtitle, tabs, activeTab, onTabChange, children 
                 <button
                   key={item.label}
                   onClick={() => { item.run(); setPaletteOpen(false); setPaletteQuery(''); }}
-                  className="w-full text-left px-4 py-2.5 text-sm text-gray-200 hover:bg-white/5 transition flex items-center gap-2.5"
+                  className="w-full text-start px-4 py-2.5 text-sm text-gray-200 hover:bg-white/5 transition flex items-center gap-2.5"
                 >
                   <span aria-hidden="true">{item.icon}</span> {item.label}
                 </button>

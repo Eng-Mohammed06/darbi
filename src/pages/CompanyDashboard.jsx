@@ -206,7 +206,7 @@ function Overview() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-xs uppercase tracking-wide text-gray-500" style={{ borderBottom: '1px solid var(--darbi-border)' }}>
+                <tr className="text-start text-xs uppercase tracking-wide text-gray-500" style={{ borderBottom: '1px solid var(--darbi-border)' }}>
                   <th className="pb-2 pe-4 font-semibold">{t('company.overview.candidateHeader')}</th>
                   <th className="pb-2 pe-4 font-semibold">{t('company.overview.positionHeader')}</th>
                   <th className="pb-2 pe-4 font-semibold">{t('company.overview.aiMatchHeader')}</th>
@@ -572,7 +572,7 @@ function JobPosting({ job: j, onRemove, onStatusChange }) {
       </p>
 
       <div className="flex items-center justify-between gap-2 mt-3">
-        <button onClick={toggle} className="text-xs font-semibold text-left" style={{ color: 'var(--darbi-purple)' }}>
+        <button onClick={toggle} className="text-xs font-semibold text-start" style={{ color: 'var(--darbi-purple)' }}>
           {t('company.jobPosting.applicants')(j.applicant_count)} {open ? '▲' : '▼'}
         </button>
         <button

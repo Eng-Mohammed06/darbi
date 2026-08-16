@@ -179,7 +179,7 @@ export default function ChatAdvisor({ student, onFallback }) {
                 <button
                   key={o}
                   onClick={() => send(o)}
-                  className="text-sm text-left text-gray-200 px-4 py-2 rounded-full border border-white/10 hover:border-[var(--darbi-purple)] hover:bg-white/5 transition max-w-md w-full"
+                  className="text-sm text-start text-gray-200 px-4 py-2 rounded-full border border-white/10 hover:border-[var(--darbi-purple)] hover:bg-white/5 transition max-w-md w-full"
                 >
                   {o}
                 </button>
@@ -237,12 +237,14 @@ export default function ChatAdvisor({ student, onFallback }) {
 }
 
 function Bubble({ role, text }) {
+  const { dir } = useLang();
   const mine = role === 'user';
+  const tailCorner = mine === (dir === 'ltr') ? 'rounded-br-sm' : 'rounded-bl-sm';
   return (
     <div className={`mb-3 flex ${mine ? 'justify-end' : 'justify-start'}`}>
       <div
         className={`max-w-[80%] px-4 py-2.5 rounded-2xl whitespace-pre-wrap ${
-          mine ? 'text-white rounded-br-sm' : 'bg-white/10 text-gray-100 rounded-bl-sm'
+          mine ? `text-white ${tailCorner}` : `bg-white/10 text-gray-100 ${tailCorner}`
         }`}
         style={mine ? { background: 'var(--darbi-gradient)' } : undefined}
       >

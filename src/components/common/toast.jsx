@@ -39,7 +39,7 @@ export function ToastProvider({ children }) {
     <ToastContext.Provider value={{ show, dismiss }}>
       {children}
       <div
-        className="fixed bottom-4 inset-x-0 sm:inset-x-auto sm:right-4 z-[60] flex flex-col gap-2 px-4 sm:px-0 items-center sm:items-end"
+        className="fixed bottom-4 inset-x-0 sm:inset-x-auto sm:end-4 z-[60] flex flex-col gap-2 px-4 sm:px-0 items-center sm:items-end"
         aria-live="polite"
       >
         {toasts.map((toastItem) => (

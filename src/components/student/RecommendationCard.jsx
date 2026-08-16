@@ -40,7 +40,7 @@ export default function RecommendationCard({
         )}
         <h3 className="text-lg font-bold text-darbi-navy uppercase tracking-wide">{major.name}</h3>
         {recommendation?.fit_score != null && (
-          <span className="ml-auto text-sm text-gray-500 shrink-0">
+          <span className="ms-auto text-sm text-gray-500 shrink-0">
             {t('student.recommendationCard.fitPercent')(recommendation.fit_score)}
           </span>
         )}

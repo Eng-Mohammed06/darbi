@@ -310,7 +310,7 @@ export default {
       noAiFallbackFooter: ' — فهي تعمل دون الحاجة إلى الذكاء الاصطناعي.',
       title: 'تحدّث مع داربي',
       subtitle: 'مبني على بيانات داربي الموثّقة للمقررات والوظائف الأردنية',
-      seeRecommendations: 'عرض التوصيات →',
+      seeRecommendations: 'عرض التوصيات ←',
       startOver: 'البدء من جديد',
       greeting: (name) => `مرحبًا ${name} — بماذا تفكّر؟`,
       greetingNameFallback: 'صديقي',

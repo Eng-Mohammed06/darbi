@@ -145,7 +145,7 @@ export default function ProfileSetupPage() {
 
       <Alert>{error}</Alert>
 
-      <form onSubmit={submit} className="space-y-4 text-left">
+      <form onSubmit={submit} className="space-y-4 text-start">
         <label className="block">
           <span className="block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
             {t('profileSetup.levelLabel')}
@@ -279,7 +279,7 @@ export default function ProfileSetupPage() {
                 key={i}
                 type="button"
                 onClick={() => removeInterest(i)}
-                className="text-xs font-semibold pl-3 pr-2.5 py-1.5 rounded-full flex items-center gap-1.5 text-white transition hover:brightness-110"
+                className="text-xs font-semibold ps-3 pe-2.5 py-1.5 rounded-full flex items-center gap-1.5 text-white transition hover:brightness-110"
                 style={{ background: 'var(--darbi-gradient)' }}
               >
                 {i} <span aria-hidden="true">×</span>

@@ -207,7 +207,7 @@ function UserRow({ u, t, onSelect, onRemove }) {
     <button
       type="button"
       onClick={onSelect}
-      className="w-full flex items-center justify-between gap-3 py-3 border-b last:border-0 text-left hover:bg-white/5 transition rounded-lg px-2 -mx-2"
+      className="w-full flex items-center justify-between gap-3 py-3 border-b last:border-0 text-start hover:bg-white/5 transition rounded-lg px-2 -mx-2"
       style={{ borderColor: 'var(--darbi-border)' }}
     >
       <div className="min-w-0">
@@ -405,7 +405,7 @@ function Row({ label, value }) {
   return (
     <div className="flex justify-between gap-4">
       <dt className="text-gray-500">{label}</dt>
-      <dd className="text-white font-medium text-right">{value}</dd>
+      <dd className="text-white font-medium text-end">{value}</dd>
     </div>
   );
 }
@@ -949,7 +949,7 @@ function MajorRow({ major, open, onToggle, onUpdated, onDeleted }) {
 
   return (
     <div className="border-b last:border-0 py-3" style={{ borderColor: 'var(--darbi-border)' }}>
-      <button type="button" onClick={onToggle} className="w-full text-left flex items-center justify-between gap-3">
+      <button type="button" onClick={onToggle} className="w-full text-start flex items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="font-semibold text-white truncate">{major.name}</p>
           <p className="text-xs text-gray-500 truncate">
@@ -1230,7 +1230,7 @@ function CoursesSection({ majorId, courses, onCoursesChange }) {
       ) : courses.length === 0 ? (
         <p className="text-sm text-gray-500 italic">{ct.none}</p>
       ) : (
-        <ul className="list-none pl-0 ps-0">
+        <ul className="list-none ps-0">
           {courses.map((c) => (
             <CourseRow key={c.id} course={c} onUpdated={updated} onDeleted={removed} />
           ))}
@@ -1472,7 +1472,7 @@ function UniversitiesSection({ majorId, universities, allUniversities, onUnivers
       ) : universities.length === 0 ? (
         <p className="text-sm text-gray-500 italic">{ut.none}</p>
       ) : (
-        <ul className="list-none pl-0 ps-0">
+        <ul className="list-none ps-0">
           {universities.map((u) => (
             <UniversityLinkRow
               key={keyOf(u)}

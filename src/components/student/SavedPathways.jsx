@@ -50,7 +50,7 @@ export default function SavedPathways() {
             return (
               <div
                 key={m.slug}
-                className={`text-left p-4 rounded-2xl border-2 transition ${
+                className={`text-start p-4 rounded-2xl border-2 transition ${
                   open ? '' : 'border-white/10 hover:border-white/25'
                 }`}
                 style={
@@ -62,7 +62,7 @@ export default function SavedPathways() {
                 <div className="flex justify-between items-start gap-2">
                   <button
                     onClick={() => setSelected(open ? null : m.slug)}
-                    className="font-semibold text-darbi-navy text-left"
+                    className="font-semibold text-darbi-navy text-start"
                   >
                     {m.name}
                   </button>

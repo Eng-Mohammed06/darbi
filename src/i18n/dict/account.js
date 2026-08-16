@@ -40,7 +40,7 @@ export default {
     cropConfirm: 'Use this photo',
   },
   ar: {
-    back: '← رجوع',
+    back: '→ رجوع',
     title: 'الحساب',
     tabProfile: 'الملف الشخصي',
     tabSecurity: 'الأمان',
