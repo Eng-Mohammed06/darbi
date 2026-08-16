@@ -83,45 +83,50 @@ export function DarkField({ label, hint, action, children }) {
 /** Dark-card shell used by every pre-login page (AuthPage, ResetPasswordPage). */
 export function DarkCard({ title, subtitle, children }) {
   return (
-    <div className="min-h-screen flex relative overflow-hidden" style={{ background: 'var(--darbi-bg)' }}>
+    <div className="min-h-screen flex flex-col relative overflow-hidden" style={{ background: 'var(--darbi-bg)' }}>
       {/* One background spanning the full width, not one per half — two
           separate Wisps each confined to a half-width panel left a hard
           seam down the middle where neither's blobs reached. */}
       <Wisps palette={[PURPLE, GOLD]} opacity={0.5} fixed />
 
-      <div className="absolute top-4 end-4 z-20">
+      {/* In normal document flow (not absolutely overlaid) so it can never
+          sit on top of the card below it — it just scrolls with the rest
+          of the page like everything else. */}
+      <div className="flex justify-end p-4 relative z-20">
         <ThemeLangSwitcher dark />
       </div>
 
-      <div className="hidden lg:flex lg:w-1/2 relative z-10 flex-col justify-center px-16">
-        <div>
-          <h1
-            className="text-6xl font-extrabold text-white tracking-tight"
-            style={{ textShadow: `0 0 50px color-mix(in srgb, ${PURPLE} 60%, transparent)` }}
-          >
-            Darbi
-          </h1>
-          <p className="text-lg mt-3" style={{ color: 'var(--darbi-purple)' }}>
-            Career Assistant Platform
-          </p>
+      <div className="flex-1 flex relative z-10">
+        <div className="hidden lg:flex lg:w-1/2 relative z-10 flex-col justify-center px-16">
+          <div>
+            <h1
+              className="text-6xl font-extrabold text-white tracking-tight"
+              style={{ textShadow: `0 0 50px color-mix(in srgb, ${PURPLE} 60%, transparent)` }}
+            >
+              Darbi
+            </h1>
+            <p className="text-lg mt-3" style={{ color: 'var(--darbi-purple)' }}>
+              Career Assistant Platform
+            </p>
+          </div>
         </div>
-      </div>
 
-      <div className="flex-1 relative z-10 flex items-center justify-center px-4 py-10">
-        <div className="relative z-10 w-full max-w-md">
-          <div
-            className="rounded-3xl p-8"
-            style={{
-              background: 'var(--darbi-surface)',
-              border: `1px solid color-mix(in srgb, ${PURPLE} 25%, transparent)`,
-              boxShadow: `0 0 60px color-mix(in srgb, ${PURPLE_DARK} 15%, transparent)`,
-            }}
-          >
-            <div className="text-center mb-6">
-              <h2 className="text-xl font-bold text-white">{title}</h2>
-              {subtitle && <p className="text-gray-400 text-sm mt-1">{subtitle}</p>}
+        <div className="flex-1 relative z-10 flex items-center justify-center px-4 py-10">
+          <div className="relative z-10 w-full max-w-md">
+            <div
+              className="rounded-3xl p-8"
+              style={{
+                background: 'var(--darbi-surface)',
+                border: `1px solid color-mix(in srgb, ${PURPLE} 25%, transparent)`,
+                boxShadow: `0 0 60px color-mix(in srgb, ${PURPLE_DARK} 15%, transparent)`,
+              }}
+            >
+              <div className="text-center mb-6">
+                <h2 className="text-xl font-bold text-white">{title}</h2>
+                {subtitle && <p className="text-gray-400 text-sm mt-1">{subtitle}</p>}
+              </div>
+              {children}
             </div>
-            {children}
           </div>
         </div>
       </div>

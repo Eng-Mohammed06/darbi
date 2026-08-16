@@ -14,6 +14,11 @@ const router = Router();
 const ROLES = ['student', 'company', 'career'];
 const CODE_TTL_MINUTES = 15;
 
+/** Turns a company name into a URL/login-safe handle; not shown to the user. */
+function slugifyUsername(str) {
+  return String(str).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'company';
+}
+
 /**
  * Signup/forgot-password must not fail just because the email provider hiccuped
  * — verification, reset, and the welcome email are all a soft nag/nicety, never
@@ -60,17 +65,21 @@ async function loadProfile(userId, role) {
  * { email, username, password, role, ...role-specific fields }
  * Creates the user and its profile row in one transaction. `name` (shown as
  * "Welcome, X" and on job postings) is no longer collected separately at
- * signup — it defaults to the username, which is otherwise required anyway.
+ * signup for student/career — it defaults to the username, which is
+ * otherwise required anyway. Company signup is the exception: it collects
+ * Company Name instead of a username (see AuthPage.jsx), so `name` is
+ * required there and `username` is generated server-side instead.
  */
 router.post(
   '/signup',
   asyncRoute(async (req, res) => {
     const { email, username, password, role, name } = req.body ?? {};
 
-    if (!email || !username || !password || !role) {
+    const needsUsername = role !== 'company';
+    if (!email || !password || !role || (needsUsername && !username) || (role === 'company' && !name)) {
       return res.status(400).json({
         error: 'missing_fields',
-        need: ['email', 'username', 'password', 'role'],
+        need: role === 'company' ? ['email', 'password', 'role', 'name'] : ['email', 'username', 'password', 'role'],
       });
     }
     if (!ROLES.includes(role)) {
@@ -85,8 +94,12 @@ router.post(
     }
 
     const normalizedEmail = String(email).trim().toLowerCase();
-    const normalizedUsername = String(username).trim();
-    const displayName = name ? String(name).trim() : normalizedUsername;
+    const displayName = name ? String(name).trim() : String(username).trim();
+    // Company accounts don't collect a username at signup — derive a unique
+    // one from the company name so login-by-username still works.
+    const normalizedUsername = username
+      ? String(username).trim()
+      : `${slugifyUsername(displayName)}-${Date.now().toString(36)}`;
     const passwordHash = await hashPassword(String(password));
 
     let user;

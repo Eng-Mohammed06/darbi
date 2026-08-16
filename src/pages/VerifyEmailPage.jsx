@@ -20,6 +20,10 @@ export default function VerifyEmailPage() {
   const [status, setStatus] = useState('');
   const [busy, setBusy] = useState(false);
 
+  // Students continue into profile-setup/onboarding; other roles (company)
+  // have no further signup steps yet and land straight on their dashboard.
+  const destination = user?.role === 'student' ? '/profile-setup' : '/';
+
   async function submit(e) {
     e.preventDefault();
     setError('');
@@ -27,7 +31,7 @@ export default function VerifyEmailPage() {
     try {
       const updated = await verifyEmail(code);
       setUser(updated);
-      navigate('/profile-setup');
+      navigate(destination);
     } catch (err) {
       setError(
         {
@@ -56,9 +60,11 @@ export default function VerifyEmailPage() {
 
   return (
     <CenteredCard>
-      <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--darbi-gold)' }}>
-        {t('verifyEmail.stepIndicator')}
-      </p>
+      {user?.role === 'student' && (
+        <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--darbi-gold)' }}>
+          {t('verifyEmail.stepIndicator')}
+        </p>
+      )}
       <h1 className="text-lg font-bold text-darbi-navy mt-2 mb-2">{t('verifyEmail.heading')}</h1>
       <p className="text-sm text-gray-400 mb-5">
         {t('verifyEmail.sentCodePrefix')}{' '}
@@ -103,7 +109,7 @@ export default function VerifyEmailPage() {
       </button>
       <button
         type="button"
-        onClick={() => navigate('/profile-setup')}
+        onClick={() => navigate(destination)}
         disabled={busy}
         className="text-xs text-gray-500 mt-3 underline block mx-auto"
       >

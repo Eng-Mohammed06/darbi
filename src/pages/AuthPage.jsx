@@ -69,6 +69,10 @@ export default function AuthPage() {
     setError('');
 
     if (mode === 'signup') {
+      if (role === 'company' && form.password !== form.confirmPassword) {
+        setError(t('auth.errPasswordMismatch'));
+        return;
+      }
       const issues = passwordIssues(form.password, lang);
       if (issues.length) {
         setError(t('auth.passwordNeeds')(issues.join(', ')));
@@ -89,6 +93,7 @@ export default function AuthPage() {
         await signup({
           email: form.email,
           username: form.username,
+          name: role === 'company' ? form.companyName : undefined,
           password: form.password,
           role,
           // Interests drive the recommendation engine, so capture them at signup.
@@ -106,8 +111,10 @@ export default function AuthPage() {
         // Students verify their email, then fill in level/interests/location,
         // then answer the onboarding questionnaire, before landing on their
         // dashboard — see VerifyEmailPage, ProfileSetupPage, OnboardingPage.
-        // Other roles have no such flow yet.
-        navigate(role === 'student' ? '/verify-email' : '/');
+        // Company accounts also verify their email, then land straight on
+        // their dashboard (no profile-setup/onboarding step yet). Career has
+        // no such flow yet.
+        navigate(['student', 'company'].includes(role) ? '/verify-email' : '/');
       }
     } catch (err) {
       setError(
@@ -123,16 +130,20 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex relative overflow-hidden" style={{ background: 'var(--darbi-bg)' }}>
+    <div className="min-h-screen flex flex-col relative overflow-hidden" style={{ background: 'var(--darbi-bg)' }}>
       {/* One background spanning the full width, not one per half — two
           separate Wisps each confined to a half-width panel left a hard
           seam down the middle where neither's blobs reached. */}
       <Wisps palette={[PURPLE, GOLD]} opacity={0.5} fixed />
 
-      <div className="absolute top-4 end-4 z-20">
+      {/* In normal document flow (not absolutely overlaid) so it can never
+          sit on top of the card below it — it just scrolls with the rest
+          of the page like everything else. */}
+      <div className="flex justify-end p-4 relative z-20">
         <ThemeLangSwitcher dark />
       </div>
 
+      <div className="flex-1 flex relative z-10">
       <div className="hidden lg:flex lg:w-1/2 relative z-10 flex-col justify-center px-16">
         <div>
           <h1
@@ -248,7 +259,13 @@ export default function AuthPage() {
             )}
 
             <form onSubmit={submit} className="space-y-4">
-              {mode === 'signup' && (
+              {mode === 'signup' && role === 'company' && (
+                <DarkField label={t('auth.companyName')}>
+                  <input className={darkInput} value={form.companyName ?? ''} onChange={set('companyName')} required />
+                </DarkField>
+              )}
+
+              {mode === 'signup' && role !== 'company' && (
                 <DarkField label={t('auth.username')}>
                   <input className={darkInput} value={form.username ?? ''} onChange={set('username')} required />
                 </DarkField>
@@ -284,16 +301,16 @@ export default function AuthPage() {
                 {mode === 'signup' && <PasswordStrengthMeter password={form.password} />}
               </DarkField>
 
+              {mode === 'signup' && role === 'company' && (
+                <DarkField label={t('auth.confirmPassword')}>
+                  <input type="password" className={darkInput} value={form.confirmPassword ?? ''} onChange={set('confirmPassword')} required />
+                </DarkField>
+              )}
+
               {mode === 'signup' && role === 'student' && (
                 <p className="text-xs text-gray-500 -mt-1">
                   {t('auth.studentSignupNote')}
                 </p>
-              )}
-
-              {mode === 'signup' && role === 'company' && (
-                <DarkField label={t('auth.industry')}>
-                  <input className={darkInput} placeholder={t('auth.industryPlaceholder')} value={form.industry ?? ''} onChange={set('industry')} />
-                </DarkField>
               )}
 
               {mode === 'signup' && role === 'career' && (
@@ -323,6 +340,7 @@ export default function AuthPage() {
             )}
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

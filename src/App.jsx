@@ -63,23 +63,25 @@ function Account() {
 
 /**
  * The post-signup sequence — verify email, then level/interests/location,
- * then the questionnaire — is student-only, and only while signed in. All
- * three guard the same way, so one helper builds each route's element.
+ * then the questionnaire — only applies while signed in, and each step is
+ * gated to whichever roles actually have it. Verify-email is shared by
+ * student and company (both collect a code at signup); profile-setup and
+ * onboarding are still student-only.
  */
-function studentOnlyRoute(Page) {
+function roleRoute(Page, allowedRoles) {
   return function Guarded() {
     const { user, loading } = useAuth();
     const { t } = useLang();
     if (loading) return <p className="p-8 text-gray-500">{t('common.loading')}</p>;
     if (!user) return <Navigate to="/" replace />;
-    if (user.role !== 'student') return <Navigate to="/" replace />;
+    if (!allowedRoles.includes(user.role)) return <Navigate to="/" replace />;
     return <Page />;
   };
 }
 
-const VerifyEmail = studentOnlyRoute(VerifyEmailPage);
-const ProfileSetup = studentOnlyRoute(ProfileSetupPage);
-const Onboarding = studentOnlyRoute(OnboardingPage);
+const VerifyEmail = roleRoute(VerifyEmailPage, ['student', 'company']);
+const ProfileSetup = roleRoute(ProfileSetupPage, ['student']);
+const Onboarding = roleRoute(OnboardingPage, ['student']);
 
 export default function App() {
   return (
