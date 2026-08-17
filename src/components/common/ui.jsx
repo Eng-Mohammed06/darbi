@@ -574,6 +574,7 @@ export function Footer() {
         <Link to="/" className="hover:text-gray-300 transition">Darbi</Link>
         {' · '}
         <Link to="/about-data" className="hover:text-gray-300 transition">{t('aboutData.title')}</Link>
+        {' '}({t('common.footerSourceOfTruth')})
       </p>
     </footer>
   );

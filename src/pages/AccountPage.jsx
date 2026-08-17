@@ -63,7 +63,10 @@ export default function AccountPage() {
           {tab === 'security' && <SecurityTab />}
 
           <div className="flex justify-end mt-6">
-            <button onClick={logout} className="text-sm text-gray-500 hover:text-red-400 transition">
+            <button
+              onClick={logout}
+              className="text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-full px-5 py-2 transition"
+            >
               {t('account.signOut')}
             </button>
           </div>
