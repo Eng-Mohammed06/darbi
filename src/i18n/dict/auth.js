@@ -1,3 +1,5 @@
+import { arabicPluralForm } from '../../lib/arabicPlural.js';
+
 export default {
   en: {
     roleStudent: 'Student',
@@ -7,7 +9,7 @@ export default {
     portal: {
       student: { title: 'Student Portal', blurb: 'Find your engineering major' },
       company: { title: 'Company Portal', blurb: 'Find engineering talent' },
-      career: { title: 'Career Boost', blurb: 'Advance your engineering career' },
+      career: { title: 'Graduate Portal', blurb: 'Advance your engineering career' },
       admin: { title: 'Admin', blurb: 'Full platform control' },
     },
     unknownPortal: 'Unknown portal.',
@@ -46,9 +48,9 @@ export default {
     roleCompany: 'شركة',
     roleAdmin: 'مدير',
     portal: {
-      student: { title: 'بوابة الطلبة', blurb: 'اعثر على تخصصك الهندسي' },
+      student: { title: 'بوابة الطلاب', blurb: 'اعثر على تخصصك الهندسي' },
       company: { title: 'بوابة الشركات', blurb: 'اعثر على الكفاءات الهندسية' },
-      career: { title: 'تطوير المهارات', blurb: 'طوّر مسيرتك المهنية الهندسية' },
+      career: { title: 'بوابة الخريجين', blurb: 'طوّر مسيرتك المهنية الهندسية' },
       admin: { title: 'الإدارة', blurb: 'تحكّم كامل بالمنصة' },
     },
     unknownPortal: 'بوابة غير معروفة.',
@@ -71,7 +73,10 @@ export default {
     yearsExperience: 'سنوات الخبرة',
     engineeringMajor: 'التخصص الهندسي',
     engineeringMajorPlaceholder: 'هندسة الحاسوب',
-    statsLine: (majors, courses, jobs) => `${majors} تخصصًا · ${courses} مقررًا موثقًا · ${jobs} وظيفة موثقة`,
+    statsLine: (majors, courses, jobs) =>
+      `${majors} ${arabicPluralForm(majors, { zero: 'تخصصات', one: 'تخصص', two: 'تخصصان', few: 'تخصصات', many: 'تخصصًا' })} · ` +
+      `${courses} ${arabicPluralForm(courses, { zero: 'مقررات موثقة', one: 'مقرر موثق', two: 'مقرران موثقان', few: 'مقررات موثقة', many: 'مقررًا موثقًا' })} · ` +
+      `${jobs} ${arabicPluralForm(jobs, { zero: 'وظائف موثقة', one: 'وظيفة موثقة', two: 'وظيفتان موثقتان', few: 'وظائف موثقة', many: 'وظيفة موثقة' })}`,
     passwordNeeds: (issues) => `كلمة المرور تحتاج ${issues}.`,
     errInvalidCredentials: 'البريد الإلكتروني وكلمة المرور غير متطابقين.',
     errEmailTaken: 'يوجد حساب مسجّل بهذا البريد الإلكتروني بالفعل. جرّب تسجيل الدخول.',

@@ -95,7 +95,7 @@ export default {
     delete: 'حذف',
     undo: 'تراجع',
     loading: 'جارٍ التحميل…',
-    verifyBanner: (email) => `فعّل بريدك الإلكتروني (${email}) للحفاظ على أمان حسابك.`,
+    verifyBanner: (email) => `أكّد بريدك الإلكتروني (${email}) للحفاظ على أمان حسابك.`,
     verifyHide: 'إخفاء',
     verifyEnterCode: 'أدخل الرمز',
     verifyResend: 'إعادة إرسال الرمز',

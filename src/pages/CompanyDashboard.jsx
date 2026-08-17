@@ -261,10 +261,10 @@ function PostJob() {
         method: 'POST',
         body: {
           title: form.title,
-          requiredMajors: (form.majors ?? '').split(',').map((s) => s.trim()).filter(Boolean),
+          requiredMajors: (form.majors ?? '').split(/[,،]/).map((s) => s.trim()).filter(Boolean),
           minGpa: form.minGpa === '' || form.minGpa == null ? null : Number(form.minGpa),
           salaryRange: form.salary || null,
-          requiredSkills: (form.skills ?? '').split(',').map((s) => s.trim()).filter(Boolean),
+          requiredSkills: (form.skills ?? '').split(/[,،]/).map((s) => s.trim()).filter(Boolean),
           location: form.location || null,
           description: form.description || null,
           responsibilities: form.responsibilities || null,
@@ -363,8 +363,8 @@ function PostJob() {
 
 function JobPreview({ form }) {
   const { t } = useLang();
-  const majors = (form.majors ?? '').split(',').map((s) => s.trim()).filter(Boolean);
-  const skills = (form.skills ?? '').split(',').map((s) => s.trim()).filter(Boolean);
+  const majors = (form.majors ?? '').split(/[,،]/).map((s) => s.trim()).filter(Boolean);
+  const skills = (form.skills ?? '').split(/[,،]/).map((s) => s.trim()).filter(Boolean);
 
   return (
     <div className="lg:sticky lg:top-6">
@@ -474,7 +474,7 @@ function MyJobs() {
     <>
       <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
         <h2 className="text-lg font-bold text-darbi-navy">
-          {loading ? t('company.myJobs.loading') : t('company.myJobs.count')(filteredJobs.length, t(`company.jobStatus.${filter}`))}
+          {loading ? t('company.myJobs.loading') : t('company.myJobs.count')(filteredJobs.length, filter)}
         </h2>
         <div
           className="flex rounded-full p-1 shrink-0"

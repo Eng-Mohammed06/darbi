@@ -3,6 +3,8 @@
 // draft/active/closed, with an expandable applicant list), and Find
 // Students (talent-pool search). Namespace mirrors CompanyDashboard.jsx's
 // tab components.
+import { arabicPluralForm } from '../../lib/arabicPlural.js';
+
 export default {
   en: {
     companyFallback: 'Company',
@@ -94,7 +96,7 @@ export default {
     },
     myJobs: {
       loading: 'Loading postings…',
-      count: (n, label) => `${n} ${label.toLowerCase()} posting${n === 1 ? '' : 's'}`,
+      count: (n, filter) => `${n} ${filter} posting${n === 1 ? '' : 's'}`,
       emptyTitle: 'Nothing here yet.',
       deleted: (title) => `Deleted "${title}".`,
       published: (title) => `Published "${title}".`,
@@ -129,7 +131,7 @@ export default {
     },
     findStudents: {
       searching: 'Searching…',
-      matchCount: (n) => `${n} matching student(s)`,
+      matchCount: (n) => `${n} matching student${n === 1 ? '' : 's'}`,
       majorLabel: 'Interest / major',
       majorPlaceholder: 'Cybersecurity',
       minGpaLabel: 'Minimum GPA',
@@ -208,7 +210,7 @@ export default {
       drafted: (title) => `تم حفظ "${title}" كمسودة.`,
     },
     preview: {
-      label: 'معاينة — كما سيراها الطلبة',
+      label: 'معاينة — كما سيراها الطلاب',
       titlePlaceholder: 'المسمى الوظيفي',
       locationNotSet: 'الموقع غير محدد',
       salaryLabel: 'الراتب:',
@@ -223,7 +225,14 @@ export default {
     },
     myJobs: {
       loading: 'جارٍ تحميل الوظائف المنشورة…',
-      count: (n, label) => `${n} وظيفة ${label}`,
+      count: (n, filter) => {
+        const forms = {
+          draft: { zero: 'مسودات', one: 'مسودة', two: 'مسودتان', few: 'مسودات', many: 'مسودة' },
+          active: { zero: 'وظائف نشطة', one: 'وظيفة نشطة', two: 'وظيفتان نشطتان', few: 'وظائف نشطة', many: 'وظيفة نشطة' },
+          closed: { zero: 'وظائف مغلقة', one: 'وظيفة مغلقة', two: 'وظيفتان مغلقتان', few: 'وظائف مغلقة', many: 'وظيفة مغلقة' },
+        };
+        return `${n} ${arabicPluralForm(n, forms[filter] ?? forms.active)}`;
+      },
       emptyTitle: 'لا يوجد شيء هنا بعد.',
       deleted: (title) => `تم حذف "${title}".`,
       published: (title) => `تم نشر "${title}".`,
@@ -258,12 +267,13 @@ export default {
     },
     findStudents: {
       searching: 'جارٍ البحث…',
-      matchCount: (n) => `${n} طالب مطابق`,
+      matchCount: (n) =>
+        `${n} ${arabicPluralForm(n, { zero: 'طلاب مطابقون', one: 'طالب مطابق', two: 'طالبان مطابقان', few: 'طلاب مطابقون', many: 'طالبًا مطابقًا' })}`,
       majorLabel: 'الاهتمام / التخصص',
       majorPlaceholder: 'الأمن السيبراني',
       minGpaLabel: 'الحد الأدنى للمعدل',
-      emptyTitle: 'لا يوجد طلبة مطابقون لهذه الفلاتر بعد — جرّب توسيع نطاق البحث.',
-      footerNote: 'هذه ميزة تصفح فقط — لا تتوفر في دربي رسائل مباشرة بعد. لا تُعرض بيانات التواصل هنا حفاظًا على خصوصية الطلبة؛ انشر وظيفة مطابقة وسيظهر المتقدمون ضمن تبويب وظائفي.',
+      emptyTitle: 'لا يوجد طلاب مطابقون لهذه الفلاتر بعد — جرّب توسيع نطاق البحث.',
+      footerNote: 'هذه ميزة تصفح فقط — لا تتوفر في دربي رسائل مباشرة بعد. لا تُعرض بيانات التواصل هنا حفاظًا على خصوصية الطلاب؛ انشر وظيفة مطابقة وسيظهر المتقدمون ضمن تبويب وظائفي.',
     },
   },
 };

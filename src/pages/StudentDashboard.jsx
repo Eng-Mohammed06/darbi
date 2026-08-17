@@ -218,7 +218,7 @@ function ProfileForm({ profile, onSaved }) {
         body: {
           name: form.name,
           level: form.level || null,
-          interests: form.interests.split(',').map((s) => s.trim()).filter(Boolean),
+          interests: form.interests.split(/[,،]/).map((s) => s.trim()).filter(Boolean),
           gpa: form.gpa === '' ? null : Number(form.gpa),
           gpaScale: form.gpaScale,
           tawjihiAverage: form.tawjihiAverage === '' ? null : Number(form.tawjihiAverage),

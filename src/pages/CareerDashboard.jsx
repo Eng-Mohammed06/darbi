@@ -1360,7 +1360,7 @@ function TagListCard({ title, value, placeholder, emptyLabel, p, onSave }) {
     setError('');
     setBusy(true);
     try {
-      await onSave(draft.split(',').map((s) => s.trim()).filter(Boolean));
+      await onSave(draft.split(/[,،]/).map((s) => s.trim()).filter(Boolean));
       toast.show(p.savedToast, { kind: 'success' });
       setEditing(false);
     } catch (err) {

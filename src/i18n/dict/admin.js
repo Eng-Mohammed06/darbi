@@ -196,7 +196,7 @@ export default {
     pageTitle: 'لوحة إدارة دربي',
     overview: {
       loadingStats: 'جارٍ تحميل الإحصائيات…',
-      students: 'الطلبة',
+      students: 'الطلاب',
       companies: 'الشركات',
       graduates: 'الخريجون',
       totalJobListings: 'إجمالي الوظائف المُدرجة',

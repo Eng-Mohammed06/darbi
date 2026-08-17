@@ -99,7 +99,7 @@ export default function AuthPage() {
           role,
           // Interests drive the recommendation engine, so capture them at signup.
           interests: form.interests
-            ? form.interests.split(',').map((s) => s.trim()).filter(Boolean)
+            ? form.interests.split(/[,،]/).map((s) => s.trim()).filter(Boolean)
             : [],
           gpa: form.gpa ? Number(form.gpa) : null,
           level: form.level || null,

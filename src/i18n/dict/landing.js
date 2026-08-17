@@ -1,3 +1,5 @@
+import { arabicPluralForm } from '../../lib/arabicPlural.js';
+
 export default {
   en: {
     navStudent: 'Student',
@@ -19,7 +21,12 @@ export default {
         body: 'Every pathway connects your major to the universities that teach it, the courses that build the skills you need, and the real job listings waiting at the other end — one clear path with Darbi, instead of getting lost in scattered numbers and information.',
       },
     ],
-    statsLabels: { majors: 'majors', courses: 'verified courses', jobs: 'verified job listings', trailing: 'every figure traced to a source.' },
+    statsLabels: {
+      majors: (n) => (n === 1 ? 'major' : 'majors'),
+      courses: (n) => (n === 1 ? 'verified course' : 'verified courses'),
+      jobs: (n) => (n === 1 ? 'verified job listing' : 'verified job listings'),
+      trailing: 'every figure traced to a source.',
+    },
     panelEyebrow: 'Career advice you can check',
     msgWho: 'Darbi advisor',
     sourcesLabel: 'Sources for this answer',
@@ -36,11 +43,11 @@ export default {
     navCompany: 'صاحب عمل',
     navCareer: 'خريج',
     title: 'يستحق كل طالب رؤية الطريق قبل اختياره.',
-    sub: 'دربي مرشد مهني ذكي لطلبة الهندسة في الأردن، يساعدك على استكشاف التخصصات والرواتب والوظائف، استنادًا إلى بيانات حقيقية وموثّقة.',
+    sub: 'دربي مرشد مهني ذكي لطلاب الهندسة في الأردن، يساعدك على استكشاف التخصصات والرواتب والوظائف، استنادًا إلى بيانات حقيقية وموثّقة.',
     pillars: [
       {
         title: 'بيانات أردنية موثوقة',
-        body: 'كل تخصص، ونطاق راتب، وإعلان وظيفة هنا يستند إلى مصدر حقيقي وموثوق، بدءًا من بيانات القبول الجامعي مروراً بسُلّم الرواتب، وصولًا إلى إعلانات الوظائف الموثوقة. لا نقدّم تخمينات، وعند وجود نقص في البيانات نوضحه بصراحة بدلًا من تعويضه بأرقام غير دقيقة.',
+        body: 'كل تخصص، ونطاق راتب، وإعلان وظيفة هنا يستند إلى مصدر حقيقي وموثوق، بدءًا من بيانات القبول الجامعي مرورًا بسُلّم الرواتب، وصولًا إلى إعلانات الوظائف الموثوقة. لا نقدّم تخمينات، وعند وجود نقص في البيانات نوضحه بصراحة بدلًا من تعويضه بأرقام غير دقيقة.',
       },
       {
         title: 'مستشارك يحادثك',
@@ -51,7 +58,12 @@ export default {
         body: 'يربط كل مسار تخصصك بالجامعات التي تدرّسه، والمقررات التي تساعدك على بناء المهارات المطلوبة، وصولًا إلى إعلانات الوظائف الحقيقية في نهاية الطريق، مسار واضح واحد مع دربي، بدلًا من التشتت بين الأرقام والمعلومات.',
       },
     ],
-    statsLabels: { majors: 'تخصصًا', courses: 'مقررًا موثقًا', jobs: 'وظيفة موثقة', trailing: 'كل رقم هنا موثّق بمصدر.' },
+    statsLabels: {
+      majors: (n) => arabicPluralForm(n, { zero: 'تخصصات', one: 'تخصص', two: 'تخصصان', few: 'تخصصات', many: 'تخصصًا' }),
+      courses: (n) => arabicPluralForm(n, { zero: 'مقررات موثقة', one: 'مقرر موثق', two: 'مقرران موثقان', few: 'مقررات موثقة', many: 'مقررًا موثقًا' }),
+      jobs: (n) => arabicPluralForm(n, { zero: 'وظائف موثقة', one: 'وظيفة موثقة', two: 'وظيفتان موثقتان', few: 'وظائف موثقة', many: 'وظيفة موثقة' }),
+      trailing: 'كل رقم هنا موثّق بمصدر.',
+    },
     panelEyebrow: 'إرشاد مهني يمكنك التحقق منه',
     msgWho: 'مستشار دربي',
     sourcesLabel: 'مصادر هذه الإجابة',

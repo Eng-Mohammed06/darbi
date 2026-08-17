@@ -264,11 +264,11 @@ export default function LandingPage() {
 
         {stats && (
           <Reveal as="p" className="hp-stats-bar hp-shell hp-mono">
-            <span className="hp-stat"><span className="hp-stat-icon">{ICONS.book}</span><CountUp to={stats.majors} /> {statsLabels.majors}</span>
+            <span className="hp-stat"><span className="hp-stat-icon">{ICONS.book}</span><CountUp to={stats.majors} /> {statsLabels.majors(stats.majors)}</span>
             <span className="hp-dot" aria-hidden="true">·</span>
-            <span className="hp-stat"><span className="hp-stat-icon">{ICONS.check}</span><CountUp to={stats.courses} /> {statsLabels.courses}</span>
+            <span className="hp-stat"><span className="hp-stat-icon">{ICONS.check}</span><CountUp to={stats.courses} /> {statsLabels.courses(stats.courses)}</span>
             <span className="hp-dot" aria-hidden="true">·</span>
-            <span className="hp-stat"><span className="hp-stat-icon">{ICONS.briefcase}</span><CountUp to={stats.jobs} /> {statsLabels.jobs}</span>
+            <span className="hp-stat"><span className="hp-stat-icon">{ICONS.briefcase}</span><CountUp to={stats.jobs} /> {statsLabels.jobs(stats.jobs)}</span>
             <span className="hp-stats-trailing hp-muted">— {statsLabels.trailing}</span>
           </Reveal>
         )}
@@ -496,7 +496,14 @@ ${themeBlocks}
 .hp-landing .hp-glow-b { inset-inline-end: -220px; inset-block-start: 420px; background: var(--caution); }
 .hp-landing .hp-topbar, .hp-landing .hp-content { position: relative; z-index: 1; }
 
-.hp-landing .hp-mono, .hp-landing .hp-num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; unicode-bidi: isolate; }
+/* Mono only for Latin text -- applied to Arabic labels (eyebrows, the stats
+   strip, "Darbi advisor") it renders wide with broken letter joins, since
+   IBM Plex Mono has no real Arabic glyphs. :lang(en) scopes the numeric/
+   monospace treatment to the language it actually suits; Arabic keeps the
+   page's normal Arabic-capable UI font (--font-ui already leads with "IBM
+   Plex Sans Arabic"). */
+.hp-landing .hp-mono, .hp-landing .hp-num { font-variant-numeric: tabular-nums; unicode-bidi: isolate; }
+.hp-landing .hp-mono:lang(en), .hp-landing .hp-num:lang(en) { font-family: var(--font-mono); }
 .hp-landing .hp-shell { max-inline-size: 1180px; margin-inline: auto; padding-inline: 18px; }
 .hp-landing .hp-topbar {
   position: sticky; inset-block-start: 0; z-index: 40; padding: 16px 0;
@@ -536,8 +543,9 @@ ${themeBlocks}
   }
 }
 
+.hp-landing .hp-eyebrow:lang(en) { font-family: var(--font-mono); }
 .hp-landing .hp-eyebrow {
-  font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+  font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
   color: var(--ink-3); display: flex; align-items: center; gap: 8px;
 }
 .hp-landing .hp-eyebrow::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
@@ -591,7 +599,8 @@ ${themeBlocks}
 .hp-landing .hp-panel-invert .hp-eyebrow { color: color-mix(in srgb, var(--paper) 55%, var(--ink)); }
 .hp-landing .hp-panel-invert .hp-eyebrow::after { background: color-mix(in srgb, var(--paper) 30%, var(--ink)); }
 .hp-landing .hp-panel-invert .hp-muted { color: color-mix(in srgb, var(--paper) 55%, var(--ink)); }
-.hp-landing .hp-msg-who { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--trust); }
+.hp-landing .hp-msg-who:lang(en) { font-family: var(--font-mono); }
+.hp-landing .hp-msg-who { font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--trust); }
 
 .hp-landing .hp-evidence { display: flex; flex-wrap: wrap; gap: 6px; margin-block-start: 12px; }
 .hp-landing .hp-chip {
