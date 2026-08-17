@@ -686,6 +686,20 @@ function ApplicantRow({ applicant: s, onChangeStatus }) {
           <p className="text-xs text-gray-500">
             {t('company.jobPosting.appliedOn')(new Date(s.applied_at).toLocaleDateString())}
           </p>
+          {(s.phone || s.linkedin_url) && (
+            <p className="text-xs text-gray-400 space-x-3 rtl:space-x-reverse">
+              {s.phone && (
+                <a href={`tel:${s.phone}`} className="hover:text-gray-200">
+                  {t('company.jobPosting.phoneLabel')} {s.phone}
+                </a>
+              )}
+              {s.linkedin_url && (
+                <a href={s.linkedin_url} target="_blank" rel="noreferrer" className="hover:text-gray-200">
+                  {t('company.jobPosting.linkedinLabel')}
+                </a>
+              )}
+            </p>
+          )}
 
           <label className="block">
             <span className="block text-xs font-semibold text-gray-400 mb-1">{t('company.jobPosting.noteLabel')}</span>

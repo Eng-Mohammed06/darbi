@@ -198,6 +198,16 @@ CREATE TABLE IF NOT EXISTS majors (
 ALTER TABLE students ADD COLUMN IF NOT EXISTS university_id INTEGER REFERENCES universities(id) ON DELETE SET NULL;
 ALTER TABLE students ADD COLUMN IF NOT EXISTS major_id INTEGER REFERENCES majors(id) ON DELETE SET NULL;
 
+-- Set once in the Profile tab, then reused on every application from then on
+-- (the apply flow prompts for them only the first time either is missing).
+-- Shared with a company as soon as a student applies to one of its postings
+-- -- see the applicants query in server/routes/companies.js -- a deliberate,
+-- product-decided exception to the platform-mediated-contact rule elsewhere
+-- (CLAUDE.md), so a company can actually reach an applicant and see their
+-- LinkedIn history.
+ALTER TABLE students ADD COLUMN IF NOT EXISTS phone TEXT;
+ALTER TABLE students ADD COLUMN IF NOT EXISTS linkedin_url TEXT;
+
 -- One row per degree programme an institution offers. The averages are Tawjihi
 -- admission percentages: `minimum_average` is the floor to apply,
 -- `competitive_average` is what the last admitted student actually scored.

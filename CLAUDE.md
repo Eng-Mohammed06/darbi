@@ -70,13 +70,19 @@ and 5174. Don't "fix" these back to defaults.
    original approved deliverables); use the admin panel for changes that
    don't have a spreadsheet to go back to, like adding a major only the
    admin knows about, or nudging a competitive average for a new year.
-6. **Company access to a student stays platform-mediated.** The applicant/
-   student-pool endpoints never return a student's email. Companies see
-   profile fields (major, interests, applied date) and can send an
-   interview-invite message via `job_applications.company_note`, which the
-   student sees on their own Jobs tab — there's no inbox and no channel to a
-   real address. Keep it that way unless someone explicitly decides to
-   expose contact info.
+6. **Company access to a student is still not email, but is no longer
+   contact-free.** The applicant/student-pool endpoints never return a
+   student's email or build a real inbox — a company still reaches an
+   applicant via `job_applications.company_note` (student sees it on their
+   own Jobs tab), not a two-way channel. But as of the phone/LinkedIn
+   feature, a company *does* see an applicant's phone and LinkedIn URL
+   (`students.phone`, `students.linkedin_url`) on every application, visible
+   the moment they apply, not gated behind Interview status — a deliberate
+   decision to let a company actually contact someone and see their academic
+   and work history. Both fields are opt-in in the sense that the student
+   controls them from their own Profile tab; the apply flow (`JobBoard` in
+   `StudentDashboard.jsx`) only prompts for them the first time either is
+   missing, then reuses what's saved on every later application.
 
 ## Data pipeline
 
@@ -215,8 +221,10 @@ Keep it that way. Don't make the pathway card depend on a model call.
 Done: repo, schema, data pipeline, seed, auth, three dashboards, recommendation
 endpoint with rule-based fallback, university extraction, streaming chat
 advisor, pathway card, company job postings with a draft/active/closed
-pipeline, and company → student interview invites (message on
-`job_applications.company_note`, platform-mediated, no contact info shared).
+pipeline, company → student interview invites (message on
+`job_applications.company_note`), and student phone/LinkedIn shared with a
+company on every application (`students.phone`, `students.linkedin_url`) —
+see Hard Rule 6 for what's still off-limits (email, a real inbox).
 
 Not done: deploy to Railway; mobile testing on a real device.
 

@@ -192,6 +192,8 @@ function ProfileForm({ profile, onSaved }) {
     salaryPref: profile?.salary_pref ?? '',
     universityId: profile?.university_id ?? '',
     majorId: profile?.major_id ?? '',
+    phone: profile?.phone ?? '',
+    linkedinUrl: profile?.linkedin_url ?? '',
   });
   const isHighSchool = form.level === 'highschool';
   const isUndergrad = form.level === 'undergraduate';
@@ -224,6 +226,8 @@ function ProfileForm({ profile, onSaved }) {
           salaryPref: form.salaryPref || null,
           universityId: form.universityId === '' ? null : Number(form.universityId),
           majorId: form.majorId === '' ? null : Number(form.majorId),
+          phone: form.phone || null,
+          linkedinUrl: form.linkedinUrl || null,
         },
       });
       onSaved(saved);
@@ -319,6 +323,12 @@ function ProfileForm({ profile, onSaved }) {
         </Field>
         <Field label={t('student.profileForm.salaryPref')}>
           <input className={inputClass} placeholder={t('student.profileForm.salaryPrefPlaceholder')} value={form.salaryPref} onChange={set('salaryPref')} />
+        </Field>
+        <Field label={t('student.profileForm.phone')} hint={t('student.profileForm.phoneHint')}>
+          <input type="tel" className={inputClass} placeholder={t('student.profileForm.phonePlaceholder')} value={form.phone} onChange={set('phone')} />
+        </Field>
+        <Field label={t('student.profileForm.linkedin')} hint={t('student.profileForm.linkedinHint')}>
+          <input type="url" className={inputClass} placeholder={t('student.profileForm.linkedinPlaceholder')} value={form.linkedinUrl} onChange={set('linkedinUrl')} />
         </Field>
         <Button type="submit">{t('student.profileForm.saveProfile')}</Button>
       </form>
@@ -669,6 +679,7 @@ const JOBS_PAGE_SIZE = 20;
  */
 function JobBoard() {
   const { t } = useLang();
+  const { profile, setProfile } = useAuth();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [major, setMajor] = useState('');
@@ -676,6 +687,13 @@ function JobBoard() {
   const [open, setOpen] = useState(null);
   const [appliedIds, setAppliedIds] = useState([]);
   const [applying, setApplying] = useState(null);
+  // A job's company only sees phone/LinkedIn once the student has both on
+  // file (server/routes/companies.js's applicants query) -- apply() prompts
+  // for whichever is missing the first time, then every later application
+  // reuses what's already saved on the profile.
+  const [contactPromptFor, setContactPromptFor] = useState(null);
+  const [contactDraft, setContactDraft] = useState({ phone: '', linkedinUrl: '' });
+  const hasContactInfo = Boolean(profile?.phone && profile?.linkedin_url);
 
   useEffect(() => {
     const q = major ? `?major=${encodeURIComponent(major)}` : '';
@@ -689,6 +707,11 @@ function JobBoard() {
   }, []);
 
   async function apply(jobId) {
+    if (!hasContactInfo) {
+      setContactDraft({ phone: profile?.phone ?? '', linkedinUrl: profile?.linkedin_url ?? '' });
+      setContactPromptFor(jobId);
+      return;
+    }
     setApplying(jobId);
     try {
       await api('/students/me/applications', { method: 'POST', body: { jobId } });
@@ -697,6 +720,24 @@ function JobBoard() {
       // The only failure mode here is "no company account behind this
       // listing" (409), already explained inline before the button shows —
       // nothing more useful to say on a retry.
+    } finally {
+      setApplying(null);
+    }
+  }
+
+  async function submitContactAndApply(jobId) {
+    const phone = contactDraft.phone.trim();
+    const linkedinUrl = contactDraft.linkedinUrl.trim();
+    if (!phone || !linkedinUrl) return;
+    setApplying(jobId);
+    try {
+      const saved = await api('/students/me', { method: 'PUT', body: { phone, linkedinUrl } });
+      setProfile(saved);
+      await api('/students/me/applications', { method: 'POST', body: { jobId } });
+      setAppliedIds((ids) => [...ids, jobId]);
+      setContactPromptFor(null);
+    } catch {
+      // Same silent handling as apply() above.
     } finally {
       setApplying(null);
     }
@@ -743,17 +784,53 @@ function JobBoard() {
 
                 <div className="pt-2">
                   {j.company_id ? (
-                    <button
-                      onClick={() => apply(j.id)}
-                      disabled={appliedIds.includes(j.id) || applying === j.id}
-                      className="darbi-btn text-sm disabled:opacity-60"
-                    >
-                      {appliedIds.includes(j.id)
-                        ? t('student.jobBoard.applied')
-                        : applying === j.id
-                          ? t('student.jobBoard.applying')
-                          : t('student.jobBoard.apply')}
-                    </button>
+                    contactPromptFor === j.id ? (
+                      <div className="space-y-2 max-w-sm">
+                        <p className="text-xs text-gray-500">{t('student.jobBoard.contactRequiredHint')}</p>
+                        <input
+                          type="tel"
+                          className={inputClass}
+                          placeholder={t('student.profileForm.phonePlaceholder')}
+                          value={contactDraft.phone}
+                          onChange={(e) => setContactDraft({ ...contactDraft, phone: e.target.value })}
+                        />
+                        <input
+                          type="url"
+                          className={inputClass}
+                          placeholder={t('student.profileForm.linkedinPlaceholder')}
+                          value={contactDraft.linkedinUrl}
+                          onChange={(e) => setContactDraft({ ...contactDraft, linkedinUrl: e.target.value })}
+                        />
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => submitContactAndApply(j.id)}
+                            disabled={applying === j.id || !contactDraft.phone.trim() || !contactDraft.linkedinUrl.trim()}
+                            className="darbi-btn text-sm disabled:opacity-60"
+                          >
+                            {applying === j.id ? t('student.jobBoard.applying') : t('student.jobBoard.submitApplication')}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setContactPromptFor(null)}
+                            className="text-sm text-gray-400 hover:text-gray-200"
+                          >
+                            {t('common.cancel')}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => apply(j.id)}
+                        disabled={appliedIds.includes(j.id) || applying === j.id}
+                        className="darbi-btn text-sm disabled:opacity-60"
+                      >
+                        {appliedIds.includes(j.id)
+                          ? t('student.jobBoard.applied')
+                          : applying === j.id
+                            ? t('student.jobBoard.applying')
+                            : t('student.jobBoard.apply')}
+                      </button>
+                    )
                   ) : (
                     <p className="text-xs text-gray-500 italic">
                       {t('student.jobBoard.externalListing')}

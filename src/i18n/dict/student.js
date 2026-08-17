@@ -50,6 +50,12 @@ export default {
       location: 'Location',
       salaryPref: 'Salary preference',
       salaryPrefPlaceholder: '800-1200 JOD',
+      phone: 'Phone number',
+      phoneHint: 'Shared with a company once you apply to one of its jobs',
+      phonePlaceholder: '079 123 4567',
+      linkedin: 'LinkedIn profile',
+      linkedinHint: 'Lets a company see your academic and work history',
+      linkedinPlaceholder: 'https://linkedin.com/in/yourname',
       saveProfile: 'Save profile',
     },
 
@@ -99,6 +105,8 @@ export default {
       applied: 'Applied ✓',
       applying: 'Applying…',
       apply: 'Apply',
+      submitApplication: 'Submit application',
+      contactRequiredHint: 'Add a phone number and LinkedIn profile so this company can reach you — saved to your profile for next time.',
       externalListing:
         "Applying isn't available for this listing — it's gathered from an external directory, not a DARBI company account.",
       showMore: (n) => `Show more (${n} remaining)`,
@@ -241,6 +249,12 @@ export default {
       location: 'الموقع',
       salaryPref: 'الراتب المفضل',
       salaryPrefPlaceholder: '800-1200 JOD',
+      phone: 'رقم الهاتف',
+      phoneHint: 'يُشارَك مع الشركة بمجرد التقديم على إحدى وظائفها',
+      phonePlaceholder: '079 123 4567',
+      linkedin: 'الملف الشخصي على LinkedIn',
+      linkedinHint: 'يتيح للشركة الاطلاع على مسارك الأكاديمي والمهني',
+      linkedinPlaceholder: 'https://linkedin.com/in/yourname',
       saveProfile: 'حفظ الملف الشخصي',
     },
 
@@ -289,6 +303,8 @@ export default {
       applied: 'تم التقديم ✓',
       applying: 'جارٍ التقديم…',
       apply: 'تقديم',
+      submitApplication: 'إرسال الطلب',
+      contactRequiredHint: 'أضف رقم هاتف وملف LinkedIn لتتمكن هذه الشركة من التواصل معك — سيُحفظان في ملفك الشخصي للمرات القادمة.',
       externalListing:
         'التقديم غير متاح لهذا الإعلان — تم جمعه من دليل خارجي، وليس من حساب شركة على داربي.',
       showMore: (n) => `عرض المزيد (${n} متبقية)`,

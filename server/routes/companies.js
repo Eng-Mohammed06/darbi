@@ -122,15 +122,19 @@ router.get(
 /**
  * GET /api/companies/me/jobs/:id/applicants
  * Same fields FindStudents shows, plus when they applied, their pipeline
- * status, an AI Match score, and any note the company has sent them — no
- * email, same "contact through the platform" rule as browsing the student
- * pool.
+ * status, an AI Match score, any note the company has sent them, and the
+ * phone/LinkedIn the student has on file — still no email, but phone and
+ * LinkedIn are shared as soon as they appear here (any status, not just
+ * Interview), so a company can actually reach them and see their academic
+ * and work history. Both are only present once the student has filled them
+ * in on their own Profile tab.
  */
 router.get(
   '/me/jobs/:id/applicants',
   asyncRoute(async (req, res) => {
     const { rows } = await query(
-      `SELECT s.user_id, s.name, s.level, s.gpa, s.location, s.interests, m.name AS major_name,
+      `SELECT s.user_id, s.name, s.level, s.gpa, s.location, s.interests, s.phone, s.linkedin_url,
+              m.name AS major_name,
               a.status, a.created_at AS applied_at, a.company_note,
               j.required_majors, j.min_gpa, j.required_skills
          FROM job_applications a

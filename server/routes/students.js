@@ -55,7 +55,7 @@ router.put(
   asyncRoute(async (req, res) => {
     const {
       name, level, interests, gpa, gpaScale, tawjihiAverage, location, salaryPref,
-      universityId, majorId,
+      universityId, majorId, phone, linkedinUrl,
     } = req.body ?? {};
 
     const { rows: current } = await query(`SELECT level FROM students WHERE user_id = $1`, [req.user.id]);
@@ -83,11 +83,14 @@ router.put(
            location        = COALESCE($6, location),
            salary_pref     = COALESCE($7, salary_pref),
            university_id   = COALESCE($11, university_id),
-           major_id        = COALESCE($12, major_id)
+           major_id        = COALESCE($12, major_id),
+           phone           = COALESCE($13, phone),
+           linkedin_url    = COALESCE($14, linkedin_url)
          WHERE user_id = $1`,
         [req.user.id, name ?? null, level ?? null, interests ?? null, gpa ?? null,
          location ?? null, salaryPref ?? null, tawjihiAverage ?? null, isHighSchool,
-         gpaScale ?? null, universityId ?? null, majorId ?? null],
+         gpaScale ?? null, universityId ?? null, majorId ?? null,
+         phone ?? null, linkedinUrl ?? null],
       );
     } catch (err) {
       if (err.code === '23503') return res.status(404).json({ error: 'unknown_university_or_major' });
