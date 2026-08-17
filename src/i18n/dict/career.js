@@ -155,6 +155,11 @@ export default {
       certName: 'Certificate name',
       certIssuer: 'Issuing organisation',
       certYear: 'Year',
+      certFile: 'Certificate file',
+      certFileRequired: 'Attach the certificate file (.pdf, .png, or .jpg).',
+      certFileUpload: 'Upload file',
+      certFileReplace: 'Replace file',
+      certFileView: 'View file',
       certSummary: (name, issuer) => (issuer ? `${name} — ${issuer}` : name),
 
       projectEmpty: 'No projects added yet.',
@@ -336,6 +341,11 @@ export default {
       certName: 'اسم الشهادة',
       certIssuer: 'الجهة المانحة',
       certYear: 'السنة',
+      certFile: 'ملف الشهادة',
+      certFileRequired: 'أرفق ملف الشهادة (.pdf أو .png أو .jpg).',
+      certFileUpload: 'رفع الملف',
+      certFileReplace: 'استبدال الملف',
+      certFileView: 'عرض الملف',
       certSummary: (name, issuer) => (issuer ? `${name} — ${issuer}` : name),
 
       projectEmpty: 'لم تُضَف مشاريع بعد.',

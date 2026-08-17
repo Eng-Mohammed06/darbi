@@ -18,10 +18,10 @@ const here = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 1mb comfortably covers every route except the avatar upload and the CV
-// upload (server/routes/auth.js, server/routes/career.js), whose base64
-// file payloads need more headroom — CV is the larger of the two (up to
-// 4MB decoded, ~5.5MB as base64), so the limit is sized for that.
+// 1mb comfortably covers every route except the avatar, CV, and certificate-
+// file uploads (server/routes/auth.js, server/routes/career.js), whose
+// base64 file payloads need more headroom — all cap at 4MB decoded
+// (~5.5MB as base64), so the limit is sized for that.
 app.use(express.json({ limit: '8mb' }));
 
 // Railway pings this to decide whether a deploy is healthy.

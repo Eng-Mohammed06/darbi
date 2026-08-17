@@ -4,6 +4,7 @@ import { useAuth } from '../services/auth.jsx';
 import { Alert, Button, Card, EmptyState, Field, Shell, Skeleton, SkeletonLines, inputClass } from '../components/common/ui.jsx';
 import { useToast } from '../components/common/toast.jsx';
 import { readCvFile } from '../lib/cv.js';
+import { readCertificateFile } from '../lib/certificateFile.js';
 import { useLang } from '../i18n/index.jsx';
 
 const TABS = ['ai assistant', 'profile', 'career path', 'jobs', 'job recommendations', 'applications', 'learning paths', 'training centres'];
@@ -1134,6 +1135,7 @@ function Profile() {
           { key: 'name', label: p.certName, required: true },
           { key: 'issuer', label: p.certIssuer },
           { key: 'year', label: p.certYear, type: 'number' },
+          { key: 'file', label: p.certFile, type: 'file', required: true },
         ]}
         summarize={(e) => p.certSummary(e.name, e.issuer)}
         onSave={(certificates) => saveFields({ certificates })}
@@ -1420,6 +1422,7 @@ function TagListCard({ title, value, placeholder, emptyLabel, p, onSave }) {
  * dialog.
  */
 function EntryListEditor({ title, entries, emptyLabel, fields, summarize, p, onSave }) {
+  const { lang } = useLang();
   const [formIndex, setFormIndex] = useState(null); // null = closed, -1 = adding, n = editing entries[n]
   const [form, setForm] = useState({});
   const [error, setError] = useState('');
@@ -1442,11 +1445,24 @@ function EntryListEditor({ title, entries, emptyLabel, fields, summarize, p, onS
     setFormIndex(i);
   }
 
+  async function onFileChange(key, e) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setError('');
+    try {
+      const dataUri = await readCertificateFile(file, lang);
+      setForm((f) => ({ ...f, [key]: dataUri }));
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
   async function submit(e) {
     e.preventDefault();
     for (const f of fields) {
       if (f.required && !String(form[f.key] ?? '').trim()) {
-        setError(p.requiredField(f.label));
+        setError(f.type === 'file' && p.certFileRequired ? p.certFileRequired : p.requiredField(f.label));
         return;
       }
     }
@@ -1504,6 +1520,11 @@ function EntryListEditor({ title, entries, emptyLabel, fields, summarize, p, onS
                   {entry.year && !entry.period && <p className="text-xs text-gray-500">{entry.year}</p>}
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
+                  {entry.file && (
+                    <a href={entry.file} target="_blank" rel="noopener noreferrer" className="text-xs font-bold" style={{ color: 'var(--darbi-purple)' }}>
+                      {p.certFileView}
+                    </a>
+                  )}
                   <button type="button" onClick={() => startEdit(i)} className="text-xs font-bold" style={{ color: 'var(--darbi-purple)' }}>
                     {p.edit}
                   </button>
@@ -1521,7 +1542,22 @@ function EntryListEditor({ title, entries, emptyLabel, fields, summarize, p, onS
         <form onSubmit={submit}>
           {fields.map((f) => (
             <Field key={f.key} label={f.label}>
-              {f.multiline ? (
+              {f.type === 'file' ? (
+                <div className="flex items-center gap-3">
+                  <label
+                    className="text-xs font-semibold rounded-full px-4 py-2 border cursor-pointer transition hover:brightness-110 inline-block"
+                    style={{ borderColor: 'var(--darbi-border)', color: 'var(--darbi-purple)' }}
+                  >
+                    {form[f.key] ? p.certFileReplace : p.certFileUpload}
+                    <input type="file" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg" className="hidden" onChange={(e) => onFileChange(f.key, e)} />
+                  </label>
+                  {form[f.key] && (
+                    <a href={form[f.key]} target="_blank" rel="noopener noreferrer" className="text-xs font-bold" style={{ color: 'var(--darbi-purple)' }}>
+                      {p.certFileView}
+                    </a>
+                  )}
+                </div>
+              ) : f.multiline ? (
                 <textarea
                   className={inputClass}
                   rows={3}

@@ -15,6 +15,26 @@ function isEntryList(v) {
   return Array.isArray(v) && v.every((e) => e && typeof e === 'object' && !Array.isArray(e));
 }
 
+// A certificate entry's optional `file` -- the actual certificate document,
+// not just its name/issuer/year. Stored as the data: URI itself directly on
+// the JSONB entry, same rationale as users.avatar/companies.logo: no object
+// store configured for this deploy. Checked here, not just client-side
+// (src/lib/certificateFile.js), since the client check is skippable.
+const CERTIFICATE_FILE_MAX_BYTES = 4 * 1024 * 1024; // 4MB decoded, same cap as the CV
+const CERTIFICATE_FILE_DATA_URL = /^data:(application\/pdf|image\/png|image\/jpe?g);base64,([A-Za-z0-9+/]+={0,2})$/;
+
+function certificateFileError(certificates) {
+  for (const cert of certificates) {
+    if (cert.file == null) continue;
+    const match = typeof cert.file === 'string' && CERTIFICATE_FILE_DATA_URL.exec(cert.file);
+    if (!match) return { error: 'bad_certificate_file', message: 'Attach a .pdf, .png, or .jpg certificate file.' };
+    if (Buffer.from(match[2], 'base64').length > CERTIFICATE_FILE_MAX_BYTES) {
+      return { error: 'certificate_file_too_large', message: 'Certificate file must be 4MB or smaller.' };
+    }
+  }
+  return null;
+}
+
 /**
  * PUT /api/career/me — updates the graduate's editable profile fields, all
  * optional (COALESCE keeps whatever isn't sent), same pattern as
@@ -42,6 +62,10 @@ router.put(
       if (value != null && !isEntryList(value)) {
         return res.status(400).json({ error: 'bad_entry_list', field: key });
       }
+    }
+    if (certificates != null) {
+      const certError = certificateFileError(certificates);
+      if (certError) return res.status(400).json(certError);
     }
 
     const { rows } = await query(
