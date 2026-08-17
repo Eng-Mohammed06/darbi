@@ -5,6 +5,7 @@ import { Alert, Bdi, Button, Card, EmptyState, Field, LtrRange, Shell, Skeleton,
 import { useToast } from '../components/common/toast.jsx';
 import { useLang } from '../i18n/index.jsx';
 import { interestLabel } from '../lib/interestLabels.js';
+import { useTabParam } from '../lib/useTabParam.js';
 
 const TABS = ['overview', 'jobs', 'find students'];
 
@@ -114,7 +115,7 @@ function JobStatusBadge({ status }) {
 export default function CompanyDashboard() {
   const { profile } = useAuth();
   const { t } = useLang();
-  const [tab, setTab] = useState('overview');
+  const [tab, setTab] = useTabParam('overview', TABS);
 
   return (
     <Shell

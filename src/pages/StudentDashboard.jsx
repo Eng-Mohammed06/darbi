@@ -10,6 +10,7 @@ import {
 } from '../components/common/ui.jsx';
 import { useToast } from '../components/common/toast.jsx';
 import { useLang } from '../i18n/index.jsx';
+import { useTabParam } from '../lib/useTabParam.js';
 
 /** Mirrors slugify() in scripts/convert_xlsx.py, which generated majors.slug. */
 const slugify = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -23,10 +24,10 @@ const UNDERGRAD_TABS = ['advisor', 'profile', 'courses', 'jobs'];
 export default function StudentDashboard() {
   const { profile, setProfile } = useAuth();
   const { t } = useLang();
-  const [tab, setTab] = useState('advisor');
+  const tabs = profile?.level === 'undergraduate' ? UNDERGRAD_TABS : ALL_TABS;
+  const [tab, setTab] = useTabParam('advisor', ALL_TABS);
   // Set when another tab sends the student to a specific pathway.
   const [pathwaySlug, setPathwaySlug] = useState(null);
-  const tabs = profile?.level === 'undergraduate' ? UNDERGRAD_TABS : ALL_TABS;
 
   const subtitle = profile?.major_name
     ? `${profile.major_name}${profile.university_name ? ` · ${profile.university_name}` : ''}`

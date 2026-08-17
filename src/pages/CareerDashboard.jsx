@@ -6,13 +6,14 @@ import { useToast } from '../components/common/toast.jsx';
 import { readCvFile } from '../lib/cv.js';
 import { readCertificateFile } from '../lib/certificateFile.js';
 import { useLang } from '../i18n/index.jsx';
+import { useTabParam } from '../lib/useTabParam.js';
 
 const TABS = ['ai assistant', 'profile', 'career path', 'jobs', 'job recommendations', 'applications', 'learning paths', 'training centres'];
 
 export default function CareerDashboard() {
   const { profile, setProfile } = useAuth();
   const { t } = useLang();
-  const [tab, setTab] = useState('ai assistant');
+  const [tab, setTab] = useTabParam('ai assistant', TABS);
   // Set by "Ask the AI Assistant" in Learning Paths — jumps to the Assistant
   // tab with the question already typed, instead of making the user retype
   // what they just picked a field to explore.

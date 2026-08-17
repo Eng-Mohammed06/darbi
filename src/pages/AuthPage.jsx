@@ -70,13 +70,17 @@ export default function AuthPage() {
     setError('');
 
     if (mode === 'signup') {
-      if (role === 'company' && form.password !== form.confirmPassword) {
+      if (form.password !== form.confirmPassword) {
         setError(t('auth.errPasswordMismatch'));
         return;
       }
       const issues = passwordIssues(form.password, lang);
       if (issues.length) {
         setError(t('auth.passwordNeeds')(issues.join(', ')));
+        return;
+      }
+      if (!form.agreeData) {
+        setError(t('auth.errConsentRequired'));
         return;
       }
     }
@@ -152,7 +156,12 @@ export default function AuthPage() {
         <span className="text-xl font-extrabold text-white tracking-tight">Darbi</span>
       </Link>
 
-      <div className="flex-1 flex relative z-10">
+      {/* max-width + mx-auto keeps the two columns from drifting to opposite
+          screen edges on very wide viewports (1920px+) -- without it, the
+          hero content (anchored near the left of its half) and the login
+          card (centred in its own half) end up far apart with a large,
+          unbalanced empty gap between them. */}
+      <div className="flex-1 flex relative z-10 max-w-[1400px] mx-auto w-full">
       <div className="hidden lg:flex lg:w-1/2 relative z-10 flex-col justify-center px-16">
         <div>
           <Link to="/" className="block w-fit">
@@ -318,7 +327,7 @@ export default function AuthPage() {
                 {mode === 'signup' && <PasswordStrengthMeter password={form.password} />}
               </DarkField>
 
-              {mode === 'signup' && role === 'company' && (
+              {mode === 'signup' && (
                 <DarkField label={t('auth.confirmPassword')}>
                   <input type="password" className={darkInput} value={form.confirmPassword ?? ''} onChange={set('confirmPassword')} required />
                 </DarkField>
@@ -342,6 +351,25 @@ export default function AuthPage() {
                     <input className={darkInput} placeholder={t('auth.engineeringMajorPlaceholder')} value={form.major ?? ''} onChange={set('major')} />
                   </DarkField>
                 </>
+              )}
+
+              {mode === 'signup' && (
+                <label className="flex items-start gap-2.5 text-xs text-gray-400 -mt-1">
+                  <input
+                    type="checkbox"
+                    className="mt-0.5 shrink-0"
+                    checked={form.agreeData ?? false}
+                    onChange={(e) => setForm({ ...form, agreeData: e.target.checked })}
+                    required
+                  />
+                  <span>
+                    {t('auth.consentPrefix')}{' '}
+                    <a href="/about-data" target="_blank" rel="noreferrer" className="underline" style={{ color: 'var(--darbi-purple)' }}>
+                      {t('auth.consentLinkText')}
+                    </a>
+                    {t('auth.consentSuffix')}
+                  </span>
+                </label>
               )}
 
               <button

@@ -4,6 +4,7 @@ import { useAuth } from '../services/auth.jsx';
 import { Alert, Button, Card, EmptyState, Field, Shell, SkeletonLines, inputClass, PhotoViewModal } from '../components/common/ui.jsx';
 import { useToast } from '../components/common/toast.jsx';
 import { useLang } from '../i18n/index.jsx';
+import { useTabParam } from '../lib/useTabParam.js';
 
 const TABS = ['overview', 'users', 'companies', 'jobs', 'majors'];
 
@@ -17,7 +18,7 @@ const TABS = ['overview', 'users', 'companies', 'jobs', 'majors'];
 export default function AdminDashboard() {
   const { t } = useLang();
   const { user } = useAuth();
-  const [tab, setTab] = useState('overview');
+  const [tab, setTab] = useTabParam('overview', TABS);
 
   return (
     <Shell title={t('admin.pageTitle')} subtitle={user?.email} tabs={TABS} activeTab={tab} onTabChange={setTab}>
