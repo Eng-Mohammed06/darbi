@@ -101,14 +101,15 @@ export function DarkCard({ title, subtitle, children }) {
       {/* The branding panel below is lg-only (hidden on phones/tablets), so
           without this, mobile visitors would never see the logo at all —
           this compact row is that panel's mobile stand-in. */}
-      <div className="lg:hidden flex items-center justify-center gap-2.5 pb-4 relative z-10">
+      <Link to="/" className="lg:hidden flex items-center justify-center gap-2.5 pb-4 relative z-10">
         <img src={darbiLogoIcon} alt="" className="h-8 w-auto" />
         <span className="text-xl font-extrabold text-white tracking-tight">Darbi</span>
-      </div>
+      </Link>
 
       <div className="flex-1 flex relative z-10">
         <div className="hidden lg:flex lg:w-1/2 relative z-10 flex-col justify-center px-16">
           <div>
+            <Link to="/" className="block w-fit">
             <img
               src={darbiLogoIcon}
               alt=""
@@ -121,6 +122,7 @@ export function DarkCard({ title, subtitle, children }) {
             >
               Darbi
             </h1>
+            </Link>
             <p className="text-lg mt-3" style={{ color: 'var(--darbi-purple)' }}>
               {t('common.tagline')}
             </p>
@@ -309,6 +311,7 @@ export function Shell({ title, subtitle, tabs, activeTab, onTabChange, children 
 
       <EmailVerifyBanner />
       <main className="darbi-container py-8 relative z-10">{children}</main>
+      <Footer />
 
       {paletteOpen && (
         <div
@@ -553,6 +556,27 @@ export function Bdi({ children, className }) {
 export function LtrRange({ children, className }) {
   if (children == null || children === '') return children;
   return <bdi dir="ltr" className={className}>{children}</bdi>;
+}
+
+/**
+ * Site-wide footer — every page was missing one (no way to reach the data
+ * sources/methodology page, and nothing that reads as "the page has ended"
+ * on a long scroll). Deliberately minimal: this project has no privacy
+ * policy or terms of service to link, and inventing binding legal text
+ * isn't something to do without the team's own sign-off, so this only links
+ * what's actually real -- the About the Data page.
+ */
+export function Footer() {
+  const { t } = useLang();
+  return (
+    <footer className="relative z-10 py-8 text-center text-xs text-gray-500" style={{ borderTop: '1px solid var(--darbi-border)' }}>
+      <p>
+        <Link to="/" className="hover:text-gray-300 transition">Darbi</Link>
+        {' · '}
+        <Link to="/about-data" className="hover:text-gray-300 transition">{t('aboutData.title')}</Link>
+      </p>
+    </footer>
+  );
 }
 
 /** Kept as an export so existing `className={inputClass}` call sites still work. */

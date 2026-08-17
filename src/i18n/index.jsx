@@ -12,6 +12,7 @@ import profileSetup from './dict/profileSetup.js';
 import companyProfileSetup from './dict/companyProfileSetup.js';
 import resetPassword from './dict/resetPassword.js';
 import verifyEmail from './dict/verifyEmail.js';
+import aboutData from './dict/aboutData.js';
 
 /**
  * Site-wide English/Arabic switch. Applies `lang`/`dir` to <html>, so every
@@ -40,6 +41,7 @@ const NAMESPACES = {
   companyProfileSetup,
   resetPassword,
   verifyEmail,
+  aboutData,
 };
 
 const DICT = { en: {}, ar: {} };

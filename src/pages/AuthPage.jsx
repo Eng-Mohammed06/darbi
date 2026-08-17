@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../services/auth.jsx';
 import { api } from '../services/api.js';
 import { Wisps, DarkField, darkInput, PURPLE, PURPLE_DARK, GOLD, GRADIENT, ThemeLangSwitcher } from '../components/common/ui.jsx';
@@ -147,14 +147,15 @@ export default function AuthPage() {
       {/* The branding panel below is lg-only (hidden on phones/tablets), so
           without this, mobile visitors would never see the logo at all —
           this compact row is that panel's mobile stand-in. */}
-      <div className="lg:hidden flex items-center justify-center gap-2.5 pb-4 relative z-10">
+      <Link to="/" className="lg:hidden flex items-center justify-center gap-2.5 pb-4 relative z-10">
         <img src={darbiLogoIcon} alt="" className="h-8 w-auto" />
         <span className="text-xl font-extrabold text-white tracking-tight">Darbi</span>
-      </div>
+      </Link>
 
       <div className="flex-1 flex relative z-10">
       <div className="hidden lg:flex lg:w-1/2 relative z-10 flex-col justify-center px-16">
         <div>
+          <Link to="/" className="block w-fit">
           <img
             src={darbiLogoIcon}
             alt=""
@@ -167,6 +168,7 @@ export default function AuthPage() {
           >
             Darbi
           </h1>
+          </Link>
           <p className="text-lg mt-3" style={{ color: 'var(--darbi-purple)' }}>
             {t('common.tagline')}
           </p>

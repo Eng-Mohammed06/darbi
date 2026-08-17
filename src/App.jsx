@@ -15,6 +15,7 @@ import CareerDashboard from './pages/CareerDashboard.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
 import AccountPage from './pages/AccountPage.jsx';
 import LandingPage from './pages/LandingPage.jsx';
+import AboutDataPage from './pages/AboutDataPage.jsx';
 
 const DASHBOARDS = {
   student: StudentDashboard,
@@ -112,8 +113,13 @@ export default function App() {
                 <Route path="/profile-setup" element={<ProfileSetup />} />
                 <Route path="/company-profile-setup" element={<CompanyProfileSetup />} />
                 <Route path="/onboarding" element={<Onboarding />} />
+                <Route path="/about-data" element={<AboutDataPage />} />
                 <Route path="/account" element={<Account />} />
                 <Route path="/dashboard" element={<Dashboard />} />
+                {/* Pre-rename URL for what's now the Graduate Portal (see
+                    today's "Career Boost" -> "Graduate" rename) — redirect
+                    rather than 404, since it used to be a real destination. */}
+                <Route path="/career-boost" element={<Navigate to="/portal/career" replace />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </BrowserRouter>

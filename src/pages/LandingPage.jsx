@@ -205,6 +205,7 @@ export default function LandingPage() {
             <Link to="/portal/career">{t('landing.navCareer')}</Link>
           </nav>
           <span className="hp-spacer" />
+          <Link to="/portal/student" className="hp-signin-btn">{t('auth.signIn')}</Link>
           <label className="hp-theme-label" htmlFor="hp-theme-sel">{t('landing.themeLabel')}</label>
           <select
             id="hp-theme-sel"
@@ -273,6 +274,13 @@ export default function LandingPage() {
           </Reveal>
         )}
       </main>
+
+      <footer className="hp-footer">
+        <div className="hp-shell hp-footer-row">
+          <span className="hp-muted hp-small">Darbi</span>
+          <Link to="/about-data" className="hp-footer-link">{t('aboutData.title')}</Link>
+        </div>
+      </footer>
     </div>
   );
 }
@@ -580,6 +588,14 @@ ${themeBlocks}
   margin-inline-start: 8px; border-radius: var(--r-md); cursor: pointer;
 }
 .hp-landing .hp-lang-btn:hover { background: var(--surface); }
+.hp-landing .hp-signin-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; padding: 0 16px; min-block-size: 38px;
+  border-radius: var(--r-md); background: var(--trust); color: var(--on-ink);
+  text-decoration: none; transition: transform .15s ease;
+}
+.hp-landing .hp-signin-btn:hover { transform: translateY(-1px); }
+@media (max-width: 560px) { .hp-landing .hp-signin-btn { padding: 0 12px; font-size: 12.5px; } }
 
 /* ---------- Hero ---------- */
 .hp-landing .hp-hero { padding-block: 72px 56px; text-align: center; display: grid; justify-items: center; gap: 18px; }
@@ -679,6 +695,12 @@ ${themeBlocks}
 .hp-landing .hp-stat-icon svg { inline-size: 15px; block-size: 15px; }
 .hp-landing .hp-dot { color: var(--ink-3); }
 .hp-landing .hp-stats-trailing { margin: 0; }
+
+/* ---------- Footer ---------- */
+.hp-landing .hp-footer { padding-block: 20px; border-block-start: 1px solid var(--rule); }
+.hp-landing .hp-footer-row { display: flex; align-items: center; justify-content: center; gap: 14px; }
+.hp-landing .hp-footer-link { color: var(--ink-2); font-size: 13px; text-decoration: none; transition: color .15s; }
+.hp-landing .hp-footer-link:hover { color: var(--ink); text-decoration: underline; }
 
 /* ---------- Scroll-reveal (Features cards, Stats bar) ---------- */
 .hp-landing .hp-reveal { opacity: 0; transform: translateY(18px); transition: opacity .5s ease-out, transform .5s ease-out; }
