@@ -37,15 +37,15 @@ import darbiLogoIcon from '../assets/darbi-logo-icon.png';
 // #9CA3AF); the other seven keep HP.html's original named palettes, plus
 // DARBI's own original palette carried over as "classic".
 const THEMES = [
-  { id: 'classic', en: 'Classic', ar: 'كلاسيكي', vars: {
+  { id: 'classic', en: 'Default', ar: 'افتراضي', vars: {
     ink: '#f8fafc', ink2: '#94a3b8', ink3: '#64748b', paper: '#0f172a', surface: '#1e293b',
     rule: 'rgba(6,182,212,0.25)', rule2: 'rgba(6,182,212,0.15)', trust: '#06b6d4', trustBg: 'rgba(6,182,212,0.15)', caution: '#ff5722', onInk: '#0f172a',
   } },
-  { id: 'blueprint', en: 'Blueprint Night', ar: 'مخطط ليلي', vars: {
+  { id: 'blueprint', en: 'Dark Blue', ar: 'أزرق داكن', vars: {
     ink: '#ffffff', ink2: '#9ca3af', ink3: '#6b7280', paper: '#0a0a0a', surface: '#111111',
     rule: 'rgba(255,255,255,0.08)', rule2: 'rgba(255,255,255,0.15)', trust: '#1fbf8f', trustBg: 'rgba(31,191,143,0.12)', caution: '#e8a33c', onInk: '#0a0a0a',
   } },
-  { id: 'limestone', en: 'Limestone & Pine', ar: 'حجر جيري وصنوبر', vars: {
+  { id: 'limestone', en: 'Beige & Green', ar: 'بيج وأخضر', vars: {
     ink: '#101418', ink2: '#565d66', ink3: '#878e97', paper: '#efece5', surface: '#ffffff',
     rule: '#d9d4c7', rule2: '#e8e4da', trust: '#0f6b57', trustBg: '#e2efea', caution: '#e0a21a', onInk: '#ffffff',
   } },
@@ -53,19 +53,19 @@ const THEMES = [
     ink: '#101a1d', ink2: '#4f6167', ink3: '#86979d', paper: '#e9eff0', surface: '#ffffff',
     rule: '#cbd8da', rule2: '#dfe8e9', trust: '#0a6b78', trustBg: '#dbeef0', caution: '#d99a12', onInk: '#ffffff',
   } },
-  { id: 'cobalt', en: 'Signal Cobalt', ar: 'كوبالت الإشارة', vars: {
+  { id: 'cobalt', en: 'Bright Blue', ar: 'أزرق فاتح', vars: {
     ink: '#11151a', ink2: '#545c66', ink3: '#848d99', paper: '#eef0f3', surface: '#ffffff',
     rule: '#d4d8de', rule2: '#e5e8ec', trust: '#1f4ee0', trustBg: '#e4e9fd', caution: '#d98016', onInk: '#ffffff',
   } },
-  { id: 'basalt', en: 'Basalt', ar: 'بازلت', vars: {
+  { id: 'basalt', en: 'Dark Gray', ar: 'رمادي داكن', vars: {
     ink: '#ece4da', ink2: '#a89c8e', ink3: '#7b7166', paper: '#16130f', surface: '#211c17',
     rule: '#372f27', rule2: '#262019', trust: '#58c295', trustBg: '#17352a', caution: '#e8a83c', onInk: '#16130f',
   } },
-  { id: 'carbon', en: 'Carbon', ar: 'كربون', vars: {
+  { id: 'carbon', en: 'Black', ar: 'أسود', vars: {
     ink: '#f2f2f2', ink2: '#a3a3a3', ink3: '#737373', paper: '#000000', surface: '#0d0d0d',
     rule: '#2b2b2b', rule2: '#1a1a1a', trust: '#35d0a0', trustBg: '#0c2a21', caution: '#f0b429', onInk: '#000000',
   } },
-  { id: 'paper', en: 'Paper', ar: 'ورق', vars: {
+  { id: 'paper', en: 'White', ar: 'أبيض', vars: {
     ink: '#0a0a0a', ink2: '#3d3d3d', ink3: '#5c5c5c', paper: '#ffffff', surface: '#ffffff',
     rule: '#767676', rule2: '#b8b8b8', trust: '#00594a', trustBg: '#dbeee8', caution: '#8a5a00', onInk: '#ffffff',
   } },
