@@ -370,8 +370,14 @@ function Specimen({ data, lang, t }) {
 }
 
 /** "400" when a band's min and max are the same figure, "400–600" otherwise. */
+/**
+ * Hyphen, not en dash — matches every other range in the app (job cards,
+ * Create a Job's salary field), and the LRI/PDI isolation marks keep it
+ * reading left-to-right when this string gets typed out inside the Arabic
+ * specimen sentence, the same fix as the Arabic salary hint (company.js).
+ */
 function range(band) {
-  return band.min === band.max ? `${band.min}` : `${band.min}–${band.max}`;
+  return band.min === band.max ? `${band.min}` : `⁦${band.min}-${band.max}⁩`;
 }
 
 function majorName(major, lang) {
