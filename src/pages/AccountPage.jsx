@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api.js';
 import { useAuth } from '../services/auth.jsx';
-import { Alert, Button, Card, Field, inputClass, Wisps, PURPLE, GOLD, ThemeLangSwitcher, PhotoViewModal } from '../components/common/ui.jsx';
+import { Alert, Bdi, Button, Card, Field, inputClass, Wisps, PURPLE, GOLD, ThemeLangSwitcher, PhotoViewModal } from '../components/common/ui.jsx';
 import { useToast } from '../components/common/toast.jsx';
 import { passwordHint, passwordIssues } from '../lib/password.js';
 import { readAvatarFile } from '../lib/avatar.js';
@@ -73,14 +73,17 @@ export default function AccountPage() {
   );
 }
 
+const ROLE_LABEL_KEY = { student: 'roleStudent', company: 'roleCompany', career: 'roleGraduate', admin: 'roleAdmin' };
+
 function ProfileSummary() {
   const { user, profile } = useAuth();
+  const { t } = useLang();
   return (
     <div className="darbi-box flex items-center gap-5 flex-wrap mb-6">
       <AvatarEditor />
       <div className="flex-1 min-w-[180px]">
-        <h2 className="text-xl font-bold text-white">{profile?.name || user?.username}</h2>
-        <p className="text-sm text-gray-400">{user?.email}</p>
+        <h2 className="text-xl font-bold text-white"><Bdi>{profile?.name || user?.username}</Bdi></h2>
+        <p className="text-sm text-gray-400"><Bdi>{user?.email}</Bdi></p>
         {user?.role && (
           <span
             className="inline-block mt-2 text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-full"
@@ -90,7 +93,7 @@ function ProfileSummary() {
               border: '1px solid color-mix(in srgb, var(--darbi-purple) 30%, transparent)',
             }}
           >
-            {user.role}
+            {t(`auth.${ROLE_LABEL_KEY[user.role] ?? 'roleStudent'}`)}
           </span>
         )}
       </div>
@@ -272,7 +275,7 @@ function ProfileTab() {
       <EditableRow label={t('account.username')} value={user?.username} onSave={saveUsername} successMessage={t('account.usernameChanged')} />
       <div className="py-4">
         <span className="block text-xs font-bold uppercase tracking-wide text-gray-500 mb-1">{t('account.email')}</span>
-        <span className="text-white">{user?.email}</span>
+        <span className="text-white"><Bdi>{user?.email}</Bdi></span>
       </div>
     </Card>
   );
@@ -422,7 +425,7 @@ function EditableRow({ label, value, onSave, successMessage }) {
         <div className="flex items-center justify-between gap-4">
           <div>
             <span className="block text-xs font-bold uppercase tracking-wide text-gray-500 mb-1">{label}</span>
-            <span className="text-white">{value || <span className="text-gray-500 italic">{t('account.notSet')}</span>}</span>
+            <span className="text-white">{value ? <Bdi>{value}</Bdi> : <span className="text-gray-500 italic">{t('account.notSet')}</span>}</span>
           </div>
           <button type="button" onClick={startEdit} className="text-xs font-bold shrink-0" style={{ color: 'var(--darbi-purple)' }}>
             {t('account.edit')}

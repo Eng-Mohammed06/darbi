@@ -18,9 +18,9 @@ const THEME_KEY = 'darbi.theme';
 export const THEMES = [
   { id: 'classic', en: 'Classic', ar: 'كلاسيكي' },
   { id: 'blueprint', en: 'Blueprint Night', ar: 'مخطط ليلي' },
-  { id: 'limestone', en: 'Limestone & Pine', ar: 'حجر جيري' },
+  { id: 'limestone', en: 'Limestone & Pine', ar: 'حجر جيري وصنوبر' },
   { id: 'aqaba', en: 'Aqaba', ar: 'العقبة' },
-  { id: 'cobalt', en: 'Signal Cobalt', ar: 'كوبالت' },
+  { id: 'cobalt', en: 'Signal Cobalt', ar: 'كوبالت الإشارة' },
   { id: 'basalt', en: 'Basalt', ar: 'بازلت' },
   { id: 'carbon', en: 'Carbon', ar: 'كربون' },
   { id: 'paper', en: 'Paper', ar: 'ورق' },

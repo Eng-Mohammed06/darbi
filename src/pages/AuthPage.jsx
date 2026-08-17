@@ -168,7 +168,7 @@ export default function AuthPage() {
             Darbi
           </h1>
           <p className="text-lg mt-3" style={{ color: 'var(--darbi-purple)' }}>
-            Career Assistant Platform
+            {t('common.tagline')}
           </p>
           {stats && (
             <p className="text-gray-400 text-sm mt-6">

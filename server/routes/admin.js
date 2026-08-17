@@ -46,7 +46,7 @@ router.get(
   '/users',
   asyncRoute(async (_req, res) => {
     const { rows } = await query(
-      `SELECT u.id, u.email, u.username, u.role, u.is_admin, u.email_verified, u.created_at,
+      `SELECT u.id, u.email, u.username, u.role, u.is_admin, u.is_test, u.email_verified, u.created_at,
               u.last_login_at, COALESCE(s.name, c.name, cp.name) AS name
          FROM users u
          LEFT JOIN students s ON s.user_id = u.id
@@ -72,7 +72,7 @@ router.get(
   asyncRoute(async (req, res) => {
     const id = Number(req.params.id);
     const { rows } = await query(
-      `SELECT u.id, u.email, u.username, u.role, u.is_admin, u.email_verified, u.avatar,
+      `SELECT u.id, u.email, u.username, u.role, u.is_admin, u.is_test, u.email_verified, u.avatar,
               u.created_at, u.last_login_at,
               COALESCE(s.name, c.name, cp.name) AS name
          FROM users u
@@ -180,6 +180,29 @@ router.patch(
       `UPDATE users SET is_admin = $1, updated_at = now() WHERE id = $2 AND role != 'admin'
        RETURNING id, email, username, role, is_admin`,
       [isAdmin, id],
+    );
+    if (!rows[0]) return res.status(404).json({ error: 'not_found' });
+    res.json(rows[0]);
+  }),
+);
+
+/**
+ * PATCH /api/admin/users/:id/test-flag — { isTest: boolean }. Marks a
+ * throwaway account (created by hand for post-deploy verification, e.g.
+ * "proddeploycheck1786726133647") so it's excluded from company-facing
+ * browsing (server/routes/companies.js's GET /students) without deleting it.
+ */
+router.patch(
+  '/users/:id/test-flag',
+  asyncRoute(async (req, res) => {
+    const id = Number(req.params.id);
+    const { isTest } = req.body ?? {};
+    if (typeof isTest !== 'boolean') return res.status(400).json({ error: 'missing_fields', need: ['isTest'] });
+
+    const { rows } = await query(
+      `UPDATE users SET is_test = $1, updated_at = now() WHERE id = $2
+       RETURNING id, email, username, role, is_test`,
+      [isTest, id],
     );
     if (!rows[0]) return res.status(404).json({ error: 'not_found' });
     res.json(rows[0]);

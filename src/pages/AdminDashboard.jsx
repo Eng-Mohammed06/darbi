@@ -96,6 +96,10 @@ function Users() {
     setUsers((list) => list.map((u) => (u.id === id ? { ...u, is_admin: isAdmin } : u)));
   }
 
+  function onTestFlagChanged(id, isTest) {
+    setUsers((list) => list.map((u) => (u.id === id ? { ...u, is_test: isTest } : u)));
+  }
+
   // Same optimistic-remove + 5s "Undo" toast used for company job postings
   // (src/pages/CompanyDashboard.jsx) — the row disappears immediately, the
   // real DELETE only fires once the window passes, so Undo just cancels it.
@@ -190,6 +194,7 @@ function Users() {
           onClose={() => setDetailId(null)}
           canRevokeSelf={detailId !== me?.id}
           onAdminAccessChanged={onAdminAccessChanged}
+          onTestFlagChanged={onTestFlagChanged}
         />
       )}
     </>
@@ -230,6 +235,11 @@ function UserRow({ u, t, onSelect, onRemove }) {
             {t('admin.users.detail.adminBadge')}
           </span>
         )}
+        {u.is_test && (
+          <span className="text-xs" title={t('admin.users.detail.testBadge')} aria-label={t('admin.users.detail.testBadge')}>
+            🧪
+          </span>
+        )}
         <span
           role="button"
           tabIndex={0}
@@ -268,7 +278,7 @@ function fmtDateTime(iso) {
  * explicitly, distinct from every other admin capability in this file,
  * which any admin-access account shares equally.
  */
-function UserDetailModal({ userId, onClose, canRevokeSelf, onAdminAccessChanged }) {
+function UserDetailModal({ userId, onClose, canRevokeSelf, onAdminAccessChanged, onTestFlagChanged }) {
   const { t } = useLang();
   const { user: me } = useAuth();
   const toast = useToast();
@@ -293,6 +303,21 @@ function UserDetailModal({ userId, onClose, canRevokeSelf, onAdminAccessChanged 
       await api(`/admin/users/${userId}/admin-access`, { method: 'PATCH', body: { isAdmin: next } });
       setDetail((d) => ({ ...d, is_admin: next }));
       onAdminAccessChanged(userId, next);
+    } catch (err) {
+      toast.show(err.message, { kind: 'error' });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function toggleTestFlag() {
+    if (!detail) return;
+    const next = !detail.is_test;
+    setBusy(true);
+    try {
+      await api(`/admin/users/${userId}/test-flag`, { method: 'PATCH', body: { isTest: next } });
+      setDetail((d) => ({ ...d, is_test: next }));
+      onTestFlagChanged(userId, next);
     } catch (err) {
       toast.show(err.message, { kind: 'error' });
     } finally {
@@ -389,6 +414,17 @@ function UserDetailModal({ userId, onClose, canRevokeSelf, onAdminAccessChanged 
                 </Button>
               </div>
             )}
+            <div className="mb-2">
+              <Button
+                type="button"
+                variant="navy"
+                disabled={busy}
+                onClick={toggleTestFlag}
+                style={{ width: '100%' }}
+              >
+                {detail.is_test ? dt.unmarkTest : dt.markTest}
+              </Button>
+            </div>
             <button type="button" onClick={onClose} className="w-full text-xs text-gray-400 hover:text-gray-200 py-2">
               {dt.close}
             </button>

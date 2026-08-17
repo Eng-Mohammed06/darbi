@@ -83,6 +83,7 @@ export function DarkField({ label, hint, action, children }) {
 
 /** Dark-card shell used by every pre-login page (AuthPage, ResetPasswordPage). */
 export function DarkCard({ title, subtitle, children }) {
+  const { t } = useLang();
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden" style={{ background: 'var(--darbi-bg)' }}>
       {/* One background spanning the full width, not one per half — two
@@ -121,7 +122,7 @@ export function DarkCard({ title, subtitle, children }) {
               Darbi
             </h1>
             <p className="text-lg mt-3" style={{ color: 'var(--darbi-purple)' }}>
-              Career Assistant Platform
+              {t('common.tagline')}
             </p>
           </div>
         </div>
@@ -524,6 +525,34 @@ export function Field({ label, hint, children }) {
       {hint && <span className="block text-xs text-gray-500 mt-1">{hint}</span>}
     </label>
   );
+}
+
+/**
+ * Wraps a piece of Latin/user-supplied text so it doesn't get pulled into
+ * the surrounding Arabic paragraph's RTL direction — without this, a value
+ * like "Demo Tech Co." renders as ".Demo Tech Co" in the Arabic UI, because
+ * a trailing period is direction-neutral and picks up the paragraph's
+ * direction instead of the Latin run's. `<bdi>` is the standard HTML element
+ * for exactly this (Bidirectional Isolate); wrap any company/person name,
+ * username, email, job title, city, or other Latin-script value that gets
+ * rendered next to Arabic text. Renders as a plain `<span>` when `value` is
+ * falsy so call sites can pass it through unconditionally.
+ */
+export function Bdi({ children, className }) {
+  if (children == null || children === '') return children;
+  return <bdi className={className}>{children}</bdi>;
+}
+
+/**
+ * Same problem as `Bdi`, but for a numeric range like "500-1000" — a plain
+ * `<bdi>` auto-detects direction from the first *strong* character, and
+ * digits are direction-neutral, so it can still pick up the paragraph's RTL
+ * direction and print the range backwards ("1000-500"). Force `dir="ltr"`
+ * explicitly rather than relying on auto-detection.
+ */
+export function LtrRange({ children, className }) {
+  if (children == null || children === '') return children;
+  return <bdi dir="ltr" className={className}>{children}</bdi>;
 }
 
 /** Kept as an export so existing `className={inputClass}` call sites still work. */

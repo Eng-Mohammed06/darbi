@@ -187,6 +187,12 @@ router.put(
  * Powers the Overview tab: five stat tiles (active jobs, total applications,
  * shortlisted, interviews, hired) plus a Recent Applications table. AI Match
  * and status mirror what each applicant row shows in My Jobs.
+ *
+ * `totalApplications` counts distinct candidates, not application rows — a
+ * student who applied to two of this company's postings (including two
+ * accidentally-duplicate listings) is one candidate, not two, which is what
+ * this stat is actually answering ("how many different people have applied
+ * to us").
  */
 router.get(
   '/me/overview',
@@ -194,7 +200,7 @@ router.get(
     const [{ rows: jobRows }, { rows: appRows }] = await Promise.all([
       query(`SELECT count(*)::int AS active_jobs FROM jobs WHERE company_id = $1 AND status = 'active'`, [req.user.id]),
       query(
-        `SELECT a.id, a.status, a.created_at,
+        `SELECT a.id, a.status, a.created_at, a.student_user_id,
                 j.title AS position, j.required_majors, j.min_gpa, j.required_skills,
                 s.name AS candidate_name, s.gpa, s.interests, m.name AS major_name
            FROM job_applications a
@@ -214,7 +220,7 @@ router.get(
 
     res.json({
       activeJobs: jobRows[0].active_jobs,
-      totalApplications: appRows.length,
+      totalApplications: new Set(appRows.map((a) => a.student_user_id)).size,
       shortlisted: counts.shortlisted,
       interviews: counts.interview,
       hired: counts.hired,
@@ -223,6 +229,7 @@ router.get(
         candidateName: a.candidate_name,
         position: a.position,
         status: a.status,
+        appliedAt: a.created_at,
         aiMatch: computeAiMatch(a),
       })),
     });
@@ -323,7 +330,9 @@ router.get(
     const { rows } = await query(
       `SELECT s.user_id, s.name, s.level, s.interests, s.gpa, s.location
          FROM students s
-        WHERE ($1::numeric IS NULL OR s.gpa >= $1)
+         JOIN users u ON u.id = s.user_id
+        WHERE NOT u.is_test
+          AND ($1::numeric IS NULL OR s.gpa >= $1)
           AND ($2::text IS NULL OR EXISTS (
                  SELECT 1 FROM unnest(s.interests) i WHERE i ILIKE '%' || $2 || '%'))
           AND ($3::text IS NULL OR EXISTS (

@@ -6,7 +6,7 @@ import Pathways from '../components/student/Pathways.jsx';
 import SavedPathways from '../components/student/SavedPathways.jsx';
 import { useAuth } from '../services/auth.jsx';
 import {
-  Alert, Button, Card, EmptyState, Field, Shell, inputClass, Salary, SkeletonLines,
+  Alert, Bdi, Button, Card, EmptyState, Field, LtrRange, Shell, inputClass, Salary, SkeletonLines,
 } from '../components/common/ui.jsx';
 import { useToast } from '../components/common/toast.jsx';
 import { useLang } from '../i18n/index.jsx';
@@ -753,10 +753,10 @@ function JobBoard() {
         {jobs.slice(0, visible).map((j) => (
           <div key={j.id} className="py-3">
             <button onClick={() => setOpen(open === j.id ? null : j.id)} className="w-full text-start">
-              <p className="font-semibold text-darbi-navy">{j.title}</p>
-              <p className="text-sm text-gray-300">{j.company_name}</p>
+              <p className="font-semibold text-darbi-navy"><Bdi>{j.title}</Bdi></p>
+              <p className="text-sm text-gray-300"><Bdi>{j.company_name}</Bdi></p>
               <p className="text-sm text-gray-500 mt-1">
-                {j.salary_raw ? t('student.jobBoard.salaryPerMonth')(j.salary_raw) : t('student.jobBoard.salaryNotStated')}
+                {j.salary_raw ? <LtrRange>{t('student.jobBoard.salaryPerMonth')(j.salary_raw)}</LtrRange> : t('student.jobBoard.salaryNotStated')}
                 {j.required_majors?.length > 0 && ` · ${j.required_majors.join(', ')}`}
               </p>
               {j.source && <p className="text-xs text-gray-400 mt-1">{t('student.jobBoard.source')(j.source)}</p>}
@@ -766,7 +766,7 @@ function JobBoard() {
               <div className="mt-3 ms-1 text-sm space-y-1.5">
                 <p className="text-gray-300">
                   <span className="font-semibold text-darbi-navy">{t('student.jobBoard.location')}</span>
-                  {j.location ?? t('student.jobBoard.notStated')}
+                  <Bdi>{j.location ?? t('student.jobBoard.notStated')}</Bdi>
                 </p>
                 {j.required_skills?.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 pt-1">

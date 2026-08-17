@@ -208,6 +208,16 @@ ALTER TABLE students ADD COLUMN IF NOT EXISTS major_id INTEGER REFERENCES majors
 ALTER TABLE students ADD COLUMN IF NOT EXISTS phone TEXT;
 ALTER TABLE students ADD COLUMN IF NOT EXISTS linkedin_url TEXT;
 
+-- Marks a throwaway account created for manual post-deploy verification
+-- (e.g. "proddeploycheck1786726133647") so it never shows up where a real
+-- company or student would see it, without having to delete the row. No
+-- script in this repo creates these -- they come from someone signing up by
+-- hand right after a deploy -- so this is toggled from the admin panel
+-- (server/routes/admin.js's PATCH /users/:id/test-flag) rather than set
+-- automatically. Lives on `users`, not `students`, since a throwaway account
+-- could be any role.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS is_test BOOLEAN NOT NULL DEFAULT false;
+
 -- One row per degree programme an institution offers. The averages are Tawjihi
 -- admission percentages: `minimum_average` is the floor to apply,
 -- `competitive_average` is what the last admitted student actually scored.

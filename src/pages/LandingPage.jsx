@@ -45,7 +45,7 @@ const THEMES = [
     ink: '#ffffff', ink2: '#9ca3af', ink3: '#6b7280', paper: '#0a0a0a', surface: '#111111',
     rule: 'rgba(255,255,255,0.08)', rule2: 'rgba(255,255,255,0.15)', trust: '#1fbf8f', trustBg: 'rgba(31,191,143,0.12)', caution: '#e8a33c', onInk: '#0a0a0a',
   } },
-  { id: 'limestone', en: 'Limestone & Pine', ar: 'حجر جيري', vars: {
+  { id: 'limestone', en: 'Limestone & Pine', ar: 'حجر جيري وصنوبر', vars: {
     ink: '#101418', ink2: '#565d66', ink3: '#878e97', paper: '#efece5', surface: '#ffffff',
     rule: '#d9d4c7', rule2: '#e8e4da', trust: '#0f6b57', trustBg: '#e2efea', caution: '#e0a21a', onInk: '#ffffff',
   } },
@@ -53,7 +53,7 @@ const THEMES = [
     ink: '#101a1d', ink2: '#4f6167', ink3: '#86979d', paper: '#e9eff0', surface: '#ffffff',
     rule: '#cbd8da', rule2: '#dfe8e9', trust: '#0a6b78', trustBg: '#dbeef0', caution: '#d99a12', onInk: '#ffffff',
   } },
-  { id: 'cobalt', en: 'Signal Cobalt', ar: 'كوبالت', vars: {
+  { id: 'cobalt', en: 'Signal Cobalt', ar: 'كوبالت الإشارة', vars: {
     ink: '#11151a', ink2: '#545c66', ink3: '#848d99', paper: '#eef0f3', surface: '#ffffff',
     rule: '#d4d8de', rule2: '#e5e8ec', trust: '#1f4ee0', trustBg: '#e4e9fd', caution: '#d98016', onInk: '#ffffff',
   } },

@@ -3,6 +3,7 @@ export default {
     roleStudent: 'Student',
     roleGraduate: 'Graduate',
     roleCompany: 'Company',
+    roleAdmin: 'Admin',
     portal: {
       student: { title: 'Student Portal', blurb: 'Find your engineering major' },
       company: { title: 'Company Portal', blurb: 'Find engineering talent' },
@@ -43,6 +44,7 @@ export default {
     roleStudent: 'طالب',
     roleGraduate: 'خريج',
     roleCompany: 'شركة',
+    roleAdmin: 'مدير',
     portal: {
       student: { title: 'بوابة الطلبة', blurb: 'اعثر على تخصصك الهندسي' },
       company: { title: 'بوابة الشركات', blurb: 'اعثر على الكفاءات الهندسية' },

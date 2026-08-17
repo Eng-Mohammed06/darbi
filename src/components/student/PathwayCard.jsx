@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../services/api.js';
 import { useLang } from '../../i18n/index.jsx';
+import { universityArabicName } from '../../lib/universityLabels.js';
 
 const GOLD = 'var(--darbi-gold)';
 const PURPLE = 'var(--darbi-purple)';
@@ -12,7 +13,7 @@ const PURPLE = 'var(--darbi-purple)';
  * call — the card renders identically with or without API credit.
  */
 export default function PathwayCard({ slug, onSave, onUnsave, saved, onClose }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
 
@@ -74,7 +75,9 @@ export default function PathwayCard({ slug, onSave, onUnsave, saved, onClose }) 
               <ul className="mb-3">
                 {study.taught_at.map((u) => (
                   <li key={`${u.code}-${u.program_name}`} className="text-sm">
-                    <span className="font-semibold text-darbi-navy">{u.code}</span>
+                    <span className="font-semibold text-darbi-navy">
+                      {universityArabicName(u.code, lang) ? `${universityArabicName(u.code, lang)} (${u.code})` : u.code}
+                    </span>
                     <span className="text-gray-500">
                       {' · '}
                       {u.competitive_average != null

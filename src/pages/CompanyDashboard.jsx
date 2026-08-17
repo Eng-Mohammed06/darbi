@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { api } from '../services/api.js';
 import { useAuth } from '../services/auth.jsx';
-import { Alert, Button, Card, EmptyState, Field, Shell, Skeleton, SkeletonLines, inputClass } from '../components/common/ui.jsx';
+import { Alert, Bdi, Button, Card, EmptyState, Field, LtrRange, Shell, Skeleton, SkeletonLines, inputClass } from '../components/common/ui.jsx';
 import { useToast } from '../components/common/toast.jsx';
 import { useLang } from '../i18n/index.jsx';
+import { interestLabel } from '../lib/interestLabels.js';
 
 const TABS = ['overview', 'jobs', 'find students'];
 
@@ -69,6 +70,11 @@ const STATUS_COLOR = {
   rejected: 'var(--darbi-error)',
 };
 
+function fmtDate(iso) {
+  if (!iso) return null;
+  return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
 function StatusBadge({ status }) {
   const { t } = useLang();
   const color = STATUS_COLOR[status] ?? STATUS_COLOR.screening;
@@ -112,7 +118,7 @@ export default function CompanyDashboard() {
 
   return (
     <Shell
-      title={`${profile?.name ?? t('company.companyFallback')} 🏢`}
+      title={<><Bdi>{profile?.name ?? t('company.companyFallback')}</Bdi> 🏢</>}
       subtitle={profile?.industry}
       tabs={TABS}
       activeTab={tab}
@@ -209,6 +215,7 @@ function Overview() {
                 <tr className="text-start text-xs uppercase tracking-wide text-gray-500" style={{ borderBottom: '1px solid var(--darbi-border)' }}>
                   <th className="pb-2 pe-4 font-semibold">{t('company.overview.candidateHeader')}</th>
                   <th className="pb-2 pe-4 font-semibold">{t('company.overview.positionHeader')}</th>
+                  <th className="pb-2 pe-4 font-semibold">{t('company.overview.appliedHeader')}</th>
                   <th className="pb-2 pe-4 font-semibold">{t('company.overview.aiMatchHeader')}</th>
                   <th className="pb-2 font-semibold">{t('company.overview.statusHeader')}</th>
                 </tr>
@@ -216,8 +223,9 @@ function Overview() {
               <tbody>
                 {data.recentApplications.map((a) => (
                   <tr key={a.id} style={{ borderBottom: '1px solid var(--darbi-border)' }}>
-                    <td className="py-2.5 pe-4 font-medium text-darbi-navy whitespace-nowrap">{a.candidateName}</td>
-                    <td className="py-2.5 pe-4 text-gray-300">{a.position}</td>
+                    <td className="py-2.5 pe-4 font-medium text-darbi-navy whitespace-nowrap"><Bdi>{a.candidateName}</Bdi></td>
+                    <td className="py-2.5 pe-4 text-gray-300"><Bdi>{a.position}</Bdi></td>
+                    <td className="py-2.5 pe-4 text-gray-500 whitespace-nowrap">{fmtDate(a.appliedAt)}</td>
                     <td className="py-2.5 pe-4"><MatchScore score={a.aiMatch} /></td>
                     <td className="py-2.5"><StatusBadge status={a.status} /></td>
                   </tr>
@@ -563,7 +571,7 @@ function JobPosting({ job: j, onRemove, onStatusChange }) {
     <div className="darbi-box flex flex-col">
       <div className="flex justify-between items-start gap-2 mb-2">
         <div className="flex items-center gap-2 min-w-0">
-          <p className="font-semibold text-darbi-navy truncate">{j.title}</p>
+          <p className="font-semibold text-darbi-navy truncate"><Bdi>{j.title}</Bdi></p>
           <JobStatusBadge status={j.status ?? 'active'} />
         </div>
         <button
@@ -577,9 +585,9 @@ function JobPosting({ job: j, onRemove, onStatusChange }) {
         {j.required_majors?.join(', ') || t('company.preview.anyMajor')}
       </p>
       <p className="text-xs text-gray-500">
-        {j.min_gpa && t('company.jobPosting.minGpa')(j.min_gpa)}
-        {j.min_gpa && j.salary_raw && ' · '}
-        {j.salary_raw && t('company.jobPosting.salary')(j.salary_raw)}
+        {j.min_gpa != null && t('company.jobPosting.minGpa')(j.min_gpa)}
+        {j.min_gpa != null && j.salary_raw && ' · '}
+        {j.salary_raw && <LtrRange>{t('company.jobPosting.salary')(j.salary_raw)}</LtrRange>}
       </p>
 
       <div className="flex items-center justify-between gap-2 mt-3">
@@ -619,7 +627,7 @@ function JobPosting({ job: j, onRemove, onStatusChange }) {
  * action, without building a full messaging inbox.
  */
 function ApplicantRow({ applicant: s, onChangeStatus }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [expanded, setExpanded] = useState(false);
   const [note, setNote] = useState(s.company_note ?? '');
   const [busy, setBusy] = useState(false);
@@ -637,9 +645,9 @@ function ApplicantRow({ applicant: s, onChangeStatus }) {
     <div className="text-sm py-2" style={{ borderBottom: '1px solid var(--darbi-border)' }}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="font-medium text-darbi-navy">{s.name}</p>
+          <p className="font-medium text-darbi-navy"><Bdi>{s.name}</Bdi></p>
           <p className="text-xs text-gray-400">
-            {s.level ?? t('company.jobPosting.levelNotStated')} · GPA {s.gpa ?? '—'} · {s.location ?? t('company.jobPosting.jordan')}
+            {s.level ? t('company.jobPosting.levelLabels')[s.level] ?? s.level : t('company.jobPosting.levelNotStated')} · {t('company.jobPosting.gpaLabel')} {s.gpa ?? '—'} · <Bdi>{s.location ?? t('company.jobPosting.jordan')}</Bdi>
           </p>
           <p className="text-xs mt-0.5">
             <MatchScore score={s.ai_match} />
@@ -678,7 +686,7 @@ function ApplicantRow({ applicant: s, onChangeStatus }) {
                   className="text-[11px] px-2 py-0.5 rounded-full"
                   style={{ background: 'color-mix(in srgb, var(--darbi-purple) 12%, transparent)', color: 'var(--darbi-purple)' }}
                 >
-                  {i}
+                  <Bdi>{interestLabel(i, lang)}</Bdi>
                 </span>
               ))}
             </div>
@@ -723,7 +731,7 @@ function ApplicantRow({ applicant: s, onChangeStatus }) {
 /** Candidate cards in a grid, closer to browsing a talent pool than reading
  * a plain list of names. */
 function FindStudents() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ major: '', minGpa: '' });
@@ -764,15 +772,15 @@ function FindStudents() {
       <div className="grid md:grid-cols-2 gap-4">
         {students.map((s) => (
           <div key={s.user_id} className="darbi-box">
-            <p className="font-semibold text-darbi-navy mb-1">{s.name}</p>
+            <p className="font-semibold text-darbi-navy mb-1"><Bdi>{s.name}</Bdi></p>
             <p className="text-sm text-gray-300">
-              {s.level ?? t('company.jobPosting.levelNotStated')} · GPA {s.gpa ?? '—'} · {s.location ?? t('company.jobPosting.jordan')}
+              {s.level ? t('company.jobPosting.levelLabels')[s.level] ?? s.level : t('company.jobPosting.levelNotStated')} · {t('company.jobPosting.gpaLabel')} {s.gpa ?? '—'} · <Bdi>{s.location ?? t('company.jobPosting.jordan')}</Bdi>
             </p>
             {s.interests?.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mt-2.5">
                 {s.interests.map((i) => (
                   <span key={i} className="text-xs px-2 py-1 rounded-full bg-white/10 text-gray-200">
-                    {i}
+                    <Bdi>{interestLabel(i, lang)}</Bdi>
                   </span>
                 ))}
               </div>
