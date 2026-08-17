@@ -2,7 +2,7 @@ export default {
   en: {
     navStudent: 'Student',
     navCompany: 'Employer',
-    navCareer: 'Career Boost',
+    navCareer: 'Graduate',
     title: 'Every student deserves to see the path before choosing it.',
     sub: "Darbi is an AI career guide for Jordanian engineering students — helping you explore majors, salaries, and jobs, all grounded in real, verified data.",
     pillars: [
@@ -34,7 +34,7 @@ export default {
   ar: {
     navStudent: 'طالب',
     navCompany: 'صاحب عمل',
-    navCareer: 'تطوير المهارات',
+    navCareer: 'خريج',
     title: 'يستحق كل طالب رؤية الطريق قبل اختياره.',
     sub: 'دربي مرشد مهني ذكي لطلبة الهندسة في الأردن، يساعدك على استكشاف التخصصات والرواتب والوظائف، استنادًا إلى بيانات حقيقية وموثّقة.',
     pillars: [
