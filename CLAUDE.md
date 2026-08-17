@@ -70,6 +70,13 @@ and 5174. Don't "fix" these back to defaults.
    original approved deliverables); use the admin panel for changes that
    don't have a spreadsheet to go back to, like adding a major only the
    admin knows about, or nudging a competitive average for a new year.
+6. **Company access to a student stays platform-mediated.** The applicant/
+   student-pool endpoints never return a student's email. Companies see
+   profile fields (major, interests, applied date) and can send an
+   interview-invite message via `job_applications.company_note`, which the
+   student sees on their own Jobs tab — there's no inbox and no channel to a
+   real address. Keep it that way unless someone explicitly decides to
+   expose contact info.
 
 ## Data pipeline
 
@@ -207,7 +214,9 @@ Keep it that way. Don't make the pathway card depend on a model call.
 
 Done: repo, schema, data pipeline, seed, auth, three dashboards, recommendation
 endpoint with rule-based fallback, university extraction, streaming chat
-advisor, pathway card.
+advisor, pathway card, company job postings with a draft/active/closed
+pipeline, and company → student interview invites (message on
+`job_applications.company_note`, platform-mediated, no contact info shared).
 
 Not done: deploy to Railway; mobile testing on a real device.
 
