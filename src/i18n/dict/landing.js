@@ -7,16 +7,16 @@ export default {
     sub: "Darbi is an AI career guide for Jordanian engineering students — helping you explore majors, salaries, and jobs, all grounded in real, verified data.",
     pillars: [
       {
-        title: 'Verified Jordanian data',
-        body: 'Every major, salary band, and job listing traces back to a real source — university admission thresholds, salary surveys, and 176 verified job postings. Nothing here is a guess, and every gap is disclosed rather than filled in.',
+        title: 'Trusted Jordanian data',
+        body: 'Every major, salary range, and job listing here is grounded in a real, verified source — from university admission data, through the salary ladder, to verified job postings. We never guess, and when the data has a gap, we say so plainly instead of filling it in with an inaccurate number.',
       },
       {
-        title: 'A conversational advisor',
-        body: "Darbi's advisor is a conversation, not a form. Tell it what you enjoy or what you're unsure about, and it grounds every answer in the same verified catalog — with the sources attached, so you can check them yourself.",
+        title: 'Your advisor, in conversation',
+        body: "Darbi's advisor is a conversation, not just a form. Tell it what you enjoy or what you're unsure about, and it builds every answer on verified data — with the sources attached, so you can check them yourself.",
       },
       {
-        title: 'From major to job, mapped',
-        body: 'Every pathway connects a major to the universities that teach it, the courses that build the right skills, and the real job listings waiting at the other end — one visual path instead of a wall of numbers.',
+        title: 'From major to job, in clear steps',
+        body: 'Every pathway connects your major to the universities that teach it, the courses that build the skills you need, and the real job listings waiting at the other end — one clear path with Darbi, instead of getting lost in scattered numbers and information.',
       },
     ],
     statsLabels: { majors: 'majors', courses: 'verified courses', jobs: 'verified job listings', trailing: 'every figure traced to a source.' },
