@@ -668,6 +668,23 @@ function MyApplications() {
 
 const JOBS_PAGE_SIZE = 20;
 
+// Default job-board view is scoped to the student's own profile — a job
+// counts as relevant if it lists their major (either as the employer wrote
+// it, or as we mapped it onto our own major list) or if any of their
+// free-text interests shows up in the title, description, or required
+// skills. Either signal is enough; a student browsing "Show all jobs" still
+// sees everything unfiltered.
+function isRelevantJob(job, profile) {
+  const major = (profile?.major_name || '').toLowerCase();
+  const interests = (profile?.interests || []).map((s) => s.toLowerCase()).filter(Boolean);
+  if (!major && !interests.length) return true;
+  const majors = [...(job.required_majors || []), ...(job.canonical_majors || [])].map((s) => s.toLowerCase());
+  const matchesMajor = major && majors.some((m) => m.includes(major) || major.includes(m));
+  const haystack = [job.title, job.description, ...(job.required_skills || [])].filter(Boolean).join(' ').toLowerCase();
+  const matchesInterest = interests.some((kw) => haystack.includes(kw));
+  return matchesMajor || matchesInterest;
+}
+
 /**
  * Rendering all ~176 listings in one pass used to briefly freeze the tab —
  * enough to make a click feel like it did nothing. Reveal them a page at a
@@ -681,9 +698,10 @@ const JOBS_PAGE_SIZE = 20;
 function JobBoard() {
   const { t } = useLang();
   const { profile, setProfile } = useAuth();
-  const [jobs, setJobs] = useState([]);
+  const [allJobs, setAllJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [major, setMajor] = useState('');
+  const [showAll, setShowAll] = useState(false);
   const [visible, setVisible] = useState(JOBS_PAGE_SIZE);
   const [open, setOpen] = useState(null);
   const [appliedIds, setAppliedIds] = useState([]);
@@ -699,9 +717,13 @@ function JobBoard() {
   useEffect(() => {
     const q = major ? `?major=${encodeURIComponent(major)}` : '';
     setLoading(true);
-    api(`/jobs${q}`, { auth: false }).then(setJobs).catch(() => {}).finally(() => setLoading(false));
+    api(`/jobs${q}`, { auth: false }).then(setAllJobs).catch(() => {}).finally(() => setLoading(false));
     setVisible(JOBS_PAGE_SIZE);
   }, [major]);
+
+  // The free-text major box is an explicit search override — typing in it
+  // (or toggling "Show all jobs") bypasses the profile-relevance filter.
+  const jobs = (!major && !showAll) ? allJobs.filter((j) => isRelevantJob(j, profile)) : allJobs;
 
   useEffect(() => {
     api('/students/me/applications').then(setAppliedIds).catch(() => {});
@@ -749,6 +771,14 @@ function JobBoard() {
       <Field label={t('student.jobBoard.filterByMajor')}>
         <input className={inputClass} placeholder={t('student.jobBoard.filterPlaceholder')} value={major} onChange={(e) => setMajor(e.target.value)} />
       </Field>
+      {!major && (
+        <div className="flex items-center justify-between gap-3 mb-3 text-xs text-gray-400">
+          <span>{!showAll && t('student.jobBoard.matchedForYou')}</span>
+          <button type="button" onClick={() => setShowAll((v) => !v)} className="underline hover:text-gray-200 shrink-0">
+            {showAll ? t('student.jobBoard.showMatchedJobs') : t('student.jobBoard.showAllJobs')}
+          </button>
+        </div>
+      )}
       {loading && <SkeletonLines lines={5} />}
       <div className="divide-y divide-[color:var(--darbi-border)]">
         {jobs.slice(0, visible).map((j) => (
